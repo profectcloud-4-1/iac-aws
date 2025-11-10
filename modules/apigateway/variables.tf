@@ -1,8 +1,3 @@
-variable "api_id" {
-  description = "API Gateway HTTP API ID (apigatewayv2)"
-  type        = string
-}
-
 variable "vpc_link_name" {
   description = "VPC Link 이름"
   type        = string
@@ -14,7 +9,7 @@ variable "vpc_link_security_group_id" {
   type        = string
 }
 
-variable "subnet_ids" {
+variable "vpi_link_subnet_ids" {
   description = "VPC Link ENI가 둘 서브넷 ID 목록 (내부 NLB에 접근 가능한 서브넷)"
   type        = list(string)
 }

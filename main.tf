@@ -185,6 +185,23 @@ module "ecs_cluster" {
   service_connect_namespace_arn = module.cloudmap.namespace_arn
 }
 
+### API Gateway ###
+module "apigateway" {
+  source                     = "./modules/apigateway"
+  vpc_link_security_group_id = module.security.vpc_link_sg_id
+  vpi_link_subnet_ids        = [module.common_network.private_subnet_app_id]
+  listener_arns = {
+    user_1    = module.nlb.listener_arns["user_1"]
+    user_2    = module.nlb.listener_arns["user_2"]
+    product_1 = module.nlb.listener_arns["product_1"]
+    product_2 = module.nlb.listener_arns["product_2"]
+    order_1   = module.nlb.listener_arns["order_1"]
+    order_2   = module.nlb.listener_arns["order_2"]
+    payment_1 = module.nlb.listener_arns["payment_1"]
+    payment_2 = module.nlb.listener_arns["payment_2"]
+  }
+}
+      
 ### s3(presigned용)
 module "presigned_s3" {
   source      = "./modules/s3"
