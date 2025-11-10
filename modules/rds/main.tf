@@ -48,13 +48,13 @@ resource "aws_security_group" "this" {
 }
 
 resource "aws_db_instance" "this" {
-  identifier                  = "${var.name}"
-  engine                      = "postgres"
-  engine_version              = var.engine_version
-  instance_class              = var.instance_class
-  db_name                     = var.db_name
-  username                    = var.username
-  password                    = var.password
+  identifier     = var.name
+  engine         = "postgres"
+  engine_version = var.engine_version
+  instance_class = var.instance_class
+  db_name        = var.db_name
+  username       = var.username
+  password       = var.password
 
   # 네트워크
   db_subnet_group_name   = aws_db_subnet_group.this.name
@@ -71,8 +71,8 @@ resource "aws_db_instance" "this" {
   apply_immediately = var.apply_immediately
 
   # 종료 보호/스냅샷
-  deletion_protection  = false
-  skip_final_snapshot  = true
+  deletion_protection = false
+  skip_final_snapshot = true
 
   # 파라미터 그룹
   parameter_group_name = aws_db_parameter_group.this.name

@@ -22,8 +22,8 @@ locals {
         rulePriority = 1
         description  = "Retain only last 2 images (tagged or untagged)"
         selection = {
-          tagStatus  = "any"
-          countType  = "imageCountMoreThan"
+          tagStatus   = "any"
+          countType   = "imageCountMoreThan"
           countNumber = 2
         }
         action = {
