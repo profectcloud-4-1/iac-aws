@@ -184,3 +184,10 @@ module "ecs_cluster" {
   cluster_name                  = "goorm-ecs"
   service_connect_namespace_arn = module.cloudmap.namespace_arn
 }
+
+### s3(presigned용)
+module "presigned_s3" {
+  source      = "./modules/s3"
+  bucket_name = "goorm-presigned-bucket"
+  versioning  = true
+}
