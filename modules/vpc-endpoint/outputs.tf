@@ -17,8 +17,3 @@ output "cloudwatch_endpoint_id" {
   description = "ID of the CloudWatch VPC endpoint"
   value       = aws_vpc_endpoint.cloudwatch.id
 }
-
-output "route_table_id" {
-  description = "ID of the route table for s3"
-  value       = aws_route_table.private.id
-}
