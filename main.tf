@@ -171,3 +171,9 @@ module "nlb" {
     tg-payment-2 = module.targetgroup_payment.target_group_arns["tg-payment-2"]
   }
 }
+
+### CloudMap ###
+module "cloudmap" {
+  source = "./modules/cloudmap"
+  vpc_id = module.common_network.vpc_id
+}
