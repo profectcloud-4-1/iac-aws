@@ -113,3 +113,14 @@ module "ecr_payment" {
   image_tag_mutability = "MUTABLE"
   scan_on_push = true
 }
+
+### ECR Policy. 한 정책의 Resource에 여러 ECR 레포지토리 포함 ###
+module "ecr_policy_user" {
+  source = "./modules/ecr-policy"
+  repository_arns = [
+    module.ecr_user.repository_arn,
+    module.ecr_product.repository_arn,
+    module.ecr_order.repository_arn,
+    module.ecr_payment.repository_arn
+  ]
+}
