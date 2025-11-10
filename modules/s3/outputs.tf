@@ -1,0 +1,19 @@
+output "bucket_id" {
+  description = "ID of the S3 bucket"
+  value       = aws_s3_bucket.this.id
+}
+
+output "bucket_arn" {
+  description = "ARN of the S3 bucket"
+  value       = aws_s3_bucket.this.arn
+}
+
+output "bucket_name" {
+  description = "Name of the S3 bucket"
+  value       = aws_s3_bucket.this.bucket
+}
+/*
+output "iam_user_name" {
+  value = aws_iam_user.presigned_user.name
+}
+ */
