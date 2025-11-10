@@ -6,7 +6,7 @@ variable "name" {
 variable "engine_version" {
   description = "PostgreSQL 엔진 버전"
   type        = string
-  default     = "16.4"
+  default     = "16.10"
 }
 
 variable "instance_class" {

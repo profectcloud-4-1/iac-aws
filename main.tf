@@ -37,7 +37,6 @@ module "rds_user" {
   vpc_id                         = module.common_network.vpc_id
   subnet_ids                     = [module.common_network.private_subnet_db_id, module.common_network.private_subnet_db_2_id]
   availability_zone              = "ap-northeast-2a" # 실제 인스턴스는 private-db(2a)에 배치
-  engine_version                 = "16.4"
   instance_class                 = "db.t3.micro"
   username                       = var.db_master_username
   password                       = var.db_master_password
@@ -53,7 +52,6 @@ module "rds_product" {
   vpc_id                         = module.common_network.vpc_id
   subnet_ids                     = [module.common_network.private_subnet_db_id, module.common_network.private_subnet_db_2_id]
   availability_zone              = "ap-northeast-2a"
-  engine_version                 = "16.4"
   instance_class                 = "db.t3.micro"
   username                       = var.db_master_username
   password                       = var.db_master_password
@@ -69,7 +67,6 @@ module "rds_order" {
   vpc_id                         = module.common_network.vpc_id
   subnet_ids                     = [module.common_network.private_subnet_db_id, module.common_network.private_subnet_db_2_id]
   availability_zone              = "ap-northeast-2a"
-  engine_version                 = "16.4"
   instance_class                 = "db.t3.micro"
   username                       = var.db_master_username
   password                       = var.db_master_password
@@ -85,7 +82,6 @@ module "rds_payment" {
   vpc_id                         = module.common_network.vpc_id
   subnet_ids                     = [module.common_network.private_subnet_db_id, module.common_network.private_subnet_db_2_id]
   availability_zone              = "ap-northeast-2a"
-  engine_version                 = "16.4"
   instance_class                 = "db.t3.micro"
   username                       = var.db_master_username
   password                       = var.db_master_password
