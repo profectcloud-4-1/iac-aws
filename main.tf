@@ -33,7 +33,7 @@ module "security" {
 module "rds_user" {
   source                         = "./modules/rds"
   name                           = "user"
-  db_name                        = "goormdotcom-user"
+  db_name                        = "goormdotcom"
   vpc_id                         = module.common_network.vpc_id
   subnet_ids                     = [module.common_network.private_subnet_db_id, module.common_network.private_subnet_db_2_id]
   availability_zone              = "ap-northeast-2a" # 실제 인스턴스는 private-db(2a)에 배치
@@ -48,7 +48,7 @@ module "rds_user" {
 module "rds_product" {
   source                         = "./modules/rds"
   name                           = "product"
-  db_name                        = "goormdotcom-product"
+  db_name                        = "goormdotcom"
   vpc_id                         = module.common_network.vpc_id
   subnet_ids                     = [module.common_network.private_subnet_db_id, module.common_network.private_subnet_db_2_id]
   availability_zone              = "ap-northeast-2a"
@@ -63,7 +63,7 @@ module "rds_product" {
 module "rds_order" {
   source                         = "./modules/rds"
   name                           = "order"
-  db_name                        = "goormdotcom-order"
+  db_name                        = "goormdotcom"
   vpc_id                         = module.common_network.vpc_id
   subnet_ids                     = [module.common_network.private_subnet_db_id, module.common_network.private_subnet_db_2_id]
   availability_zone              = "ap-northeast-2a"
@@ -78,7 +78,7 @@ module "rds_order" {
 module "rds_payment" {
   source                         = "./modules/rds"
   name                           = "payment"
-  db_name                        = "goormdotcom-payment"
+  db_name                        = "goormdotcom"
   vpc_id                         = module.common_network.vpc_id
   subnet_ids                     = [module.common_network.private_subnet_db_id, module.common_network.private_subnet_db_2_id]
   availability_zone              = "ap-northeast-2a"
