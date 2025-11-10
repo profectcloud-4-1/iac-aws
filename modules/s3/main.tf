@@ -1,6 +1,7 @@
 resource "aws_s3_bucket" "this" {
   bucket = var.bucket_name
 
+
   tags = {
     Name        = var.bucket_name
     Environment = "prod"
@@ -10,12 +11,24 @@ resource "aws_s3_bucket" "this" {
 resource "aws_s3_bucket_versioning" "this" {
   bucket = aws_s3_bucket.this.id
 
+
   versioning_configuration {
     status = var.versioning ? "Enabled" : "Suspended"
   }
 }
 
+# Public Access Block 설정 (프라이빗 버킷)
+resource "aws_s3_bucket_public_access_block" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  block_public_acls       = true
+  block_public_policy     = false #정책 허용
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
 # Presigned URL 사용 시 정책
+# iam 사용시 이 부분은 주석 처리 가능
 resource "aws_s3_bucket_policy" "this" {
   bucket = aws_s3_bucket.this.id
 
