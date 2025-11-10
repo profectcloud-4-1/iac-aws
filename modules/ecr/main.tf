@@ -82,8 +82,8 @@ data "aws_iam_policy_document" "pull" {
 }
 
 resource "aws_iam_policy" "pull" {
-  name        = "${var.repository_name}-ecr-pull"
-  description = "Allow pulling images from ${var.repository_name}"
+  name        = "ecr-pull"
+  description = "Allow pulling images"
   policy      = data.aws_iam_policy_document.pull.json
   tags        = local.common_tags
 }
@@ -115,8 +115,8 @@ data "aws_iam_policy_document" "push" {
 }
 
 resource "aws_iam_policy" "push" {
-  name        = "${var.repository_name}-ecr-push"
-  description = "Allow pushing images to ${var.repository_name}"
+  name        = "ecr-push"
+  description = "Allow pushing images"
   policy      = data.aws_iam_policy_document.push.json
   tags        = local.common_tags
 }
