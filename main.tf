@@ -127,6 +127,13 @@ module "ecr_policy_user" {
 module "vpc_endpoint" {
   source = "./modules/vpc-endpoint"
 
+  name_prefix        = "goorm"
+  vpc_id             = module.common_network.vpc_id
+  private_subnet_ids = [module.common_network.private_subnet_app_id]
+  vpce_sg_id         = module.security.vpce_sg_id
+  route_table_ids    = [module.vpc_endpoint.route_table_id] # Gateway용
+}
+
 ### Target Group ###
 module "targetgroup_user" {
   source   = "./modules/targetgroup"
@@ -163,9 +170,4 @@ module "nlb" {
     tg-payment-1 = module.targetgroup_payment.target_group_arns["tg-payment-1"]
     tg-payment-2 = module.targetgroup_payment.target_group_arns["tg-payment-2"]
   }
-  name_prefix = "goorm"
-  vpc_id             = module.common_network.vpc_id
-  private_subnet_ids = [module.common_network.private_subnet_app_id]
-  vpce_sg_id         = module.security.vpce_sg_id
-  route_table_ids    = [module.vpc_endpoint.route_table_id]  # Gateway용
 }
