@@ -171,3 +171,16 @@ module "nlb" {
     tg-payment-2 = module.targetgroup_payment.target_group_arns["tg-payment-2"]
   }
 }
+
+### Cloud Map (ECS 내부통신 네임스페이스) ###
+module "cloudmap" {
+  source = "./modules/cloudmap"
+  vpc_id = module.common_network.vpc_id
+}
+
+### ECS Cluster (Fargate 전용, Service Connect 기본 네임스페이스 설정) ###
+module "ecs_cluster" {
+  source                        = "./modules/ecs"
+  cluster_name                  = "goorm-ecs"
+  service_connect_namespace_arn = module.cloudmap.namespace_arn
+}
