@@ -183,6 +183,33 @@ module "ecs_cluster" {
   source                        = "./modules/ecs"
   cluster_name                  = "goorm-ecs"
   service_connect_namespace_arn = module.cloudmap.namespace_arn
+
+  service_task_configs = {
+    user = {
+      image          = var.user_image
+      cpu            = 256
+      memory         = 512
+      container_port = 8080
+    }
+    product = {
+      image          = var.product_image
+      cpu            = 256
+      memory         = 512
+      container_port = 8080
+    }
+    order = {
+      image          = var.order_image
+      cpu            = 256
+      memory         = 512
+      container_port = 8080
+    }
+    payment = {
+      image          = var.payment_image
+      cpu            = 256
+      memory         = 512
+      container_port = 8080
+    }
+  }
 }
 
 ### API Gateway ###
@@ -201,7 +228,7 @@ module "apigateway" {
     payment_2 = module.nlb.listener_arns["payment_2"]
   }
 }
-      
+
 ### s3(presigned용)
 module "presigned_s3" {
   source      = "./modules/s3"
