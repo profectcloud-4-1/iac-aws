@@ -30,6 +30,7 @@ module "security" {
   vpc_cidr_block = module.common_network.vpc_cidr_block
 }
 
+### RDS ###
 module "rds_user" {
   source                = "./modules/rds"
   name                  = "user"
@@ -44,7 +45,6 @@ module "rds_user" {
   create_security_group = false
   security_group_ids    = [module.security.rds_user_sg_id]
 }
-
 module "rds_product" {
   source                = "./modules/rds"
   name                  = "product"
@@ -59,7 +59,6 @@ module "rds_product" {
   create_security_group = false
   security_group_ids    = [module.security.rds_product_sg_id]
 }
-
 module "rds_order" {
   source                = "./modules/rds"
   name                  = "order"
@@ -74,7 +73,6 @@ module "rds_order" {
   create_security_group = false
   security_group_ids    = [module.security.rds_order_sg_id]
 }
-
 module "rds_payment" {
   source                = "./modules/rds"
   name                  = "payment"
@@ -90,10 +88,81 @@ module "rds_payment" {
   security_group_ids    = [module.security.rds_payment_sg_id]
 }
 
+### ECR Repository ###
+module "ecr_user" {
+  source               = "./modules/ecr"
+  repository_name      = "goormdotcom/user-service"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+}
+module "ecr_product" {
+  source               = "./modules/ecr"
+  repository_name      = "goormdotcom/product-service"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+}
+module "ecr_order" {
+  source               = "./modules/ecr"
+  repository_name      = "goormdotcom/order-service"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+}
+module "ecr_payment" {
+  source               = "./modules/ecr"
+  repository_name      = "goormdotcom/payment-service"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+}
 
+### ECR Policy. 한 정책의 Resource에 여러 ECR 레포지토리 포함 ###
+module "ecr_policy_user" {
+  source = "./modules/ecr-policy"
+  repository_arns = [
+    module.ecr_user.repository_arn,
+    module.ecr_product.repository_arn,
+    module.ecr_order.repository_arn,
+    module.ecr_payment.repository_arn
+  ]
+}
 module "vpc_endpoint" {
   source = "./modules/vpc-endpoint"
 
+### Target Group ###
+module "targetgroup_user" {
+  source   = "./modules/targetgroup"
+  vpc_id   = module.common_network.vpc_id
+  services = ["user"]
+}
+module "targetgroup_product" {
+  source   = "./modules/targetgroup"
+  vpc_id   = module.common_network.vpc_id
+  services = ["product"]
+}
+module "targetgroup_order" {
+  source   = "./modules/targetgroup"
+  vpc_id   = module.common_network.vpc_id
+  services = ["order"]
+}
+module "targetgroup_payment" {
+  source   = "./modules/targetgroup"
+  vpc_id   = module.common_network.vpc_id
+  services = ["payment"]
+}
+
+### NLB ###
+module "nlb" {
+  source     = "./modules/nlb"
+  subnet_ids = [module.common_network.private_subnet_app_id]
+  target_group_arns_map = {
+    tg-user-1    = module.targetgroup_user.target_group_arns["tg-user-1"]
+    tg-user-2    = module.targetgroup_user.target_group_arns["tg-user-2"]
+    tg-product-1 = module.targetgroup_product.target_group_arns["tg-product-1"]
+    tg-product-2 = module.targetgroup_product.target_group_arns["tg-product-2"]
+    tg-order-1   = module.targetgroup_order.target_group_arns["tg-order-1"]
+    tg-order-2   = module.targetgroup_order.target_group_arns["tg-order-2"]
+    tg-payment-1 = module.targetgroup_payment.target_group_arns["tg-payment-1"]
+    tg-payment-2 = module.targetgroup_payment.target_group_arns["tg-payment-2"]
+  }
   name_prefix = "goorm"
   vpc_id             = module.common_network.vpc_id
   private_subnet_ids = [module.common_network.private_subnet_app_id]
