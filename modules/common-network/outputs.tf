@@ -21,3 +21,7 @@ output "private_subnet_db_id" {
 output "private_subnet_db_2_id" {
   value = aws_subnet.private-db-2.id
 }
+
+output "private_rtb_app_id" {
+  value = aws_route_table.private_app.id
+}
