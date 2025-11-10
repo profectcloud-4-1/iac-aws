@@ -130,7 +130,7 @@ jobs:
           cd .terravision
           pip install -r requirements.txt
           chmod +x terravision.py
-          ln -s "$(pwd)/terravision.py" "$(pwd)/terravision"
+          [ -e "$(pwd)/terravision" ] || ln -s "$(pwd)/terravision.py" "$(pwd)/terravision"
           echo "$(pwd)" >> "$GITHUB_PATH"
 
       # Terraform CLI 설치 (분석용, 백엔드 연결은 비활성화)
