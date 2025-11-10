@@ -18,8 +18,8 @@ locals {
 
 data "aws_iam_policy_document" "pull" {
   statement {
-    sid     = "GetAuthorizationToken"
-    actions = ["ecr:GetAuthorizationToken"]
+    sid       = "GetAuthorizationToken"
+    actions   = ["ecr:GetAuthorizationToken"]
     resources = ["*"]
   }
 
@@ -46,8 +46,8 @@ resource "aws_iam_policy" "pull" {
 
 data "aws_iam_policy_document" "push" {
   statement {
-    sid     = "GetAuthorizationToken"
-    actions = ["ecr:GetAuthorizationToken"]
+    sid       = "GetAuthorizationToken"
+    actions   = ["ecr:GetAuthorizationToken"]
     resources = ["*"]
   }
 

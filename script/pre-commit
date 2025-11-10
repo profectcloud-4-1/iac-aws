@@ -1,5 +1,5 @@
 #!/bin/bash
 
 terraform init -input=false -no-color || exit 1
-terraform fmt -recursive --check
+terraform fmt -recursive
 terraform validate -no-color || exit 1
