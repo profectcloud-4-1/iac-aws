@@ -30,6 +30,7 @@ module "security" {
   vpc_cidr_block = module.common_network.vpc_cidr_block
 }
 
+### RDS ###
 module "rds_user" {
   source                = "./modules/rds"
   name                  = "user"
@@ -44,7 +45,6 @@ module "rds_user" {
   create_security_group = false
   security_group_ids    = [module.security.rds_user_sg_id]
 }
-
 module "rds_product" {
   source                = "./modules/rds"
   name                  = "product"
@@ -59,7 +59,6 @@ module "rds_product" {
   create_security_group = false
   security_group_ids    = [module.security.rds_product_sg_id]
 }
-
 module "rds_order" {
   source                = "./modules/rds"
   name                  = "order"
@@ -74,7 +73,6 @@ module "rds_order" {
   create_security_group = false
   security_group_ids    = [module.security.rds_order_sg_id]
 }
-
 module "rds_payment" {
   source                = "./modules/rds"
   name                  = "payment"
@@ -90,32 +88,53 @@ module "rds_payment" {
   security_group_ids    = [module.security.rds_payment_sg_id]
 }
 
-output "common_network" {
-  value = module.common_network.vpc_id
+### ECR Repository ###
+module "ecr_user" {
+  source               = "./modules/ecr"
+  repository_name      = "goormdotcom/user-service"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+}
+module "ecr_product" {
+  source               = "./modules/ecr"
+  repository_name      = "goormdotcom/product-service"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+}
+module "ecr_order" {
+  source               = "./modules/ecr"
+  repository_name      = "goormdotcom/order-service"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+}
+module "ecr_payment" {
+  source               = "./modules/ecr"
+  repository_name      = "goormdotcom/payment-service"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
 }
 
-output "common_network_public_subnet_id" {
-  value = module.common_network.public_subnet_id
+### ECR Policy. 한 정책의 Resource에 여러 ECR 레포지토리 포함 ###
+module "ecr_policy_user" {
+  source = "./modules/ecr-policy"
+  repository_arns = [
+    module.ecr_user.repository_arn,
+    module.ecr_product.repository_arn,
+    module.ecr_order.repository_arn,
+    module.ecr_payment.repository_arn
+  ]
 }
 
-output "common_network_private_subnet_app_id" {
-  value = module.common_network.private_subnet_app_id
+### Target Group ###
+module "targetgroup_user" {
+  source   = "./modules/targetgroup"
+  vpc_id   = module.common_network.vpc_id
+  services = ["user"]
 }
-
-output "common_network_private_subnet_db_id" {
-  value = module.common_network.private_subnet_db_id
-}
-
-output "rds_user_endpoint" {
-  value = module.rds_user.endpoint
-}
-
-output "rds_product_endpoint" {
-  value = module.rds_product.endpoint
-}
-
-output "rds_order_endpoint" {
-  value = module.rds_order.endpoint
+module "targetgroup_product" {
+  source   = "./modules/targetgroup"
+  vpc_id   = module.common_network.vpc_id
+  services = ["product"]
 }
 
 output "rds_payment_endpoint" {
@@ -130,4 +149,13 @@ module "vpc_endpoint" {
   private_subnet_ids = [module.common_network.private_subnet_app_id]
   vpce_sg_id         = module.security.vpce_sg_id
   route_table_ids    = [module.vpc_endpoint.route_table_id]  # Gateway용
+module "targetgroup_order" {
+  source   = "./modules/targetgroup"
+  vpc_id   = module.common_network.vpc_id
+  services = ["order"]
+}
+module "targetgroup_payment" {
+  source   = "./modules/targetgroup"
+  vpc_id   = module.common_network.vpc_id
+  services = ["payment"]
 }
