@@ -28,3 +28,51 @@ variable "tags" {
   default     = {}
 }
 
+variable "task_execution_role_arn" {
+  description = "ECS Task Execution Role ARN (ECR Pull/Logs 권한)"
+  type        = string
+  default     = ""
+}
+
+variable "task_role_arn" {
+  description = "ECS Task Role ARN (애플리케이션 권한)"
+  type        = string
+  default     = ""
+}
+
+variable "log_prefix" {
+  description = "CloudWatch Logs 그룹 접두사"
+  type        = string
+  default     = "/ecs"
+}
+
+variable "service_task_configs" {
+  description = "서비스별 태스크 설정(user/product/order/payment 각각 cpu, memory, container_port, image)"
+  type = object({
+    user = object({
+      cpu            = number
+      memory         = number
+      container_port = number
+      image          = string
+    })
+    product = object({
+      cpu            = number
+      memory         = number
+      container_port = number
+      image          = string
+    })
+    order = object({
+      cpu            = number
+      memory         = number
+      container_port = number
+      image          = string
+    })
+    payment = object({
+      cpu            = number
+      memory         = number
+      container_port = number
+      image          = string
+    })
+  })
+  default = null
+}

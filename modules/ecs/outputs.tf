@@ -8,3 +8,7 @@ output "arn" {
   value       = aws_ecs_cluster.this.arn
 }
 
+output "codedeploy_service_role_arn" {
+  description = "CodeDeploy가 ECS 블루/그린 배포에 사용하는 Role ARN"
+  value       = aws_iam_role.codedeploy_ecs.arn
+}
