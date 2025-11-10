@@ -1,7 +1,7 @@
 resource "aws_apigatewayv2_vpc_link" "this" {
   name               = var.vpc_link_name
   security_group_ids = [var.vpc_link_security_group_id]
-  subnet_ids         = var.subnet_ids
+  subnet_ids         = var.vpi_link_subnet_ids
 }
 
 locals {
