@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
+}
 resource "aws_vpc" "goorm" {
   cidr_block = "10.9.0.0/16"
   tags = {
@@ -150,4 +158,21 @@ resource "aws_network_acl_rule" "private_db_egress_allow_vpc" {
 resource "aws_network_acl_association" "private_db_assoc" {
   network_acl_id = aws_network_acl.private_db.id
   subnet_id      = aws_subnet.private-db.id
+}
+
+# eip for nat gw
+resource "aws_eip" "nat" {
+  tags = {
+    Name = "goorm-nat-eip"
+  }
+}
+
+# nat gw
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.private-app.id
+
+  tags = {
+    Name = "goorm-nat-gateway"
+  }
 }
