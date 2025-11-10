@@ -172,6 +172,7 @@ module "nlb" {
   }
 }
 
+
 ### Cloud Map (ECS 내부통신 네임스페이스) ###
 module "cloudmap" {
   source = "./modules/cloudmap"
@@ -227,6 +228,17 @@ module "apigateway" {
     payment_1 = module.nlb.listener_arns["payment_1"]
     payment_2 = module.nlb.listener_arns["payment_2"]
   }
+}
+
+### CloudFront (api.goorm.store -> API Gateway, blue/green 프리픽스) ###
+module "cloudfront" {
+  source               = "./modules/cloudfront"
+  domain_name          = "api.goorm.store"
+  hosted_zone_name     = "goorm.store"
+  user_api_endpoint    = module.apigateway.api_endpoints.user
+  product_api_endpoint = module.apigateway.api_endpoints.product
+  order_api_endpoint   = module.apigateway.api_endpoints.order
+  payment_api_endpoint = module.apigateway.api_endpoints.payment
 }
 
 ### s3(presigned용)

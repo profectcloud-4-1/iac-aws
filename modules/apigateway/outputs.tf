@@ -13,25 +13,12 @@ output "api_ids" {
   }
 }
 
-output "stage_arns" {
-  description = "각 서비스별 blue/green 스테이지 ARN"
+output "api_endpoints" {
+  description = "각 서비스별 HTTP API 엔드포인트(URL)"
   value = {
-    user = {
-      blue  = aws_apigatewayv2_stage.user_blue.arn
-      green = aws_apigatewayv2_stage.user_green.arn
-    }
-    product = {
-      blue  = aws_apigatewayv2_stage.product_blue.arn
-      green = aws_apigatewayv2_stage.product_green.arn
-    }
-    order = {
-      blue  = aws_apigatewayv2_stage.order_blue.arn
-      green = aws_apigatewayv2_stage.order_green.arn
-    }
-    payment = {
-      blue  = aws_apigatewayv2_stage.payment_blue.arn
-      green = aws_apigatewayv2_stage.payment_green.arn
-    }
+    user    = aws_apigatewayv2_api.user.api_endpoint
+    product = aws_apigatewayv2_api.product.api_endpoint
+    order   = aws_apigatewayv2_api.order.api_endpoint
+    payment = aws_apigatewayv2_api.payment.api_endpoint
   }
 }
-
