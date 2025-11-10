@@ -96,3 +96,32 @@ resource "aws_security_group" "rds_payment" {
   }
 }
 
+// vpc endpoint sg
+resource "aws_security_group" "vpce" {
+  name        = "${var.name_prefix}-vpce-sg"
+  description = "Security group for VPC Interface Endpoints (ECR, CloudWatch)"
+  vpc_id      = var.vpc_id
+
+  # 인터페이스 엔드포인트는 HTTPS(443) 통신만 허용됨
+  ingress {
+    description = "Allow HTTPS from within VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr_block]
+  }
+
+  # 기본 아웃바운드 전체 허용
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.name_prefix}-vpce-sg"
+  }
+}
+
+
