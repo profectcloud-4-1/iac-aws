@@ -1,0 +1,99 @@
+# GitHub Actions: Terraform Cloud 원격 실행 파이프라인
+# - PR: fmt/validate + 원격 speculative plan, PR 코멘트로 결과 게시
+# - main 푸시: fmt/validate + 원격 apply
+# 사전 준비:
+# 1) 리포지토리 시크릿에 TF_API_TOKEN(Terraform Cloud User Token) 저장
+# 2) Terraform Cloud 워크스페이스 변수(AWS 자격증명 등) 설정
+name: Terraform (Remote Execution - Terraform Cloud)
+
+on:
+  # PR에서만 plan을 수행하고 결과를 코멘트로 남깁니다.
+  pull_request:
+    paths:
+      - "**/*.tf"
+      - "**/*.tfvars"
+      - ".github/workflows/terraform-remote.yml"
+
+env:
+  # Terraform CLI 비대화/CI 모드 설정
+  TF_IN_AUTOMATION: true
+  TF_INPUT: false
+  # 참고: 아래 값들은 문서화용 환경변수로, 실제 원격 실행은 mian.tf의 cloud 블록을 따릅니다.
+  TF_CLOUD_ORGANIZATION: goormdotcom
+  TF_WORKSPACE: prod
+
+jobs:
+  # 형식 검사(fmt)와 구성 유효성(validate)만 수행하는 기본 검사 잡
+  fmt_validate:
+    name: fmt & validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Terraform CLI 설치 및 Terraform Cloud 인증(토큰은 리포지토리 시크릿 사용)
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      # Terraform Cloud 원격 백엔드로 초기화
+      - name: Terraform Init (remote)
+        run: terraform init -input=false -no-color
+
+      # 코드 스타일 검사 (변경 사항이 있으면 실패)
+      - name: Terraform Format Check
+        run: terraform fmt -recursive -check
+
+      # 구성 유효성 검사
+      - name: Terraform Validate
+        run: terraform validate -no-color
+
+  # PR에서만 실행되는 원격 speculative plan 잡
+  plan:
+    name: plan (speculative - TFC remote)
+    runs-on: ubuntu-latest
+    needs: fmt_validate
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Terraform CLI 설치 및 TFC 인증
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      # Terraform Cloud 원격 백엔드로 초기화
+      - name: Terraform Init (remote)
+        run: terraform init -input=false -no-color
+
+      # 원격 speculative plan 실행(상태 변경 없음)
+      - name: Terraform Plan (remote speculative)
+        id: plan
+        run: |
+          set -o pipefail
+          terraform plan -no-color -input=false | tee plan.txt
+
+      # plan 결과 파일을 워크플로우 아티팩트로 업로드
+      - name: Upload Plan as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: plan.txt
+          if-no-files-found: error
+
+      # PR에 plan 결과를 고정(sticky) 코멘트로 게시
+      - name: Comment PR with Plan (sticky)
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: terraform-plan
+          path: plan.txt
