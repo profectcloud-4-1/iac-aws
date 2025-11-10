@@ -17,16 +17,6 @@ resource "aws_db_parameter_group" "this" {
     name  = "timezone"
     value = "Asia/Seoul"
   }
-
-  parameter {
-    name  = "log_timezone"
-    value = "Asia/Seoul"
-  }
-
-  parameter {
-    name  = "client_encoding"
-    value = "UTF8"
-  }
 }
 
 # DB Subnet Group (서브넷 2개 이상 권장 - 단일 AZ 배포여도 요구됨)
