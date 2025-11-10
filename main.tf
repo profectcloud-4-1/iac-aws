@@ -201,3 +201,14 @@ module "apigateway" {
     payment_2 = module.nlb.listener_arns["payment_2"]
   }
 }
+      
+### s3(presigned용)
+module "presigned_s3" {
+  source      = "./modules/s3"
+  bucket_name = "goorm-presigned-bucket"
+  versioning  = true
+}
+
+output "presigned_user_name" {
+  value = module.presigned_s3.iam_user_name
+}
