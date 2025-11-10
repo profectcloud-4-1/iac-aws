@@ -146,3 +146,19 @@ module "targetgroup_payment" {
   vpc_id   = module.common_network.vpc_id
   services = ["payment"]
 }
+
+### NLB ###
+module "nlb" {
+  source     = "./modules/nlb"
+  subnet_ids = [module.common_network.private_subnet_app_id]
+  target_group_arns_map = {
+    tg-user-1    = module.targetgroup_user.target_group_arns["tg-user-1"]
+    tg-user-2    = module.targetgroup_user.target_group_arns["tg-user-2"]
+    tg-product-1 = module.targetgroup_product.target_group_arns["tg-product-1"]
+    tg-product-2 = module.targetgroup_product.target_group_arns["tg-product-2"]
+    tg-order-1   = module.targetgroup_order.target_group_arns["tg-order-1"]
+    tg-order-2   = module.targetgroup_order.target_group_arns["tg-order-2"]
+    tg-payment-1 = module.targetgroup_payment.target_group_arns["tg-payment-1"]
+    tg-payment-2 = module.targetgroup_payment.target_group_arns["tg-payment-2"]
+  }
+}
