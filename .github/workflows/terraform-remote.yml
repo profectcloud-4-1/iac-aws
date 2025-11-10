@@ -122,20 +122,30 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y graphviz
 
-      # Terravision 설치 (PyPI에 없는 경우 GitHub에서 직접 설치)
-      - name: Install Terravision
+      # Terravision 설치: 레포를 클론하고 Poetry로 로컬 실행 환경 구성
+      - name: Install Terravision (via Poetry)
         run: |
           pip install --upgrade pip
-          pip install "git+https://github.com/patrickchugh/terravision"
+          pip install poetry
+          git clone --depth 1 https://github.com/patrickchugh/terravision .terravision
+          cd .terravision
+          poetry install --no-interaction --no-ansi
 
-      # Terraform 초기화 (terravision이 내부에서 terraform 정보를 활용)
+      # Terraform CLI 설치 (분석용, 백엔드 연결은 비활성화)
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+
+      # Terraform 초기화(백엔드 비활성) - 원격 자격증명 없이 동작
       - name: Terraform Init (for analysis)
-        run: terraform init -input=false -no-color
+        run: terraform init -backend=false -input=false -no-color
 
       # 다이어그램 생성 (SVG 권장: 텍스트 선명, 용량 작음)
       - name: Generate Diagram (SVG)
         run: |
-          terravision draw --source . --format svg --outfile architecture
+          cd .terravision
+          poetry run terravision draw --source "$GITHUB_WORKSPACE" --format svg --outfile "$GITHUB_WORKSPACE/architecture"
           test -f architecture.svg
 
       - name: Upload Diagram Artifact
