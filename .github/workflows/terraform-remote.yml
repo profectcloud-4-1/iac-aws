@@ -98,8 +98,6 @@ jobs:
           header: terraform-plan
           path: plan.txt
 
-  # PR에서 Terraform 다이어그램을 자동 생성하여 아티팩트 업로드 및 코멘트로 링크 공유
-  diagram:
     name: diagram (Terravision)
     runs-on: ubuntu-latest
     needs: fmt_validate
