@@ -1,12 +1,8 @@
 # 1. IAM 사용자 생성
-/*resource "aws_iam_user" "presigned_user" {
+resource "aws_iam_user" "presigned_user" {
   name = "presigned-user"
 }
 
-# 2. IAM Access Key 생성
-resource "aws_iam_access_key" "presigned_key" {
-  user = aws_iam_user.presigned_user.name
-}
 
 # 3. IAM 정책 생성 (S3 특정 버킷에만 접근)
 data "aws_iam_policy_document" "s3_presigned_policy" {
@@ -30,4 +26,4 @@ resource "aws_iam_policy" "s3_presigned_policy" {
 resource "aws_iam_user_policy_attachment" "attach" {
   user       = aws_iam_user.presigned_user.name
   policy_arn = aws_iam_policy.s3_presigned_policy.arn
-}*/
+}

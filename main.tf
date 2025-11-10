@@ -191,3 +191,7 @@ module "presigned_s3" {
   bucket_name = "goorm-presigned-bucket"
   versioning  = true
 }
+
+output "presigned_user_name" {
+  value = module.presigned_s3.iam_user_name
+}
