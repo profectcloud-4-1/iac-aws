@@ -59,19 +59,3 @@ resource "aws_vpc_endpoint" "cloudwatch" {
     Name = "${var.name_prefix}-cloudwatch-endpoint"
   }
 }
-
-#route table for s3
-# Private Route Table (S3 Gateway용)
-resource "aws_route_table" "private" {
-  vpc_id = var.vpc_id
-
-  tags = {
-    Name = "goorm-private-rt"
-  }
-}
-
-# Route Table Association
-resource "aws_route_table_association" "private_app" {
-  subnet_id      = var.private_subnet_ids[0]
-  route_table_id = aws_route_table.private.id
-}

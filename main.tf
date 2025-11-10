@@ -131,7 +131,7 @@ module "vpc_endpoint" {
   vpc_id             = module.common_network.vpc_id
   private_subnet_ids = [module.common_network.private_subnet_app_id]
   vpce_sg_id         = module.security.vpce_sg_id
-  route_table_ids    = [module.vpc_endpoint.route_table_id] # Gateway용
+  route_table_ids    = [module.common_network.private_rtb_app_id] # S3 Gateway용
 }
 
 ### Target Group ###
