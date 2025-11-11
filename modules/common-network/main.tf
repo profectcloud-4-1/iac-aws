@@ -159,6 +159,26 @@ resource "aws_network_acl_rule" "private_app_egress_allow_http" {
   from_port      = 80
   to_port        = 80
 }
+resource "aws_network_acl_rule" "private_app_egress_allow_db_dev" {
+  network_acl_id = aws_network_acl.private_app.id
+  rule_number    = 130
+  egress         = true
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  from_port      = 5230
+  to_port        = 5233
+}
+resource "aws_network_acl_rule" "private_app_egress_allow_db_rds" {
+  network_acl_id = aws_network_acl.private_app.id
+  rule_number    = 140
+  egress         = true
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = aws_vpc.goorm.cidr_block
+  from_port      = 5432
+  to_port        = 5432
+}
 # nacl <-> subnet 연결
 resource "aws_network_acl_association" "private_app_assoc" {
   network_acl_id = aws_network_acl.private_app.id
