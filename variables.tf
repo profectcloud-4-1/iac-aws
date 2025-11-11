@@ -18,19 +18,23 @@ variable "aws_region" {
 variable "user_image" {
   type        = string
   description = "User service image"
+  default     = "please-fill/imagename:tag"
 }
 
 variable "product_image" {
   type        = string
   description = "Product service image"
+  default     = "please-fill/imagename:tag"
 }
 
 variable "order_image" {
   type        = string
   description = "Order service image"
+  default     = "please-fill/imagename:tag"
 }
 
 variable "payment_image" {
   type        = string
   description = "Payment service image"
+  default     = "please-fill/imagename:tag"
 }

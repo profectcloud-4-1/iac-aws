@@ -1,5 +1,5 @@
 resource "aws_vpc" "goorm" {
-  cidr_block = "10.9.0.0/16"
+  cidr_block = var.vpc_cidr_block
 
   enable_dns_hostnames = true
   enable_dns_support   = true

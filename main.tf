@@ -21,6 +21,7 @@ provider "aws" {
 
 module "common_network" {
   source = "./modules/common-network"
+  # vpc_cidr_block = "10.9.0.0/16"
 }
 
 module "security" {
