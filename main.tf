@@ -240,7 +240,7 @@ module "apigateway" {
 ### CloudFront (api.goorm.store -> API Gateway, blue/green 프리픽스) ###
 module "cloudfront" {
   source               = "./modules/cloudfront"
-  domain_name          = "api.goorm.store"
+  domain_name          = var.cloudfront_domain_name
   hosted_zone_name     = "goorm.store"
   user_api_endpoint    = module.apigateway.api_endpoints.user
   product_api_endpoint = module.apigateway.api_endpoints.product
@@ -251,7 +251,7 @@ module "cloudfront" {
 ### s3(presigned용)
 module "presigned_s3" {
   source      = "./modules/s3"
-  bucket_name = "goorm-presigned-bucket"
+  bucket_name = var.presigned_bucket_name
   versioning  = true
 }
 
