@@ -19,14 +19,16 @@ resource "aws_iam_role" "task" {
 resource "aws_iam_role" "task_execution" {
   name               = "ecsTaskExecutionRole-goorm"
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
-  ]
 }
 
 resource "aws_iam_role_policy_attachment" "task_execution_ssm_readonly" {
   role       = aws_iam_role.task_execution.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "task_execution_ecs_managed" {
+  role       = aws_iam_role.task_execution.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 data "aws_iam_policy_document" "task_execution_cwlogs" {
