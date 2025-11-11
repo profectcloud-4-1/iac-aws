@@ -17,6 +17,12 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
+  default_tags {
+    tags = {
+      Project     = "goormdotcom"
+      Environment = terraform.workspace
+    }
+  }
 }
 
 module "common_network" {
