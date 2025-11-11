@@ -174,3 +174,27 @@ resource "aws_security_group" "vpce" {
   }
 }
 
+### SG - ECS Service ###
+resource "aws_security_group" "ecs_service" {
+  name        = "${var.name_prefix}-ecs-service-sg"
+  description = "ECS Service SG"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr_block]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.name_prefix}-ecs-service-sg"
+  }
+}
