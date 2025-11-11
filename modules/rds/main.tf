@@ -37,9 +37,6 @@ resource "aws_security_group" "this" {
   tags = {
     Name = "${var.name}-rds-sg"
   }
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_db_instance" "this" {

@@ -22,9 +22,6 @@ resource "aws_security_group" "rds_user" {
   tags = {
     Name = "${var.name_prefix}-rds-user-sg"
   }
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_security_group" "rds_product" {
@@ -48,9 +45,6 @@ resource "aws_security_group" "rds_product" {
 
   tags = {
     Name = "${var.name_prefix}-rds-product-sg"
-  }
-  lifecycle {
-    prevent_destroy = true
   }
 }
 
@@ -76,9 +70,6 @@ resource "aws_security_group" "rds_order" {
   tags = {
     Name = "${var.name_prefix}-rds-order-sg"
   }
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_security_group" "rds_payment" {
@@ -103,9 +94,6 @@ resource "aws_security_group" "rds_payment" {
   tags = {
     Name = "${var.name_prefix}-rds-payment-sg"
   }
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 
@@ -124,9 +112,6 @@ resource "aws_security_group" "vpc_link" {
 
   tags = {
     Name = "${var.name_prefix}-vpc-link-sg"
-  }
-  lifecycle {
-    prevent_destroy = true
   }
 }
 
@@ -158,9 +143,6 @@ resource "aws_security_group" "nlb" {
   tags = {
     Name = "${var.name_prefix}-nlb-sg"
   }
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 
@@ -190,9 +172,6 @@ resource "aws_security_group" "vpce" {
   tags = {
     Name = "${var.name_prefix}-vpce-sg"
   }
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 ### SG - ECS Service ###
@@ -217,8 +196,5 @@ resource "aws_security_group" "ecs_service" {
 
   tags = {
     Name = "${var.name_prefix}-ecs-service-sg"
-  }
-  lifecycle {
-    prevent_destroy = true
   }
 }

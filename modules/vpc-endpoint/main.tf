@@ -12,9 +12,6 @@ resource "aws_vpc_endpoint" "ecr_api" {
   tags = {
     Name = "${var.name_prefix}-ecr-api-endpoint"
   }
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 # -------------------------------
@@ -31,9 +28,6 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   tags = {
     Name = "${var.name_prefix}-ecr-dkr-endpoint"
   }
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 # -------------------------------
@@ -47,9 +41,6 @@ resource "aws_vpc_endpoint" "s3" {
 
   tags = {
     Name = "${var.name_prefix}-s3-endpoint"
-  }
-  lifecycle {
-    prevent_destroy = true
   }
 }
 
@@ -66,8 +57,5 @@ resource "aws_vpc_endpoint" "cloudwatch" {
 
   tags = {
     Name = "${var.name_prefix}-cloudwatch-endpoint"
-  }
-  lifecycle {
-    prevent_destroy = true
   }
 }
