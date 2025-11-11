@@ -18,9 +18,6 @@ resource "aws_db_subnet_group" "this" {
   tags = {
     Name = "${var.name}-db-subnet-group"
   }
-  lifecycle {
-    prevent_destroy = var.prevent_destroy
-  }
 }
 
 # RDS 전용 SG (외부에서 전달받지 않을 때에만 생성)
@@ -41,7 +38,7 @@ resource "aws_security_group" "this" {
     Name = "${var.name}-rds-sg"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -77,9 +74,6 @@ resource "aws_db_instance" "this" {
 
   tags = {
     Name = "${var.name}-rds"
-  }
-  lifecycle {
-    prevent_destroy = var.prevent_destroy
   }
 }
 

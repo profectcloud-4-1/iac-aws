@@ -26,8 +26,5 @@ resource "aws_lb_target_group" "this" {
     interval            = 30
     timeout             = 5
   }
-  lifecycle {
-    prevent_destroy = var.prevent_destroy
-  }
 }
 

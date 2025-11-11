@@ -8,9 +8,3 @@ variable "versioning" {
   type        = bool
   default     = false
 }
-
-variable "prevent_destroy" {
-  description = "Prevent destroy"
-  type        = bool
-  default     = false
-}

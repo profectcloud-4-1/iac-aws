@@ -1,6 +1,9 @@
 # 1. IAM 사용자 생성
 resource "aws_iam_user" "presigned_user" {
   name = "presigned-user"
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 
@@ -20,10 +23,16 @@ data "aws_iam_policy_document" "s3_presigned_policy" {
 resource "aws_iam_policy" "s3_presigned_policy" {
   name   = "s3-presigned-policy"
   policy = data.aws_iam_policy_document.s3_presigned_policy.json
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # 4. 사용자에 정책 붙이기
 resource "aws_iam_user_policy_attachment" "attach" {
   user       = aws_iam_user.presigned_user.name
   policy_arn = aws_iam_policy.s3_presigned_policy.arn
+  lifecycle {
+    prevent_destroy = true
+  }
 }

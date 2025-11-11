@@ -23,7 +23,7 @@ resource "aws_security_group" "rds_user" {
     Name = "${var.name_prefix}-rds-user-sg"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -50,7 +50,7 @@ resource "aws_security_group" "rds_product" {
     Name = "${var.name_prefix}-rds-product-sg"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -77,7 +77,7 @@ resource "aws_security_group" "rds_order" {
     Name = "${var.name_prefix}-rds-order-sg"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -104,7 +104,7 @@ resource "aws_security_group" "rds_payment" {
     Name = "${var.name_prefix}-rds-payment-sg"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -126,7 +126,7 @@ resource "aws_security_group" "vpc_link" {
     Name = "${var.name_prefix}-vpc-link-sg"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -159,7 +159,7 @@ resource "aws_security_group" "nlb" {
     Name = "${var.name_prefix}-nlb-sg"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -191,7 +191,7 @@ resource "aws_security_group" "vpce" {
     Name = "${var.name_prefix}-vpce-sg"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -219,6 +219,6 @@ resource "aws_security_group" "ecs_service" {
     Name = "${var.name_prefix}-ecs-service-sg"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }

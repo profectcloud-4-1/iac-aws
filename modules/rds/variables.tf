@@ -83,9 +83,3 @@ variable "apply_immediately" {
   type        = bool
   default     = true
 }
-
-variable "prevent_destroy" {
-  description = "Prevent destroy"
-  type        = bool
-  default     = false
-}

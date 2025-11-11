@@ -28,8 +28,6 @@ provider "aws" {
 module "common_network" {
   source = "./modules/common-network"
   # vpc_cidr_block = "10.9.0.0/16"
-
-  prevent_destroy = true
 }
 
 module "security" {
@@ -37,8 +35,6 @@ module "security" {
   vpc_id         = module.common_network.vpc_id
   name_prefix    = "goorm"
   vpc_cidr_block = module.common_network.vpc_cidr_block
-
-  prevent_destroy = true
 }
 
 ### RDS ###
@@ -105,32 +101,24 @@ module "ecr_user" {
   repository_name      = "goormdotcom/user-service"
   image_tag_mutability = "MUTABLE"
   scan_on_push         = true
-
-  prevent_destroy = true
 }
 module "ecr_product" {
   source               = "./modules/ecr"
   repository_name      = "goormdotcom/product-service"
   image_tag_mutability = "MUTABLE"
   scan_on_push         = true
-
-  prevent_destroy = true
 }
 module "ecr_order" {
   source               = "./modules/ecr"
   repository_name      = "goormdotcom/order-service"
   image_tag_mutability = "MUTABLE"
   scan_on_push         = true
-
-  prevent_destroy = true
 }
 module "ecr_payment" {
   source               = "./modules/ecr"
   repository_name      = "goormdotcom/payment-service"
   image_tag_mutability = "MUTABLE"
   scan_on_push         = true
-
-  prevent_destroy = true
 }
 
 ### ECR Policy. 한 정책의 Resource에 여러 ECR 레포지토리 포함 ###
@@ -142,8 +130,6 @@ module "ecr_policy_user" {
     module.ecr_order.repository_arn,
     module.ecr_payment.repository_arn
   ]
-
-  prevent_destroy = true
 }
 module "vpc_endpoint" {
   source = "./modules/vpc-endpoint"
@@ -153,8 +139,6 @@ module "vpc_endpoint" {
   private_subnet_ids = [module.common_network.private_subnet_app_id]
   vpce_sg_id         = module.security.vpce_sg_id
   route_table_ids    = [module.common_network.private_rtb_app_id] # S3 Gateway용
-
-  prevent_destroy = true
 }
 
 ### Target Group ###
@@ -200,8 +184,6 @@ module "nlb" {
 module "cloudmap" {
   source = "./modules/cloudmap"
   vpc_id = module.common_network.vpc_id
-
-  prevent_destroy = true
 }
 
 ### ECS Cluster (Fargate 전용, Service Connect 기본 네임스페이스 설정) ###
@@ -236,8 +218,6 @@ module "ecs_cluster" {
       container_port = 8080
     }
   }
-
-  prevent_destroy = true
 }
 
 ### API Gateway ###
@@ -273,6 +253,4 @@ module "presigned_s3" {
   source      = "./modules/s3"
   bucket_name = var.presigned_bucket_name
   versioning  = true
-
-  prevent_destroy = true
 }

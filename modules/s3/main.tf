@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "this" {
     Environment = "prod"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -21,7 +21,7 @@ resource "aws_s3_bucket_versioning" "this" {
     status = var.versioning ? "Enabled" : "Suspended"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -33,7 +33,7 @@ resource "aws_s3_bucket_public_access_block" "this" {
   ignore_public_acls      = true
   restrict_public_buckets = true
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 

@@ -28,9 +28,3 @@ variable "vpce_sg_id" {
   description = "Security group ID for Interface Endpoints"
   type        = string
 }
-
-variable "prevent_destroy" {
-  description = "Prevent destroy"
-  type        = bool
-  default     = false
-}

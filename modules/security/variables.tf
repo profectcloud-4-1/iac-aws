@@ -13,9 +13,3 @@ variable "vpc_cidr_block" {
   description = "VPC CIDR block"
   type        = string
 }
-
-variable "prevent_destroy" {
-  description = "Prevent destroy"
-  type        = bool
-  default     = false
-}

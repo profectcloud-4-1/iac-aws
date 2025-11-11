@@ -27,9 +27,3 @@ variable "payment_api_endpoint" {
   description = "Payment API Gateway 엔드포인트(https://... 형태)"
   type        = string
 }
-
-variable "prevent_destroy" {
-  description = "Prevent destroy"
-  type        = bool
-  default     = false
-}

@@ -50,9 +50,3 @@ variable "health_check_path" {
   type        = string
   default     = "/actuator/health"
 }
-
-variable "prevent_destroy" {
-  description = "Prevent destroy"
-  type        = bool
-  default     = false
-}

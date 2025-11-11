@@ -25,9 +25,3 @@ variable "target_group_arns_map" {
   description = "대상그룹 이름 => ARN 맵 (tg-user-1/2, tg-product-1/2, tg-order-1/2, tg-payment-1/2)"
   type        = map(string)
 }
-
-variable "prevent_destroy" {
-  description = "Prevent destroy"
-  type        = bool
-  default     = false
-}

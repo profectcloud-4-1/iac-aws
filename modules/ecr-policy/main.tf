@@ -34,7 +34,7 @@ resource "aws_iam_policy" "pull" {
   policy      = data.aws_iam_policy_document.pull.json
   tags        = local.common_tags
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -69,7 +69,7 @@ resource "aws_iam_policy" "push" {
   policy      = data.aws_iam_policy_document.push.json
   tags        = local.common_tags
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 

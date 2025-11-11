@@ -8,7 +8,7 @@ resource "aws_vpc" "goorm" {
     Name = "goorm-vpc"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -20,7 +20,7 @@ resource "aws_subnet" "public" {
     Name = "goorm-public-subnet"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -32,7 +32,7 @@ resource "aws_subnet" "private-app" {
     Name = "goorm-private-subnet-app"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -44,7 +44,7 @@ resource "aws_subnet" "private-db" {
     Name = "goorm-private-subnet-db"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -56,7 +56,7 @@ resource "aws_subnet" "private-db-2" {
     Name = "goorm-private-subnet-db-2"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -67,7 +67,7 @@ resource "aws_internet_gateway" "igw" {
     Name = "goorm-igw"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -79,7 +79,7 @@ resource "aws_route_table" "public" {
     Name = "goorm-rtb-public"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -94,7 +94,7 @@ resource "aws_route_table_association" "public_assoc" {
   subnet_id      = aws_subnet.public.id
   route_table_id = aws_route_table.public.id
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -105,14 +105,14 @@ resource "aws_route_table" "private_app" {
     Name = "goorm-rtb-private-app"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 resource "aws_route_table_association" "private_app_assoc" {
   subnet_id      = aws_subnet.private-app.id
   route_table_id = aws_route_table.private_app.id
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -123,14 +123,14 @@ resource "aws_route_table" "private_db" {
     Name = "goorm-rtb-private-db"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 resource "aws_route_table_association" "private_db_assoc" {
   subnet_id      = aws_subnet.private-db.id
   route_table_id = aws_route_table.private_db.id
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -141,7 +141,7 @@ resource "aws_network_acl" "private_app" {
     Name = "goorm-nacl-private-app"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 resource "aws_network_acl_rule" "private_app_ingress_allow_vpc" {
@@ -215,7 +215,7 @@ resource "aws_network_acl_association" "private_app_assoc" {
   network_acl_id = aws_network_acl.private_app.id
   subnet_id      = aws_subnet.private-app.id
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -226,7 +226,7 @@ resource "aws_network_acl" "private_db" {
     Name = "goorm-nacl-private-db"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 resource "aws_network_acl_rule" "private_db_ingress_allow_vpc" {
@@ -250,7 +250,7 @@ resource "aws_network_acl_association" "private_db_assoc" {
   network_acl_id = aws_network_acl.private_db.id
   subnet_id      = aws_subnet.private-db.id
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -260,7 +260,7 @@ resource "aws_eip" "nat" {
     Name = "goorm-nat-eip"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -273,7 +273,7 @@ resource "aws_nat_gateway" "nat" {
     Name = "goorm-nat-gateway"
   }
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }
 
@@ -282,6 +282,6 @@ resource "aws_route" "private_app_to_nat" {
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.nat.id
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true
   }
 }

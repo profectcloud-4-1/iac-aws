@@ -61,9 +61,3 @@ variable "service_task_configs" {
   })
   default = null
 }
-
-variable "prevent_destroy" {
-  description = "Prevent destroy"
-  type        = bool
-  default     = false
-}
