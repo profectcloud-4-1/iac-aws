@@ -1,13 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
-  }
-}
-
-#
 
 locals {
   user_origin    = replace(var.user_api_endpoint, "https://", "")

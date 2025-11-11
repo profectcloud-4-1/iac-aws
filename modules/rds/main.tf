@@ -1,11 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
-  }
-}
 
 # PostgreSQL 16용 파라미터 그룹: 서울 타임존 및 UTF-8
 resource "aws_db_parameter_group" "this" {

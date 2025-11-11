@@ -1,11 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
-  }
-}
 
 locals {
   # 예: ["tg-user-1", "tg-user-2", "tg-product-1", ...]

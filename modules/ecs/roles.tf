@@ -65,9 +65,11 @@ data "aws_iam_policy_document" "codedeploy_assume_role" {
 resource "aws_iam_role" "codedeploy_ecs" {
   name               = "CodeDeployRoleForECS-goorm"
   assume_role_policy = data.aws_iam_policy_document.codedeploy_assume_role.json
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS",
-  ]
+}
+
+resource "aws_iam_role_policy_attachment" "codedeploy_ecs_managed" {
+  role       = aws_iam_role.codedeploy_ecs.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS"
 }
 
 

@@ -1,11 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
-  }
-}
 resource "aws_vpc" "goorm" {
   cidr_block = "10.9.0.0/16"
 

@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
-  }
-}
-
 locals {
   use_kms = var.encryption_type == "KMS" && var.kms_key_arn != null && var.kms_key_arn != ""
   common_tags = merge(
