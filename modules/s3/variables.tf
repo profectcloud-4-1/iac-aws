@@ -9,3 +9,8 @@ variable "versioning" {
   default     = false
 }
 
+variable "prevent_destroy" {
+  description = "Prevent destroy"
+  type        = bool
+  default     = false
+}

@@ -5,5 +5,8 @@ resource "aws_lb" "this" {
   subnets                          = var.subnet_ids
   enable_deletion_protection       = false
   enable_cross_zone_load_balancing = var.enable_cross_zone_load_balancing
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 

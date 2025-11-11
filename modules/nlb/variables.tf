@@ -26,3 +26,8 @@ variable "target_group_arns_map" {
   type        = map(string)
 }
 
+variable "prevent_destroy" {
+  description = "Prevent destroy"
+  type        = bool
+  default     = false
+}

@@ -2,6 +2,9 @@ resource "aws_apigatewayv2_vpc_link" "this" {
   name               = var.vpc_link_name
   security_group_ids = [var.vpc_link_security_group_id]
   subnet_ids         = var.vpi_link_subnet_ids
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 
 locals {
@@ -22,6 +25,9 @@ resource "aws_apigatewayv2_integration" "user_1" {
   timeout_milliseconds   = var.integration_timeout_ms
   description            = "Integration for user_1"
   request_parameters     = local.request_headers
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 
 resource "aws_apigatewayv2_integration" "product_1" {
@@ -36,6 +42,9 @@ resource "aws_apigatewayv2_integration" "product_1" {
   description            = "Integration for product_1"
 
   request_parameters = local.request_headers
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 
 resource "aws_apigatewayv2_integration" "order_1" {
@@ -50,6 +59,9 @@ resource "aws_apigatewayv2_integration" "order_1" {
   description            = "Integration for order_1"
 
   request_parameters = local.request_headers
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 
 resource "aws_apigatewayv2_integration" "payment_1" {
@@ -64,4 +76,7 @@ resource "aws_apigatewayv2_integration" "payment_1" {
   description            = "Integration for payment_1"
 
   request_parameters = local.request_headers
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }

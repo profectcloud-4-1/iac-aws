@@ -28,3 +28,8 @@ variable "payment_api_endpoint" {
   type        = string
 }
 
+variable "prevent_destroy" {
+  description = "Prevent destroy"
+  type        = bool
+  default     = false
+}

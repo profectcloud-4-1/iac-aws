@@ -6,6 +6,9 @@ resource "aws_lb_listener" "user_1" {
     type             = "forward"
     target_group_arn = var.target_group_arns_map["tg-user-1"]
   }
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 
 resource "aws_lb_listener" "user_2" {
@@ -15,6 +18,9 @@ resource "aws_lb_listener" "user_2" {
   default_action {
     type             = "forward"
     target_group_arn = var.target_group_arns_map["tg-user-2"]
+  }
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
   }
 }
 
@@ -26,6 +32,9 @@ resource "aws_lb_listener" "product_1" {
     type             = "forward"
     target_group_arn = var.target_group_arns_map["tg-product-1"]
   }
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 
 resource "aws_lb_listener" "product_2" {
@@ -35,6 +44,9 @@ resource "aws_lb_listener" "product_2" {
   default_action {
     type             = "forward"
     target_group_arn = var.target_group_arns_map["tg-product-2"]
+  }
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
   }
 }
 
@@ -46,6 +58,9 @@ resource "aws_lb_listener" "order_1" {
     type             = "forward"
     target_group_arn = var.target_group_arns_map["tg-order-1"]
   }
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 
 resource "aws_lb_listener" "order_2" {
@@ -55,6 +70,9 @@ resource "aws_lb_listener" "order_2" {
   default_action {
     type             = "forward"
     target_group_arn = var.target_group_arns_map["tg-order-2"]
+  }
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
   }
 }
 
@@ -66,6 +84,9 @@ resource "aws_lb_listener" "payment_1" {
     type             = "forward"
     target_group_arn = var.target_group_arns_map["tg-payment-1"]
   }
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 
 resource "aws_lb_listener" "payment_2" {
@@ -75,6 +96,9 @@ resource "aws_lb_listener" "payment_2" {
   default_action {
     type             = "forward"
     target_group_arn = var.target_group_arns_map["tg-payment-2"]
+  }
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
   }
 }
 

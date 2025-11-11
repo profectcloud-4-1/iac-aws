@@ -51,3 +51,8 @@ variable "health_check_path" {
   default     = "/actuator/health"
 }
 
+variable "prevent_destroy" {
+  description = "Prevent destroy"
+  type        = bool
+  default     = false
+}

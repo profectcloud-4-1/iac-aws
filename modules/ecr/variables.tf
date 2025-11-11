@@ -39,3 +39,8 @@ variable "tags" {
   default     = {}
 }
 
+variable "prevent_destroy" {
+  description = "Prevent destroy"
+  type        = bool
+  default     = false
+}

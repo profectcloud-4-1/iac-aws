@@ -43,10 +43,16 @@ resource "aws_ecr_repository" "this" {
   }
 
   tags = local.common_tags
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 
 # 리텐션 정책
 resource "aws_ecr_lifecycle_policy" "this" {
   repository = aws_ecr_repository.this.name
   policy     = var.lifecycle_policy_text != null ? var.lifecycle_policy_text : local.default_lifecycle_policy
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }

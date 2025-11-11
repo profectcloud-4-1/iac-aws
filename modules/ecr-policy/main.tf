@@ -33,6 +33,9 @@ resource "aws_iam_policy" "pull" {
   description = "Allow pulling images from selected ECR repositories"
   policy      = data.aws_iam_policy_document.pull.json
   tags        = local.common_tags
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 
 data "aws_iam_policy_document" "push" {
@@ -65,5 +68,8 @@ resource "aws_iam_policy" "push" {
   description = "Allow pushing images to selected ECR repositories"
   policy      = data.aws_iam_policy_document.push.json
   tags        = local.common_tags
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 

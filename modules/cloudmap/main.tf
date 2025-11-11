@@ -9,5 +9,8 @@ resource "aws_service_discovery_private_dns_namespace" "this" {
     },
     var.tags,
   )
+  lifecycle {
+    prevent_destroy = var.prevent_destroy
+  }
 }
 

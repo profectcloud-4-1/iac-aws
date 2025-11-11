@@ -31,3 +31,8 @@ variable "integration_timeout_ms" {
   default     = 29000
 }
 
+variable "prevent_destroy" {
+  description = "Prevent destroy"
+  type        = bool
+  default     = false
+}
