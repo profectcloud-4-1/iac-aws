@@ -123,7 +123,7 @@ resource "aws_network_acl_rule" "private_app_ingress_allow_vpc" {
 }
 resource "aws_network_acl_rule" "private_app_ingress_allow_ephemeral_ports" {
   network_acl_id = aws_network_acl.private_app.id
-  rule_number    = 100
+  rule_number    = 200
   egress         = false
   from_port      = 1024
   to_port        = 65535
