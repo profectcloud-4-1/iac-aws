@@ -23,6 +23,24 @@ resource "aws_iam_role" "task" {
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json
 }
 
+data "aws_iam_policy_document" "task_execution_ssm" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ssm:GetParameters",
+      "ssm:GetParameter",
+      "ssm:GetParametersByPath",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "task_execution_ssm" {
+  name   = "ecsTaskExecutionRole-SSMRead"
+  role   = aws_iam_role.task_execution.id
+  policy = data.aws_iam_policy_document.task_execution_ssm.json
+}
+
 data "aws_iam_policy_document" "codedeploy_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
