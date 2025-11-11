@@ -61,30 +61,3 @@ variable "service_task_configs" {
   })
   default = null
 }
-
-variable "service_subnet_ids" {
-  description = "ECS 서비스가 배치될 서브넷 ID 목록"
-  type        = list(string)
-}
-
-variable "service_security_group_id" {
-  description = "ECS 서비스 ENI 보안그룹 ID"
-  type        = string
-}
-
-variable "user_target_group_arn_blue" {
-  description = "user BLUE 타깃그룹 ARN"
-  type        = string
-}
-variable "user_target_group_arn_green" {
-  description = "user GREEN 타깃그룹 ARN"
-  type        = string
-}
-variable "user_prod_listener_arn" {
-  description = "user 프로덕션 트래픽 NLB 리스너 ARN"
-  type        = string
-}
-variable "user_test_listener_arn" {
-  description = "user 테스트 트래픽 NLB 리스너 ARN"
-  type        = string
-}
