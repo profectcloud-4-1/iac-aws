@@ -185,6 +185,14 @@ module "ecs_cluster" {
   cluster_name                  = "goorm-ecs"
   service_connect_namespace_arn = module.cloudmap.namespace_arn
 
+  service_subnet_ids        = [module.common_network.private_subnet_app_id]
+  service_security_group_id = module.security.ecs_service_sg_id
+
+  user_target_group_arn_blue  = module.targetgroup_user.target_group_arns["tg-user-1"]
+  user_target_group_arn_green = module.targetgroup_user.target_group_arns["tg-user-2"]
+  user_prod_listener_arn      = module.nlb.listener_arns["user_1"]
+  user_test_listener_arn      = module.nlb.listener_arns["user_2"]
+
   service_task_configs = {
     user = {
       image          = var.user_image
