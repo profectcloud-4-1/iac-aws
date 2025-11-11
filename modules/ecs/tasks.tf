@@ -45,6 +45,7 @@ resource "aws_ecs_task_definition" "user" {
       essential = true
       portMappings = [
         {
+          name          = "user-8080-tcp"
           containerPort = var.service_task_configs.user.container_port
           hostPort      = var.service_task_configs.user.container_port
           protocol      = "tcp"
