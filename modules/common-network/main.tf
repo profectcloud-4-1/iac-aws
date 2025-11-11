@@ -139,15 +139,25 @@ resource "aws_network_acl_rule" "private_app_egress_allow_vpc" {
   rule_action    = "allow"
   cidr_block     = aws_vpc.goorm.cidr_block
 }
-resource "aws_network_acl_rule" "private_app_egress_allow_ephemeral_ports" {
+resource "aws_network_acl_rule" "private_app_egress_allow_https" {
   network_acl_id = aws_network_acl.private_app.id
-  rule_number    = 200
+  rule_number    = 110
   egress         = true
-  from_port      = 1024
-  to_port        = 65535
   protocol       = "tcp"
   rule_action    = "allow"
   cidr_block     = "0.0.0.0/0"
+  from_port      = 443
+  to_port        = 443
+}
+resource "aws_network_acl_rule" "private_app_egress_allow_http" {
+  network_acl_id = aws_network_acl.private_app.id
+  rule_number    = 120
+  egress         = true
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  from_port      = 80
+  to_port        = 80
 }
 # nacl <-> subnet 연결
 resource "aws_network_acl_association" "private_app_assoc" {
