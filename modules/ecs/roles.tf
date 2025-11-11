@@ -10,6 +10,12 @@ data "aws_iam_policy_document" "ecs_tasks_assume_role" {
   }
 }
 
+resource "aws_iam_role" "task" {
+  name               = "ecsTaskRole-goorm"
+  assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json
+}
+
+### ECS Task Execution Role ###
 resource "aws_iam_role" "task_execution" {
   name               = "ecsTaskExecutionRole-goorm"
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json
@@ -18,16 +24,32 @@ resource "aws_iam_role" "task_execution" {
   ]
 }
 
-resource "aws_iam_role" "task" {
-  name               = "ecsTaskRole-goorm"
-  assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json
-}
-
 resource "aws_iam_role_policy_attachment" "task_execution_ssm_readonly" {
   role       = aws_iam_role.task_execution.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
 }
 
+data "aws_iam_policy_document" "task_execution_cwlogs" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "task_execution_cwlogs" {
+  name   = "ecsTaskExecutionRole-CloudWatchLogs"
+  role   = aws_iam_role.task_execution.id
+  policy = data.aws_iam_policy_document.task_execution_cwlogs.json
+}
+
+### CodeDeploy Role ###
 data "aws_iam_policy_document" "codedeploy_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
