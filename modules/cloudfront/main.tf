@@ -4,6 +4,23 @@ locals {
   product_origin = replace(var.product_api_endpoint, "https://", "")
   order_origin   = replace(var.order_api_endpoint, "https://", "")
   payment_origin = replace(var.payment_api_endpoint, "https://", "")
+  user_service_paths = [
+    "/api/v1/users/*",
+  ]
+  product_service_paths = [
+    "/api/v1/product/*",
+    "/api/v1/category/*",
+    "/api/v1/reviews/*",
+    "/api/v1/stock/*",
+  ]
+  order_service_paths = [
+    "/api/v1/orders/*",
+    "/api/v1/delivery/*",
+    "/api/v1/carts/*",
+  ]
+  payment_service_paths = [
+    "/api/v1/payment/*",
+  ]
 }
 
 data "aws_cloudfront_cache_policy" "disabled" {
@@ -68,80 +85,60 @@ resource "aws_cloudfront_distribution" "this" {
     origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
   }
 
-  ordered_cache_behavior {
-    path_pattern             = "/green/api/v1/users/*"
-    target_origin_id         = "user-api-origin"
-    viewer_protocol_policy   = "redirect-to-https"
-    allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
-    cached_methods           = ["GET", "HEAD"]
-    cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
-    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
-  }
-  ordered_cache_behavior {
-    path_pattern             = "/api/v1/users/*"
-    target_origin_id         = "user-api-origin"
-    viewer_protocol_policy   = "redirect-to-https"
-    allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
-    cached_methods           = ["GET", "HEAD"]
-    cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
-    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
+  ### User Service ###
+  dynamic "ordered_cache_behavior" {
+    for_each = toset(local.user_service_paths)
+    content {
+      path_pattern             = ordered_cache_behavior.value
+      target_origin_id         = "user-api-origin"
+      viewer_protocol_policy   = "redirect-to-https"
+      allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
+      cached_methods           = ["GET", "HEAD"]
+      cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
+      origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
+    }
   }
 
-  ordered_cache_behavior {
-    path_pattern             = "/green/api/v1/product/*"
-    target_origin_id         = "product-api-origin"
-    viewer_protocol_policy   = "redirect-to-https"
-    allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
-    cached_methods           = ["GET", "HEAD"]
-    cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
-    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
-  }
-  ordered_cache_behavior {
-    path_pattern             = "/api/v1/product/*"
-    target_origin_id         = "product-api-origin"
-    viewer_protocol_policy   = "redirect-to-https"
-    allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
-    cached_methods           = ["GET", "HEAD"]
-    cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
-    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
+  ### Product Service ###
+  dynamic "ordered_cache_behavior" {
+    for_each = toset(local.product_service_paths)
+    content {
+      path_pattern             = ordered_cache_behavior.value
+      target_origin_id         = "product-api-origin"
+      viewer_protocol_policy   = "redirect-to-https"
+      allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
+      cached_methods           = ["GET", "HEAD"]
+      cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
+      origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
+    }
   }
 
-  ordered_cache_behavior {
-    path_pattern             = "/green/api/v1/order/*"
-    target_origin_id         = "order-api-origin"
-    viewer_protocol_policy   = "redirect-to-https"
-    allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
-    cached_methods           = ["GET", "HEAD"]
-    cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
-    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
-  }
-  ordered_cache_behavior {
-    path_pattern             = "/api/v1/order/*"
-    target_origin_id         = "order-api-origin"
-    viewer_protocol_policy   = "redirect-to-https"
-    allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
-    cached_methods           = ["GET", "HEAD"]
-    cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
-    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
+  ### Order Service ###
+  dynamic "ordered_cache_behavior" {
+    for_each = toset(local.order_service_paths)
+    content {
+      path_pattern             = ordered_cache_behavior.value
+      target_origin_id         = "order-api-origin"
+      viewer_protocol_policy   = "redirect-to-https"
+      allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
+      cached_methods           = ["GET", "HEAD"]
+      cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
+      origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
+    }
   }
 
-  ordered_cache_behavior {
-    path_pattern             = "/green/api/v1/payment/*"
-    target_origin_id         = "payment-api-origin"
-    viewer_protocol_policy   = "redirect-to-https"
-    allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
-    cached_methods           = ["GET", "HEAD"]
-    cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
-    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
-  }
-  ordered_cache_behavior {
-    path_pattern             = "/api/v1/payment/*"
-    target_origin_id         = "payment-api-origin"
-    viewer_protocol_policy   = "redirect-to-https"
-    allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
-    cached_methods           = ["GET", "HEAD"]
-    cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
-    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
+  ### Payment Service ###
+  dynamic "ordered_cache_behavior" {
+    for_each = toset(local.payment_service_paths)
+    content {
+      path_pattern             = ordered_cache_behavior.value
+      target_origin_id         = "payment-api-origin"
+      viewer_protocol_policy   = "redirect-to-https"
+      allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
+      cached_methods           = ["GET", "HEAD"]
+      cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
+      origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
+    }
   }
 
   restrictions {
