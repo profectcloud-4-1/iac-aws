@@ -1,17 +1,22 @@
 
 locals {
-  # 예: ["tg-user-1", "tg-user-2", "tg-product-1", ...]
-  target_group_names = flatten([
+  # 예: [{name="tg-user-1", service="user"}, ...]
+  target_groups = flatten([
     for s in var.services : [
-      for i in range(var.replicas_per_service) : "${var.name_prefix}-${s}-${i + 1}"
+      for i in range(var.replicas_per_service) : {
+        name    = "${var.name_prefix}-${s}-${i + 1}"
+        service = s
+      }
     ]
   ])
 }
 
 resource "aws_lb_target_group" "this" {
-  for_each = toset(local.target_group_names)
+  for_each = {
+    for tg in local.target_groups : tg.name => tg
+  }
 
-  name        = each.key
+  name        = each.value.name
   port        = var.port
   protocol    = var.protocol
   target_type = var.target_type
@@ -25,6 +30,10 @@ resource "aws_lb_target_group" "this" {
     unhealthy_threshold = 3
     interval            = 30
     timeout             = 5
+  }
+
+  tags = {
+    Service = each.value.service
   }
 }
 
