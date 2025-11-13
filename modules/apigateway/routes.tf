@@ -31,11 +31,46 @@ resource "aws_apigatewayv2_route" "product_proxy" {
   authorizer_id      = aws_apigatewayv2_authorizer.product_jwt.id
   target             = "integrations/${aws_apigatewayv2_integration.product_1.id}"
 }
+resource "aws_apigatewayv2_route" "product_category_proxy" {
+  api_id             = aws_apigatewayv2_api.product.id
+  route_key          = "ANY /api/v1/category/{proxy+}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.product_jwt.id
+  target             = "integrations/${aws_apigatewayv2_integration.product_1.id}"
+}
+resource "aws_apigatewayv2_route" "product_review_proxy" {
+  api_id             = aws_apigatewayv2_api.product.id
+  route_key          = "ANY /api/v1/reviews/{proxy+}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.product_jwt.id
+  target             = "integrations/${aws_apigatewayv2_integration.product_1.id}"
+}
+resource "aws_apigatewayv2_route" "product_stock_proxy" {
+  api_id             = aws_apigatewayv2_api.product.id
+  route_key          = "ANY /api/v1/stock/{proxy+}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.product_jwt.id
+  target             = "integrations/${aws_apigatewayv2_integration.product_1.id}"
+}
 
 ## Order API (JWT)
 resource "aws_apigatewayv2_route" "order_proxy" {
   api_id             = aws_apigatewayv2_api.order.id
-  route_key          = "ANY /api/v1/order/{proxy+}"
+  route_key          = "ANY /api/v1/orders/{proxy+}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.order_jwt.id
+  target             = "integrations/${aws_apigatewayv2_integration.order_1.id}"
+}
+resource "aws_apigatewayv2_route" "order_delivery_proxy" {
+  api_id             = aws_apigatewayv2_api.order.id
+  route_key          = "ANY /api/v1/delivery/{proxy+}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.order_jwt.id
+  target             = "integrations/${aws_apigatewayv2_integration.order_1.id}"
+}
+resource "aws_apigatewayv2_route" "order_cart_proxy" {
+  api_id             = aws_apigatewayv2_api.order.id
+  route_key          = "ANY /api/v1/carts/{proxy+}"
   authorization_type = "JWT"
   authorizer_id      = aws_apigatewayv2_authorizer.order_jwt.id
   target             = "integrations/${aws_apigatewayv2_integration.order_1.id}"
