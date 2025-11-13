@@ -51,6 +51,46 @@ resource "aws_ecs_task_definition" "user" {
           protocol      = "tcp"
         }
       ]
+      environment = [
+        {
+          name  = "ORDER_SERVICE_URL"
+          value = "http://order-api.prod.goorm:8080"
+        },
+        {
+          name  = "PRODUCT_SERVICE_URL"
+          value = "http://product-api.prod.goorm:8080"
+        },
+        {
+          name  = "PAYMENT_SERVICE_URL"
+          value = "http://payment-api.prod.goorm:8080"
+        },
+        {
+          name  = "SERVER_PORT"
+          value = "8080"
+        },
+        {
+          name  = "DB_DRIVER"
+          value = "org.postgresql.Driver"
+        },
+      ]
+      secrets = [
+        {
+          name      = "DB_URL"
+          valueFrom = "/goormdotcom/config/msa/user/prod/DB_URL"
+        },
+        {
+          name      = "DB_USERNAME"
+          valueFrom = "/goormdotcom/config/msa/user/prod/DB_USERNAME"
+        },
+        {
+          name      = "DB_PASSWORD"
+          valueFrom = "/goormdotcom/config/msa/user/prod/DB_PASSWORD"
+        },
+        {
+          name      = "JWT_SECRET"
+          valueFrom = "/goormdotcom/config/msa/user/prod/JWT_PRIVATE_KEY"
+        },
+      ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {
