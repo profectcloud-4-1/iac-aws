@@ -5,21 +5,21 @@ locals {
   order_origin   = replace(var.order_api_endpoint, "https://", "")
   payment_origin = replace(var.payment_api_endpoint, "https://", "")
   user_service_paths = [
-    "/api/v1/users/*",
+    "/api/v1/users*",
   ]
   product_service_paths = [
-    "/api/v1/product/*",
-    "/api/v1/category/*",
-    "/api/v1/reviews/*",
-    "/api/v1/stock/*",
+    "/api/v1/product*",
+    "/api/v1/category*",
+    "/api/v1/reviews*",
+    "/api/v1/stock*",
   ]
   order_service_paths = [
-    "/api/v1/orders/*",
-    "/api/v1/delivery/*",
-    "/api/v1/carts/*",
+    "/api/v1/orders*",
+    "/api/v1/delivery*",
+    "/api/v1/carts*",
   ]
   payment_service_paths = [
-    "/api/v1/payment/*",
+    "/api/v1/payment*",
   ]
 }
 
