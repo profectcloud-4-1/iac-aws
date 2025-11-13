@@ -27,3 +27,8 @@ variable "payment_api_endpoint" {
   description = "Payment API Gateway 엔드포인트(https://... 형태)"
   type        = string
 }
+
+variable "s3_bucket_name" {
+  description = "정적 리소스를 호스팅할 S3 버킷명 (예: my-bucket)"
+  type        = string
+}

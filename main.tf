@@ -237,6 +237,14 @@ module "apigateway" {
   }
 }
 
+
+### s3(presigned용)
+module "presigned_s3" {
+  source      = "./modules/s3"
+  bucket_name = var.presigned_bucket_name
+  versioning  = true
+}
+
 ### CloudFront (api.goorm.store -> API Gateway) ###
 module "cloudfront" {
   source               = "./modules/cloudfront"
@@ -246,11 +254,6 @@ module "cloudfront" {
   product_api_endpoint = module.apigateway.api_endpoints.product
   order_api_endpoint   = module.apigateway.api_endpoints.order
   payment_api_endpoint = module.apigateway.api_endpoints.payment
+  s3_bucket_name       = module.presigned_s3.bucket_name
 }
 
-### s3(presigned용)
-module "presigned_s3" {
-  source      = "./modules/s3"
-  bucket_name = var.presigned_bucket_name
-  versioning  = true
-}

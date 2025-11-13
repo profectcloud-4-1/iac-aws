@@ -31,6 +31,18 @@ data "aws_cloudfront_origin_request_policy" "all_viewer_except_host" {
   name = "Managed-AllViewerExceptHostHeader"
 }
 
+data "aws_cloudfront_cache_policy" "caching_optimized" {
+  name = "Managed-CachingOptimized"
+}
+
+resource "aws_cloudfront_origin_access_control" "s3" {
+  name                              = "oac-s3-origin"
+  description                       = "OAC for S3 static origin"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
+
 resource "aws_cloudfront_distribution" "this" {
   enabled = true
   aliases = [var.domain_name]
@@ -139,6 +151,26 @@ resource "aws_cloudfront_distribution" "this" {
       cache_policy_id          = data.aws_cloudfront_cache_policy.disabled.id
       origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
     }
+  }
+
+  # TODO: s3 origin 추가
+  origin {
+    domain_name              = "${var.s3_bucket_name}.s3.amazonaws.com"
+    origin_id                = "s3-origin"
+    origin_path              = "/main"
+    origin_access_control_id = aws_cloudfront_origin_access_control.s3.id
+    s3_origin_config {
+      origin_access_identity = ""
+    }
+  }
+
+  ordered_cache_behavior {
+    path_pattern           = "/img/*"
+    target_origin_id       = "s3-origin"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+    cached_methods         = ["GET", "HEAD"]
+    cache_policy_id        = data.aws_cloudfront_cache_policy.caching_optimized.id
   }
 
   restrictions {
