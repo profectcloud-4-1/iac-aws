@@ -15,6 +15,22 @@ resource "aws_iam_role" "task" {
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json
 }
 
+data "aws_iam_policy_document" "task_cloudwatch_metrics" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "cloudwatch:PutMetricData",
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy" "task_cloudwatch_metrics" {
+  name   = "ecsTaskRole-CloudWatchPutMetricData"
+  role   = aws_iam_role.task.id
+  policy = data.aws_iam_policy_document.task_cloudwatch_metrics.json
+}
+
 ### ECS Task Execution Role ###
 resource "aws_iam_role" "task_execution" {
   name               = "ecsTaskExecutionRole-goorm"
