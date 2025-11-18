@@ -30,3 +30,8 @@ variable "integration_timeout_ms" {
   type        = number
   default     = 29000
 }
+
+variable "authorizer_uri" {
+  description = "Lambda Authorizer URI"
+  type        = string
+}

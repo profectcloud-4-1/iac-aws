@@ -41,53 +41,23 @@ resource "aws_apigatewayv2_stage" "payment_default" {
   auto_deploy = true
 }
 
-### (intergrations.tf에 의해 통합 생성) ###
+### Lambda Authorizer (각 API 공통 설정) ###
+resource "aws_apigatewayv2_authorizer" "common_lambda" {
+  for_each = toset([
+    aws_apigatewayv2_api.user.id,
+    aws_apigatewayv2_api.product.id,
+    aws_apigatewayv2_api.order.id,
+    aws_apigatewayv2_api.payment.id
+  ])
 
-### JWT Authorizer (각 API 공통 설정) ###
-resource "aws_apigatewayv2_authorizer" "user_jwt" {
-  api_id           = aws_apigatewayv2_api.user.id
-  name             = "common-jwt-authorizer"
-  authorizer_type  = "JWT"
-  identity_sources = ["$request.header.Authorization"]
-
-  jwt_configuration {
-    issuer   = "https://public.goorm.store"
-    audience = ["goormdotcom-aud"]
-  }
-}
-
-resource "aws_apigatewayv2_authorizer" "product_jwt" {
-  api_id           = aws_apigatewayv2_api.product.id
-  name             = "common-jwt-authorizer"
-  authorizer_type  = "JWT"
-  identity_sources = ["$request.header.Authorization"]
-
-  jwt_configuration {
-    issuer   = "https://public.goorm.store"
-    audience = ["goormdotcom-aud"]
-  }
-}
-
-resource "aws_apigatewayv2_authorizer" "order_jwt" {
-  api_id           = aws_apigatewayv2_api.order.id
-  name             = "common-jwt-authorizer"
-  authorizer_type  = "JWT"
-  identity_sources = ["$request.header.Authorization"]
-
-  jwt_configuration {
-    issuer   = "https://public.goorm.store"
-    audience = ["goormdotcom-aud"]
-  }
-}
-
-resource "aws_apigatewayv2_authorizer" "payment_jwt" {
-  api_id           = aws_apigatewayv2_api.payment.id
-  name             = "common-jwt-authorizer"
-  authorizer_type  = "JWT"
-  identity_sources = ["$request.header.Authorization"]
-
-  jwt_configuration {
-    issuer   = "https://public.goorm.store"
-    audience = ["goormdotcom-aud"]
-  }
+  api_id                            = each.key
+  name                              = "common-lambda-authorizer"
+  authorizer_type                   = "REQUEST"
+  authorizer_uri                    = var.authorizer_uri
+  authorizer_payload_format_version = "2.0"
+  enable_simple_response            = true
+  identity_sources = [
+    "$request.header.Authorization",
+    "$request.header.X-Forwarded-For"
+  ]
 }

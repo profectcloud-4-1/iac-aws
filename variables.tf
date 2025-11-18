@@ -58,3 +58,8 @@ variable "presigned_bucket_name" {
     error_message = "Presigned bucket name is required"
   }
 }
+
+variable "authorizer_uri" {
+  description = "Lambda Authorizer URI"
+  type        = string
+}
