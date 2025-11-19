@@ -6,8 +6,8 @@ resource "aws_apigatewayv2_vpc_link" "this" {
 
 locals {
   request_headers = {
-    "overwrite:header.user-id"    = "$context.authorizer.claims.sub"
-    "overwrite:header.user-roles" = "$context.authorizer.claims.role"
+    "overwrite:header.user-id"    = "$context.authorizer.userId"
+    "overwrite:header.user-roles" = "$context.authorizer.role"
   }
 }
 
