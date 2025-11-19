@@ -1,4 +1,3 @@
-
 ### HTTP API + Stage ###
 
 resource "aws_apigatewayv2_api" "user" {
@@ -48,8 +47,10 @@ resource "aws_apigatewayv2_authorizer" "user_lambda" {
   authorizer_type  = "REQUEST"
   authorizer_uri   = var.authorizer_uri
   identity_sources = ["$request.header.Authorization"]
+
   authorizer_payload_format_version = "2.0"
   authorizer_result_ttl_in_seconds  = 0
+  enable_simple_responses           = true
 }
 
 resource "aws_apigatewayv2_authorizer" "product_lambda" {
@@ -58,8 +59,10 @@ resource "aws_apigatewayv2_authorizer" "product_lambda" {
   authorizer_type  = "REQUEST"
   authorizer_uri   = var.authorizer_uri
   identity_sources = ["$request.header.Authorization"]
+
   authorizer_payload_format_version = "2.0"
   authorizer_result_ttl_in_seconds  = 0
+  enable_simple_responses           = true
 }
 
 resource "aws_apigatewayv2_authorizer" "order_lambda" {
@@ -68,8 +71,10 @@ resource "aws_apigatewayv2_authorizer" "order_lambda" {
   authorizer_type  = "REQUEST"
   authorizer_uri   = var.authorizer_uri
   identity_sources = ["$request.header.Authorization"]
+
   authorizer_payload_format_version = "2.0"
   authorizer_result_ttl_in_seconds  = 0
+  enable_simple_responses           = true
 }
 
 resource "aws_apigatewayv2_authorizer" "payment_lambda" {
@@ -78,6 +83,8 @@ resource "aws_apigatewayv2_authorizer" "payment_lambda" {
   authorizer_type  = "REQUEST"
   authorizer_uri   = var.authorizer_uri
   identity_sources = ["$request.header.Authorization"]
+
   authorizer_payload_format_version = "2.0"
   authorizer_result_ttl_in_seconds  = 0
+  enable_simple_responses           = true
 }
