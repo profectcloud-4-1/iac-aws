@@ -54,7 +54,6 @@ resource "aws_apigatewayv2_authorizer" "user_lambda" {
   identity_sources = ["$request.header.Authorization"]
   authorizer_payload_format_version = "2.0"
   authorizer_result_ttl_in_seconds  = 0
-  enable_simple_responses           = true
 }
 
 resource "aws_apigatewayv2_authorizer" "product_lambda" {
@@ -65,7 +64,6 @@ resource "aws_apigatewayv2_authorizer" "product_lambda" {
   identity_sources = ["$request.header.Authorization"]
   authorizer_payload_format_version = "2.0"
   authorizer_result_ttl_in_seconds  = 0
-  enable_simple_responses           = true
 }
 
 resource "aws_apigatewayv2_authorizer" "order_lambda" {
@@ -76,7 +74,6 @@ resource "aws_apigatewayv2_authorizer" "order_lambda" {
   identity_sources = ["$request.header.Authorization"]
   authorizer_payload_format_version = "2.0"
   authorizer_result_ttl_in_seconds  = 0
-  enable_simple_responses           = true
 }
 
 resource "aws_apigatewayv2_authorizer" "payment_lambda" {
@@ -87,7 +84,6 @@ resource "aws_apigatewayv2_authorizer" "payment_lambda" {
   identity_sources = ["$request.header.Authorization"]
   authorizer_payload_format_version = "2.0"
   authorizer_result_ttl_in_seconds  = 0
-  enable_simple_responses           = true
 }
 
 # api 에서 lambda-authorizer 호출 허용
