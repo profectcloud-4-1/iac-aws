@@ -41,53 +41,43 @@ resource "aws_apigatewayv2_stage" "payment_default" {
   auto_deploy = true
 }
 
-### (intergrations.tf에 의해 통합 생성) ###
-
-### JWT Authorizer (각 API 공통 설정) ###
-resource "aws_apigatewayv2_authorizer" "user_jwt" {
+### Lambda Authorizer (각 API 공통 설정) ###
+resource "aws_apigatewayv2_authorizer" "user_lambda" {
   api_id           = aws_apigatewayv2_api.user.id
   name             = "common-jwt-authorizer"
-  authorizer_type  = "JWT"
+  authorizer_type  = "REQUEST"
+  authorizer_uri   = var.authorizer_uri
   identity_sources = ["$request.header.Authorization"]
-
-  jwt_configuration {
-    issuer   = "https://public.goorm.store"
-    audience = ["goormdotcom-aud"]
-  }
+  authorizer_payload_format_version = "2.0"
+  authorizer_result_ttl_in_seconds  = 0
 }
 
-resource "aws_apigatewayv2_authorizer" "product_jwt" {
+resource "aws_apigatewayv2_authorizer" "product_lambda" {
   api_id           = aws_apigatewayv2_api.product.id
   name             = "common-jwt-authorizer"
-  authorizer_type  = "JWT"
+  authorizer_type  = "REQUEST"
+  authorizer_uri   = var.authorizer_uri
   identity_sources = ["$request.header.Authorization"]
-
-  jwt_configuration {
-    issuer   = "https://public.goorm.store"
-    audience = ["goormdotcom-aud"]
-  }
+  authorizer_payload_format_version = "2.0"
+  authorizer_result_ttl_in_seconds  = 0
 }
 
-resource "aws_apigatewayv2_authorizer" "order_jwt" {
+resource "aws_apigatewayv2_authorizer" "order_lambda" {
   api_id           = aws_apigatewayv2_api.order.id
   name             = "common-jwt-authorizer"
-  authorizer_type  = "JWT"
+  authorizer_type  = "REQUEST"
+  authorizer_uri   = var.authorizer_uri
   identity_sources = ["$request.header.Authorization"]
-
-  jwt_configuration {
-    issuer   = "https://public.goorm.store"
-    audience = ["goormdotcom-aud"]
-  }
+  authorizer_payload_format_version = "2.0"
+  authorizer_result_ttl_in_seconds  = 0
 }
 
-resource "aws_apigatewayv2_authorizer" "payment_jwt" {
+resource "aws_apigatewayv2_authorizer" "payment_lambda" {
   api_id           = aws_apigatewayv2_api.payment.id
   name             = "common-jwt-authorizer"
-  authorizer_type  = "JWT"
+  authorizer_type  = "REQUEST"
+  authorizer_uri   = var.authorizer_uri
   identity_sources = ["$request.header.Authorization"]
-
-  jwt_configuration {
-    issuer   = "https://public.goorm.store"
-    audience = ["goormdotcom-aud"]
-  }
+  authorizer_payload_format_version = "2.0"
+  authorizer_result_ttl_in_seconds  = 0
 }

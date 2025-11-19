@@ -235,6 +235,7 @@ module "apigateway" {
     payment_1 = module.nlb.listener_arns["payment_1"]
     payment_2 = module.nlb.listener_arns["payment_2"]
   }
+  authorizer_uri             = var.authorizer_uri
 }
 
 
