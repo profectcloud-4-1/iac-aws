@@ -42,22 +42,42 @@ resource "aws_apigatewayv2_stage" "payment_default" {
 }
 
 ### Lambda Authorizer (각 API 공통 설정) ###
-resource "aws_apigatewayv2_authorizer" "common_lambda" {
-  for_each = toset([
-    aws_apigatewayv2_api.user.id,
-    aws_apigatewayv2_api.product.id,
-    aws_apigatewayv2_api.order.id,
-    aws_apigatewayv2_api.payment.id
-  ])
-
-  api_id                            = each.key
-  name                              = "common-lambda-authorizer"
-  authorizer_type                   = "REQUEST"
-  authorizer_uri                    = var.authorizer_uri
+resource "aws_apigatewayv2_authorizer" "user_lambda" {
+  api_id           = aws_apigatewayv2_api.user.id
+  name             = "common-jwt-authorizer"
+  authorizer_type  = "REQUEST"
+  authorizer_uri   = var.authorizer_uri
+  identity_sources = ["$request.header.Authorization"]
   authorizer_payload_format_version = "2.0"
-  enable_simple_responses            = true
-  identity_sources = [
-    "$request.header.Authorization",
-    "$request.header.X-Forwarded-For"
-  ]
+  authorizer_result_ttl_in_seconds  = 0
+}
+
+resource "aws_apigatewayv2_authorizer" "product_lambda" {
+  api_id           = aws_apigatewayv2_api.product.id
+  name             = "common-jwt-authorizer"
+  authorizer_type  = "REQUEST"
+  authorizer_uri   = var.authorizer_uri
+  identity_sources = ["$request.header.Authorization"]
+  authorizer_payload_format_version = "2.0"
+  authorizer_result_ttl_in_seconds  = 0
+}
+
+resource "aws_apigatewayv2_authorizer" "order_lambda" {
+  api_id           = aws_apigatewayv2_api.order.id
+  name             = "common-jwt-authorizer"
+  authorizer_type  = "REQUEST"
+  authorizer_uri   = var.authorizer_uri
+  identity_sources = ["$request.header.Authorization"]
+  authorizer_payload_format_version = "2.0"
+  authorizer_result_ttl_in_seconds  = 0
+}
+
+resource "aws_apigatewayv2_authorizer" "payment_lambda" {
+  api_id           = aws_apigatewayv2_api.payment.id
+  name             = "common-jwt-authorizer"
+  authorizer_type  = "REQUEST"
+  authorizer_uri   = var.authorizer_uri
+  identity_sources = ["$request.header.Authorization"]
+  authorizer_payload_format_version = "2.0"
+  authorizer_result_ttl_in_seconds  = 0
 }
