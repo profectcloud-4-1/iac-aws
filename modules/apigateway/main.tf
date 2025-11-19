@@ -55,7 +55,7 @@ resource "aws_apigatewayv2_authorizer" "common_lambda" {
   authorizer_type                   = "REQUEST"
   authorizer_uri                    = var.authorizer_uri
   authorizer_payload_format_version = "2.0"
-  enable_simple_response            = true
+  enable_simple_responses            = true
   identity_sources = [
     "$request.header.Authorization",
     "$request.header.X-Forwarded-For"
