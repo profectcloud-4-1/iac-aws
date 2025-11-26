@@ -18,12 +18,26 @@ resource "aws_subnet" "public" {
   }
 }
 
-resource "aws_subnet" "private-app" {
+resource "aws_subnet" "private-app-a" {
   vpc_id            = aws_vpc.goorm.id
   cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 1)
   availability_zone = "ap-northeast-2a"
   tags = {
-    Name = "goorm-private-subnet-app"
+    Name = "goorm-private-subnet-app-a"
+    AZ = "a"
+    kubernetes.io/role/internal-elb = "1"
+    kubernetes.io/cluster/goorm = "shared"
+  }
+}
+resource "aws_subnet" "private-app-b" {
+  vpc_id            = aws_vpc.goorm.id
+  cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 1)
+  availability_zone = "ap-northeast-2b"
+  tags = {
+    Name = "goorm-private-subnet-app-b"
+    AZ = "b"
+    kubernetes.io/role/internal-elb = "1"
+    kubernetes.io/cluster/goorm = "shared"
   }
 }
 
@@ -32,7 +46,8 @@ resource "aws_subnet" "private-db" {
   cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 2)
   availability_zone = "ap-northeast-2a"
   tags = {
-    Name = "goorm-private-subnet-db"
+    Name = "goorm-private-subnet-db-a"
+    AZ = "a"
   }
 }
 
@@ -41,7 +56,8 @@ resource "aws_subnet" "private-db-2" {
   cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 3)
   availability_zone = "ap-northeast-2b"
   tags = {
-    Name = "goorm-private-subnet-db-2"
+    Name = "goorm-private-subnet-db-b"
+    AZ = "b"
   }
 }
 
@@ -81,8 +97,12 @@ resource "aws_route_table" "private_app" {
     Name = "goorm-rtb-private-app"
   }
 }
-resource "aws_route_table_association" "private_app_assoc" {
-  subnet_id      = aws_subnet.private-app.id
+resource "aws_route_table_association" "private_app_a_assoc" {
+  subnet_id      = aws_subnet.private-app-a.id
+  route_table_id = aws_route_table.private_app.id
+}
+resource "aws_route_table_association" "private_app_b_assoc" {
+  subnet_id      = aws_subnet.private-app-b.id
   route_table_id = aws_route_table.private_app.id
 }
 
@@ -151,16 +171,6 @@ resource "aws_network_acl_rule" "private_app_egress_allow_http" {
   from_port      = 80
   to_port        = 80
 }
-resource "aws_network_acl_rule" "private_app_egress_allow_db_dev" {
-  network_acl_id = aws_network_acl.private_app.id
-  rule_number    = 130
-  egress         = true
-  protocol       = "tcp"
-  rule_action    = "allow"
-  cidr_block     = "0.0.0.0/0"
-  from_port      = 5230
-  to_port        = 5233
-}
 resource "aws_network_acl_rule" "private_app_egress_allow_db_rds" {
   network_acl_id = aws_network_acl.private_app.id
   rule_number    = 140
@@ -171,10 +181,24 @@ resource "aws_network_acl_rule" "private_app_egress_allow_db_rds" {
   from_port      = 5432
   to_port        = 5432
 }
-# nacl <-> subnet 연결
-resource "aws_network_acl_association" "private_app_assoc" {
+resource "aws_network_acl_rule" "private_app_egress_allow_db_redis" {
   network_acl_id = aws_network_acl.private_app.id
-  subnet_id      = aws_subnet.private-app.id
+  rule_number    = 150
+  egress         = true
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = aws_vpc.goorm.cidr_block
+  from_port      = 6379
+  to_port        = 6379
+}
+# nacl <-> subnet 연결
+resource "aws_network_acl_association" "private_app_a_assoc" {
+  network_acl_id = aws_network_acl.private_app.id
+  subnet_id      = aws_subnet.private-app-a.id
+}
+resource "aws_network_acl_association" "private_app_b_assoc" {
+  network_acl_id = aws_network_acl.private_app.id
+  subnet_id      = aws_subnet.private-app-b.id
 }
 
 ### Network ACL - Private - DB ###
