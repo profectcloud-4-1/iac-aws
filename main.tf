@@ -136,27 +136,16 @@ module "vpc_endpoint" {
 
   name_prefix        = "goorm"
   vpc_id             = module.common_network.vpc_id
-  private_subnet_ids = [module.common_network.private_subnet_app_id]
+  private_subnet_ids = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
   vpce_sg_id         = module.security.vpce_sg_id
-  route_table_ids    = [module.common_network.private_rtb_app_id] # S3 Gateway용
+  route_table_ids    = [module.common_network.private_rtb_app_a_id, module.common_network.private_rtb_app_b_id] # S3 Gateway용
 }
 
 ### API Gateway ###
 module "apigateway" {
   source                     = "./modules/apigateway"
   vpc_link_security_group_id = module.security.vpc_link_sg_id
-  vpi_link_subnet_ids        = [module.common_network.private_subnet_app_id]
-  listener_arns = {
-    user_1    = module.nlb.listener_arns["user_1"]
-    user_2    = module.nlb.listener_arns["user_2"]
-    product_1 = module.nlb.listener_arns["product_1"]
-    product_2 = module.nlb.listener_arns["product_2"]
-    order_1   = module.nlb.listener_arns["order_1"]
-    order_2   = module.nlb.listener_arns["order_2"]
-    payment_1 = module.nlb.listener_arns["payment_1"]
-    payment_2 = module.nlb.listener_arns["payment_2"]
-  }
-  authorizer_uri             = var.authorizer_uri
+  vpi_link_subnet_ids        = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
 }
 
 

@@ -4,64 +4,50 @@ resource "aws_apigatewayv2_vpc_link" "this" {
   subnet_ids         = var.vpi_link_subnet_ids
 }
 
-locals {
-  request_headers = {
-    "overwrite:header.user-id"    = "$context.authorizer.userId"
-    "overwrite:header.user-roles" = "$context.authorizer.role"
-  }
-}
-
-resource "aws_apigatewayv2_integration" "user_1" {
+resource "aws_apigatewayv2_integration" "user" {
   api_id                 = aws_apigatewayv2_api.user.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
   connection_type        = "VPC_LINK"
   connection_id          = aws_apigatewayv2_vpc_link.this.id
-  integration_uri        = var.listener_arns["user_1"]
+  integration_uri        = "http://dummy.local" # NOTE: NLB 생성 전 임시 URI
   payload_format_version = var.payload_format_version
   timeout_milliseconds   = var.integration_timeout_ms
-  description            = "Integration for user_1"
-  request_parameters     = local.request_headers
+  description            = "Integration for user"
 }
 
-resource "aws_apigatewayv2_integration" "product_1" {
+resource "aws_apigatewayv2_integration" "product" {
   api_id                 = aws_apigatewayv2_api.product.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
   connection_type        = "VPC_LINK"
   connection_id          = aws_apigatewayv2_vpc_link.this.id
-  integration_uri        = var.listener_arns["product_1"]
+  integration_uri        = "http://dummy.local" # NOTE: NLB 생성 전 임시 URI
   payload_format_version = var.payload_format_version
   timeout_milliseconds   = var.integration_timeout_ms
-  description            = "Integration for product_1"
-
-  request_parameters = local.request_headers
+  description            = "Integration for product"
 }
 
-resource "aws_apigatewayv2_integration" "order_1" {
+resource "aws_apigatewayv2_integration" "order" {
   api_id                 = aws_apigatewayv2_api.order.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
   connection_type        = "VPC_LINK"
   connection_id          = aws_apigatewayv2_vpc_link.this.id
-  integration_uri        = var.listener_arns["order_1"]
+  integration_uri        = "http://dummy.local" # NOTE: NLB 생성 전 임시 URI
   payload_format_version = var.payload_format_version
   timeout_milliseconds   = var.integration_timeout_ms
-  description            = "Integration for order_1"
-
-  request_parameters = local.request_headers
+  description            = "Integration for order"
 }
 
-resource "aws_apigatewayv2_integration" "payment_1" {
+resource "aws_apigatewayv2_integration" "payment" {
   api_id                 = aws_apigatewayv2_api.payment.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
   connection_type        = "VPC_LINK"
   connection_id          = aws_apigatewayv2_vpc_link.this.id
-  integration_uri        = var.listener_arns["payment_1"]
+  integration_uri        = "http://dummy.local" # NOTE: NLB 생성 전 임시 URI
   payload_format_version = var.payload_format_version
   timeout_milliseconds   = var.integration_timeout_ms
-  description            = "Integration for payment_1"
-
-  request_parameters = local.request_headers
+  description            = "Integration for payment"
 }

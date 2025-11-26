@@ -7,3 +7,22 @@ output "vpc_cidr_block" {
 }
 
 
+output "private_subnet_app_a_id" {
+  value = aws_subnet.private-app-a.id
+}
+
+output "private_subnet_app_b_id" {
+  value = aws_subnet.private-app-b.id
+}
+
+output "private_subnet_db_a_id" {
+  value = aws_subnet.private-db.id
+}
+
+output "private_rtb_app_a_id" {
+  value = aws_route_table.private_app.id
+}
+
+output "private_rtb_app_b_id" {
+  value = aws_route_table.private_app.id
+}

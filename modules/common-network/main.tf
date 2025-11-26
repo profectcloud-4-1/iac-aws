@@ -23,10 +23,10 @@ resource "aws_subnet" "private-app-a" {
   cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 1)
   availability_zone = "ap-northeast-2a"
   tags = {
-    Name = "goorm-private-subnet-app-a"
-    AZ = "a"
-    kubernetes.io/role/internal-elb = "1"
-    kubernetes.io/cluster/goorm = "shared"
+    Name                              = "goorm-private-subnet-app-a"
+    AZ                                = "a"
+    "kubernetes.io/role/internal-elb" = "1"
+    "kubernetes.io/cluster/goorm"     = "shared"
   }
 }
 resource "aws_subnet" "private-app-b" {
@@ -34,10 +34,10 @@ resource "aws_subnet" "private-app-b" {
   cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 1)
   availability_zone = "ap-northeast-2b"
   tags = {
-    Name = "goorm-private-subnet-app-b"
-    AZ = "b"
-    kubernetes.io/role/internal-elb = "1"
-    kubernetes.io/cluster/goorm = "shared"
+    Name                              = "goorm-private-subnet-app-b"
+    AZ                                = "b"
+    "kubernetes.io/role/internal-elb" = "1"
+    "kubernetes.io/cluster/goorm"     = "shared"
   }
 }
 
@@ -47,7 +47,7 @@ resource "aws_subnet" "private-db" {
   availability_zone = "ap-northeast-2a"
   tags = {
     Name = "goorm-private-subnet-db-a"
-    AZ = "a"
+    AZ   = "a"
   }
 }
 
@@ -57,7 +57,7 @@ resource "aws_subnet" "private-db-2" {
   availability_zone = "ap-northeast-2b"
   tags = {
     Name = "goorm-private-subnet-db-b"
-    AZ = "b"
+    AZ   = "b"
   }
 }
 
