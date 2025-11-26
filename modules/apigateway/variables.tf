@@ -14,11 +14,6 @@ variable "vpi_link_subnet_ids" {
   type        = list(string)
 }
 
-variable "listener_arns" {
-  description = "NLB 리스너 이름 => ARN 맵 (user_1, user_2, ...)"
-  type        = map(string)
-}
-
 variable "payload_format_version" {
   description = "API Gateway 통합 Payload Format Version"
   type        = string
@@ -29,9 +24,4 @@ variable "integration_timeout_ms" {
   description = "통합 타임아웃 (밀리초)"
   type        = number
   default     = 29000
-}
-
-variable "authorizer_uri" {
-  description = "Lambda Authorizer URI"
-  type        = string
 }
