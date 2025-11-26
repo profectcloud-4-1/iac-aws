@@ -31,7 +31,7 @@ resource "aws_subnet" "private-app-a" {
 }
 resource "aws_subnet" "private-app-b" {
   vpc_id            = aws_vpc.goorm.id
-  cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 3)
+  cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 2)
   availability_zone = "ap-northeast-2b"
   tags = {
     Name                              = "goorm-private-subnet-app-b"
@@ -43,7 +43,7 @@ resource "aws_subnet" "private-app-b" {
 
 resource "aws_subnet" "private-db" {
   vpc_id            = aws_vpc.goorm.id
-  cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 2)
+  cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 3)
   availability_zone = "ap-northeast-2a"
   tags = {
     Name = "goorm-private-subnet-db-a"
@@ -53,7 +53,7 @@ resource "aws_subnet" "private-db" {
 
 resource "aws_subnet" "private-db-2" {
   vpc_id            = aws_vpc.goorm.id
-  cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 3)
+  cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 4)
   availability_zone = "ap-northeast-2b"
   tags = {
     Name = "goorm-private-subnet-db-b"
