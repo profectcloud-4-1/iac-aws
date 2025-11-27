@@ -36,6 +36,27 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_role_vpc_resource_control
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
 }
 
+resource "aws_iam_role_policy" "eks_cluster_autonomous_instance_profile" {
+  name = "${var.cluster_name}-autonomous-instance-profile"
+  role = aws_iam_role.eks_cluster_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "iam:CreateInstanceProfile",
+          "iam:DeleteInstanceProfile",
+          "iam:AddRoleToInstanceProfile",
+          "iam:RemoveRoleFromInstanceProfile"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 ########################
 # Node Role (Managed Node Group / EC2)
 ########################
@@ -59,13 +80,6 @@ resource "aws_iam_role" "eks_node_role" {
     Name = "${var.cluster_name}-node-role"
   })
 }
-
-
-resource "aws_iam_role_policy_attachment" "eks_node_role_ecr_readonly" {
-  role       = aws_iam_role.eks_node_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-}
-
 
 resource "aws_iam_role_policy_attachment" "eks_node_role_ecr_pullonly" {
   role       = aws_iam_role.eks_node_role.name
