@@ -149,40 +149,32 @@ module "eks" {
 
 
 # EKS 연결용 데이터 소스 (Helm/Kubernetes 프로바이더)
-# data "aws_eks_cluster" "eks" {
-#   depends_on = [module.eks]
-#   name       = module.eks.cluster_name
-# }
-# data "aws_eks_cluster_auth" "eks" {
-#   depends_on = [module.eks]
-#   name       = module.eks.cluster_name
-# }
+data "aws_eks_cluster" "eks" {
+  depends_on = [module.eks]
+  name       = module.eks.cluster_name
+}
+data "aws_eks_cluster_auth" "eks" {
+  depends_on = [module.eks]
+  name       = module.eks.cluster_name
+}
 
-# provider "kubernetes" {
-#   alias                  = "eks"
-#   host                   = data.aws_eks_cluster.eks.endpoint
-#   cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-#   token                  = data.aws_eks_cluster_auth.eks.token
-# }
+provider "helm" {
+  alias = "eks"
+  kubernetes {
+    host                   = data.aws_eks_cluster.eks.endpoint
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+    token                  = data.aws_eks_cluster_auth.eks.token
+  }
+}
 
-# provider "helm" {
-#   alias = "eks"
-#   kubernetes {
-#     host                   = data.aws_eks_cluster.eks.endpoint
-#     cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-#     token                  = data.aws_eks_cluster_auth.eks.token
-#   }
-# }
-
-# module "helm" {
-#   source                    = "./modules/helm"
-#   enable_kube_state_metrics = true
-#   enable_node_exporter      = true
-#   providers = {
-#     helm       = helm.eks
-#     kubernetes = kubernetes.eks
-#   }
-# }
+module "eks_addon" {
+  source           = "./modules/eks-addon"
+  cluster_name     = module.eks.cluster_name
+  vpc_cni_role_arn = module.eks.vpc_cni_role_arn
+  providers = {
+    helm = helm.eks
+  }
+}
 
 
 # module "vpc_endpoint" {

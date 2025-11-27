@@ -13,4 +13,8 @@ output "cluster_certificate_authority_data" {
   value       = aws_eks_cluster.this.certificate_authority[0].data
 }
 
+output "vpc_cni_role_arn" {
+  description = "VPC CNI 역할 ARN"
+  value       = aws_iam_role.vpc_cni.arn
+}
 
