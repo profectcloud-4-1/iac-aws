@@ -70,13 +70,10 @@ resource "aws_iam_role_policy_attachment" "eks_node_role_ecr_readonly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
-# 베스트 프랙티스: CNI 권한은 IRSA(aws-node 서비스어카운트)에 부여하고
-# 노드 역할에는 부여하지 않는 구성을 기본값으로 채택
-# 필요 시 아래를 활성화할 수 있도록 주석만 남김
-# resource "aws_iam_role_policy_attachment" "eks_node_role_cni_policy" {
-#   role       = aws_iam_role.eks_node_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-# }
+resource "aws_iam_role_policy_attachment" "eks_node_role_cni_policy" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
 
 ########################
 # VPC CNI Addon IRSA Role (aws-node)
