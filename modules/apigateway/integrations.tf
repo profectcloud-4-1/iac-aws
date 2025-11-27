@@ -22,8 +22,6 @@ resource "aws_apigatewayv2_vpc_link" "this" {
 }
 
 resource "aws_apigatewayv2_integration" "user" {
-  count                  = var.enable_integrations && local.listener_nlb != null ? 1 : 0
-
   api_id                 = aws_apigatewayv2_api.user.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
@@ -36,8 +34,6 @@ resource "aws_apigatewayv2_integration" "user" {
 }
 
 resource "aws_apigatewayv2_integration" "product" {
-  count                  = var.enable_integrations && local.listener_nlb != null ? 1 : 0
-
   api_id                 = aws_apigatewayv2_api.product.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
@@ -50,8 +46,6 @@ resource "aws_apigatewayv2_integration" "product" {
 }
 
 resource "aws_apigatewayv2_integration" "order" {
-  count                  = var.enable_integrations && local.listener_nlb != null ? 1 : 0
-
   api_id                 = aws_apigatewayv2_api.order.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
@@ -64,8 +58,6 @@ resource "aws_apigatewayv2_integration" "order" {
 }
 
 resource "aws_apigatewayv2_integration" "payment" {
-  count                  = var.enable_integrations && local.listener_nlb != null ? 1 : 0
-
   api_id                 = aws_apigatewayv2_api.payment.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"

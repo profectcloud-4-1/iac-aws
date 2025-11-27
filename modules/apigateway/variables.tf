@@ -25,9 +25,3 @@ variable "integration_timeout_ms" {
   type        = number
   default     = 29000
 }
-
-variable "enable_integrations" {
-  description = "NLB 리스너 ARN이 준비된 경우에만 통합 리소스 생성"
-  type        = bool
-  default     = false
-}

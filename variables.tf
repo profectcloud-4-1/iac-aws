@@ -24,3 +24,9 @@ variable "presigned_bucket_name" {
     error_message = "Presigned bucket name is required"
   }
 }
+
+variable "enable_apigateway" {
+  description = "API Gateway 통합 리소스 생성 여부"
+  type        = bool
+  default     = false
+}

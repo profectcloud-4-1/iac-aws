@@ -12,6 +12,14 @@ terraform {
       source  = "hashicorp/aws"
       version = "6.20.0"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.13"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.33"
+    }
   }
 }
 
@@ -131,6 +139,50 @@ module "ecr_policy_user" {
     module.ecr_payment.repository_arn
   ]
 }
+
+module "eks" {
+  source          = "./modules/eks"
+  cluster_name    = "goorm"
+  cluster_version = "1.33"
+  subnet_ids      = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
+  enable_irsa_cni = true
+}
+
+
+# EKS 연결용 데이터 소스 (Helm/Kubernetes 프로바이더)
+data "aws_eks_cluster" "eks" {
+  name = module.eks.cluster_name
+}
+data "aws_eks_cluster_auth" "eks" {
+  name = module.eks.cluster_name
+}
+
+provider "kubernetes" {
+  alias                  = "eks"
+  host                   = data.aws_eks_cluster.eks.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.eks.token
+}
+
+provider "helm" {
+  alias = "eks"
+  kubernetes {
+    host                   = data.aws_eks_cluster.eks.endpoint
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+    token                  = data.aws_eks_cluster_auth.eks.token
+  }
+}
+
+module "helm" {
+  source                    = "./modules/helm"
+  enable_kube_state_metrics = true
+  enable_node_exporter      = true
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+  }
+}
+
 module "vpc_endpoint" {
   source = "./modules/vpc-endpoint"
 
@@ -143,6 +195,8 @@ module "vpc_endpoint" {
 
 ### API Gateway ###
 module "apigateway" {
+  count = var.enable_apigateway ? 1 : 0
+
   source                     = "./modules/apigateway"
   vpc_link_security_group_id = module.security.vpc_link_sg_id
   vpi_link_subnet_ids        = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]

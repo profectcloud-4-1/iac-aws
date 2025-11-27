@@ -43,44 +43,6 @@ resource "aws_eks_addon" "metrics_server" {
   addon_name   = "metrics-server"
 }
 
-# 참고:
-# kube-state-metrics, prometheus-node-exporter는 관리형 애드온이 아니므로
-# 일반적으로 Helm 등을 통해 배포합니다. 아래 Helm 배포 리소스로 설치합니다.
 
-# kube-state-metrics (Helm)
-resource "helm_release" "kube_state_metrics" {
-  provider          = helm.eks
-  count             = var.enable_kube_state_metrics ? 1 : 0
-  name              = "kube-state-metrics"
-  repository        = "https://prometheus-community.github.io/helm-charts"
-  chart             = "kube-state-metrics"
-  namespace         = "kube-system"
-  create_namespace  = false
-  dependency_update = true
-  wait              = true
-  timeout           = 600
-
-  depends_on = [
-    aws_eks_cluster.this
-  ]
-}
-
-# prometheus-node-exporter (Helm)
-resource "helm_release" "prometheus_node_exporter" {
-  provider          = helm.eks
-  count             = var.enable_node_exporter ? 1 : 0
-  name              = "prometheus-node-exporter"
-  repository        = "https://prometheus-community.github.io/helm-charts"
-  chart             = "prometheus-node-exporter"
-  namespace         = "kube-system"
-  create_namespace  = false
-  dependency_update = true
-  wait              = true
-  timeout           = 600
-
-  depends_on = [
-    aws_eks_cluster.this
-  ]
-}
 
 
