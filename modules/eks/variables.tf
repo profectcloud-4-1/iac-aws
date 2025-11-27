@@ -33,10 +33,5 @@ variable "oidc_provider_arn" {
   default     = null
 }
 
-variable "oidc_provider_url" {
-  description = "EKS OIDC Issuer URL (예: https://oidc.eks.ap-northeast-2.amazonaws.com/id/XXXXXXXX)"
-  type        = string
-  default     = null
-}
 
 

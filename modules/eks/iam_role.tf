@@ -2,11 +2,6 @@
 # EKS IAM Roles and Policies
 ############################
 
-locals {
-  # IRSA 신뢰정책 Condition 키에 쓰기 위해 https:// 접두어 제거
-  oidc_provider_hostpath = var.oidc_provider_url == null ? null : replace(var.oidc_provider_url, "https://", "")
-}
-
 ########################
 # Cluster Role (Control Plane)
 ########################
@@ -93,21 +88,16 @@ resource "aws_iam_role" "eks_cni_irsa_role" {
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          Federated = var.oidc_provider_arn
-        },
-        Action = "sts:AssumeRoleWithWebIdentity",
-        Condition = {
-          StringEquals = {
-            "${local.oidc_provider_hostpath}:aud" = "sts.amazonaws.com",
-            "${local.oidc_provider_hostpath}:sub" = "system:serviceaccount:kube-system:aws-node"
-          }
-        }
-      }
-    ]
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "pods.eks.amazonaws.com"
+      },
+      Action = [
+        "sts:AssumeRole",
+        "sts:TagSession"
+      ]
+    }]
   })
 
   tags = merge(var.tags, {
