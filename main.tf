@@ -151,9 +151,11 @@ module "eks" {
 
 # EKS 연결용 데이터 소스 (Helm/Kubernetes 프로바이더)
 data "aws_eks_cluster" "eks" {
+  depends_on = [module.eks]
   name = module.eks.cluster_name
 }
 data "aws_eks_cluster_auth" "eks" {
+  depends_on = [module.eks]
   name = module.eks.cluster_name
 }
 

@@ -1,3 +1,14 @@
+terraform {
+  required_providers {
+    helm = {
+      source = "hashicorp/helm"
+    }
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+    }
+  }
+}
+
 resource "helm_release" "kube_state_metrics" {
   provider          = helm
   count             = var.enable_kube_state_metrics ? 1 : 0
