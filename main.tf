@@ -145,7 +145,6 @@ module "eks" {
   cluster_name    = "goorm"
   cluster_version = "1.33"
   subnet_ids      = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
-  enable_irsa_cni = true
 }
 
 
@@ -185,15 +184,16 @@ module "eks" {
 #   }
 # }
 
-module "vpc_endpoint" {
-  source = "./modules/vpc-endpoint"
 
-  name_prefix        = "goorm"
-  vpc_id             = module.common_network.vpc_id
-  private_subnet_ids = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
-  vpce_sg_id         = module.security.vpce_sg_id
-  route_table_ids    = [module.common_network.private_rtb_app_a_id, module.common_network.private_rtb_app_b_id] # S3 Gateway용
-}
+# module "vpc_endpoint" {
+#   source = "./modules/vpc-endpoint"
+
+#   name_prefix        = "goorm"
+#   vpc_id             = module.common_network.vpc_id
+#   private_subnet_ids = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
+#   vpce_sg_id         = module.security.vpce_sg_id
+#   route_table_ids    = [module.common_network.private_rtb_app_a_id, module.common_network.private_rtb_app_b_id] # S3 Gateway용
+# }
 
 ### API Gateway ###
 module "apigateway" {

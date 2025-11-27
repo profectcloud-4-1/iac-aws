@@ -20,18 +20,3 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
-
-variable "enable_irsa_cni" {
-  description = "VPC CNI 애드온(IRSA)용 역할 생성 여부"
-  type        = bool
-  default     = true
-}
-
-variable "oidc_provider_arn" {
-  description = "EKS OIDC Provider ARN (IRSA 신뢰정책에 사용)"
-  type        = string
-  default     = null
-}
-
-
-

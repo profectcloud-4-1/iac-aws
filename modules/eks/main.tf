@@ -1,26 +1,33 @@
-############################
-# EKS Cluster and Add-ons
-############################
-
-
-
-resource "aws_eks_cluster" "this" {
+# ---------------------------------------
+# Create EKS Auto Cluster
+# ---------------------------------------
+resource "aws_eks_cluster" "cluster" {
   name     = var.cluster_name
-  role_arn = aws_iam_role.eks_cluster_role.arn
+  role_arn = aws_iam_role.cluster.arn
+  version  = var.cluster_version
 
-  version = var.cluster_version
+  vpc_config {
+    subnet_ids              = var.subnet_ids
+    security_group_ids      = []
+    endpoint_private_access = "true"
+    endpoint_public_access  = "true"
+  }
+
+  access_config {
+    authentication_mode                         = "API"
+    bootstrap_cluster_creator_admin_permissions = false
+  }
 
   bootstrap_self_managed_addons = false
 
-  access_config {
-    authentication_mode                         = "API_AND_CONFIG_MAP"
-    bootstrap_cluster_creator_admin_permissions = true
+  zonal_shift_config {
+    enabled = true
   }
 
   compute_config {
     enabled       = true
     node_pools    = ["general-purpose", "system"]
-    node_role_arn = aws_iam_role.eks_node_role.arn
+    node_role_arn = aws_iam_role.node.arn
   }
 
   kubernetes_network_config {
@@ -34,24 +41,6 @@ resource "aws_eks_cluster" "this" {
       enabled = true
     }
   }
-
-  vpc_config {
-    subnet_ids = var.subnet_ids
-  }
-
-  tags = var.tags
-}
-
-resource "aws_eks_pod_identity_association" "cni" {
-  count           = var.enable_irsa_cni ? 1 : 0
-  cluster_name    = aws_eks_cluster.this.name
-  namespace       = "kube-system"
-  service_account = "aws-node"
-  role_arn        = aws_iam_role.eks_cni_irsa_role[0].arn
-
-  depends_on = [
-    aws_eks_cluster.this
-  ]
 }
 
 
