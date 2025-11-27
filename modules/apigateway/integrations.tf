@@ -1,6 +1,6 @@
 data "aws_lb" "ngf" {
   tags = {
-    "kubernetes.io/service-name" = "nginx-gateway/ngf-nginx-gateway-fabric"
+    "service.eks.amazonaws.com/stack" = "nginx-gateway/ngf-nginx-gateway-fabric"
   }
 }
 
