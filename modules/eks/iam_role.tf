@@ -60,19 +60,21 @@ resource "aws_iam_role" "eks_node_role" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "eks_node_role_worker_node_policy" {
-  role       = aws_iam_role.eks_node_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-}
 
 resource "aws_iam_role_policy_attachment" "eks_node_role_ecr_readonly" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
-resource "aws_iam_role_policy_attachment" "eks_node_role_cni_policy" {
+
+resource "aws_iam_role_policy_attachment" "eks_node_role_ecr_pullonly" {
   role       = aws_iam_role.eks_node_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+}
+
+resource "aws_iam_role_policy_attachment" "eks_node_role_worker_node_minimal" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodeMinimalPolicy"
 }
 
 ########################
