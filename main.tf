@@ -174,13 +174,21 @@ provider "helm" {
   }
 }
 
+provider "kubernetes" {
+  alias                  = "eks"
+  host                   = data.aws_eks_cluster.eks.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.eks.token
+}
+
 module "eks_addon" {
   source                  = "./modules/eks-addon"
   cluster_name            = module.eks.cluster_name
   vpc_cni_role_arn        = module.eks.vpc_cni_role_arn
   alb_controller_role_arn = module.eks.alb_controller_role_arn
   providers = {
-    helm = helm.eks
+    helm        = helm.eks
+    kubernetes  = kubernetes.eks
   }
   depends_on = [module.eks]
 }

@@ -3,6 +3,9 @@ terraform {
     helm = {
       source = "hashicorp/helm"
     }
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+    }
   }
 }
 
@@ -44,27 +47,45 @@ resource "helm_release" "prometheus_node_exporter" {
   timeout           = 600
 }
 
-# # ---------------------------------------
-# # AWS Load Balancer Controller (Helm)
-# # ---------------------------------------
-# resource "helm_release" "aws_load_balancer_controller" {
-#   name              = "aws-load-balancer-controller"
-#   repository        = "https://aws.github.io/eks-charts"
-#   chart             = "aws-load-balancer-controller"
-#   namespace         = "kube-system"
-#   create_namespace  = false
-#   dependency_update = true
-#   wait              = true
-#   timeout           = 600
-#
-#   values = [
-#     yamlencode({
-#       clusterName = var.cluster_name
-#       serviceAccount = {
-#         annotations = {
-#           "eks.amazonaws.com/role-arn" = var.alb_controller_role_arn
-#         }
-#       }
-#     })
-#   ]
-# }
+# ---------------------------------------
+# ServiceAccount for AWS Load Balancer Controller (IRSA)
+# ---------------------------------------
+resource "kubernetes_service_account" "alb_controller" {
+  metadata {
+    name      = "aws-load-balancer-controller"
+    namespace = "kube-system"
+    annotations = {
+      "eks.amazonaws.com/role-arn" = var.alb_controller_role_arn
+    }
+    labels = {
+      "app.kubernetes.io/name"       = "aws-load-balancer-controller"
+      "app.kubernetes.io/component"  = "controller"
+    }
+  }
+}
+
+# ---------------------------------------
+# AWS Load Balancer Controller (Helm) - use precreated SA
+# ---------------------------------------
+resource "helm_release" "aws_load_balancer_controller" {
+  name              = "aws-load-balancer-controller"
+  repository        = "https://aws.github.io/eks-charts"
+  chart             = "aws-load-balancer-controller"
+  namespace         = "kube-system"
+  create_namespace  = false
+  dependency_update = true
+  wait              = true
+  timeout           = 600
+
+  values = [
+    yamlencode({
+      clusterName   = var.cluster_name
+      serviceAccount = {
+        create = false
+        name   = kubernetes_service_account.alb_controller.metadata[0].name
+      }
+    })
+  ]
+
+  depends_on = [kubernetes_service_account.alb_controller]
+}
