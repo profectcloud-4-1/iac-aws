@@ -153,6 +153,7 @@ data "aws_eks_cluster" "eks" {
   depends_on = [module.eks]
   name       = module.eks.cluster_name
 }
+
 data "aws_eks_cluster_auth" "eks" {
   depends_on = [module.eks]
   name       = module.eks.cluster_name
@@ -168,9 +169,10 @@ provider "helm" {
 }
 
 module "eks_addon" {
-  source           = "./modules/eks-addon"
-  cluster_name     = module.eks.cluster_name
-  vpc_cni_role_arn = module.eks.vpc_cni_role_arn
+  source                  = "./modules/eks-addon"
+  cluster_name            = module.eks.cluster_name
+  vpc_cni_role_arn        = module.eks.vpc_cni_role_arn
+  alb_controller_role_arn = module.eks.alb_controller_role_arn
   providers = {
     helm = helm.eks
   }
@@ -179,7 +181,7 @@ module "eks_addon" {
 
 # module "vpc_endpoint" {
 #   source = "./modules/vpc-endpoint"
-
+#
 #   name_prefix        = "goorm"
 #   vpc_id             = module.common_network.vpc_id
 #   private_subnet_ids = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]

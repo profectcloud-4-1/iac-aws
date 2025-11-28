@@ -18,3 +18,8 @@ output "vpc_cni_role_arn" {
   value       = aws_iam_role.vpc_cni.arn
 }
 
+output "alb_controller_role_arn" {
+  description = "ALB Controller(IRSA) 역할 ARN"
+  value       = aws_iam_role.alb_controller.arn
+}
+

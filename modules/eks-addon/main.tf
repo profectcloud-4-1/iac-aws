@@ -45,3 +45,30 @@ resource "helm_release" "prometheus_node_exporter" {
   wait              = true
   timeout           = 600
 }
+
+# ---------------------------------------
+# AWS Load Balancer Controller (Helm)
+# ---------------------------------------
+resource "helm_release" "aws_load_balancer_controller" {
+  provider          = helm
+  name              = "aws-load-balancer-controller"
+  repository        = "https://aws.github.io/eks-charts"
+  chart             = "aws-load-balancer-controller"
+  namespace         = "kube-system"
+  create_namespace  = false
+  dependency_update = true
+  wait              = true
+  timeout           = 600
+
+  # 필수 값
+  set {
+    name  = "clusterName"
+    value = var.cluster_name
+  }
+
+  # IRSA 연결: serviceAccount.annotations["eks.amazonaws.com/role-arn"]
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = var.alb_controller_role_arn
+  }
+}

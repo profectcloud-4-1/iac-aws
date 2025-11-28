@@ -98,3 +98,37 @@ resource "aws_iam_role_policy_attachment" "vpc_cni_policy" {
   role       = aws_iam_role.vpc_cni.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
+
+# ---------------------------------------
+# EKS ALB Controller IRSA Role
+# ---------------------------------------
+
+data "aws_iam_policy" "alb_controller_managed" {
+  arn = "arn:aws:iam::aws:policy/AWSLoadBalancerControllerIAMPolicy"
+}
+
+resource "aws_iam_role" "alb_controller" {
+  name = "eks-alb-controller-irsa"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Federated = aws_iam_openid_connect_provider.this.arn
+      },
+      Action = "sts:AssumeRoleWithWebIdentity",
+      Condition = {
+        StringEquals = {
+          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller",
+          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
+        }
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "alb_controller_attach" {
+  role       = aws_iam_role.alb_controller.name
+  policy_arn = data.aws_iam_policy.alb_controller_managed.arn
+}
