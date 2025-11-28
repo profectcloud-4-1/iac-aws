@@ -128,6 +128,12 @@ module "ecr_payment" {
   image_tag_mutability = "MUTABLE"
   scan_on_push         = true
 }
+module "ecr_auth" {
+  source               = "./modules/ecr"
+  repository_name      = "goormdotcom/auth-service"
+  image_tag_mutability = "MUTABLE"
+  scan_on_push         = true
+}
 
 ### ECR Policy. 한 정책의 Resource에 여러 ECR 레포지토리 포함 ###
 module "ecr_policy_user" {
