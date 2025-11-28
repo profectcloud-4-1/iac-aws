@@ -103,8 +103,18 @@ resource "aws_iam_role_policy_attachment" "vpc_cni_policy" {
 # EKS ALB Controller IRSA Role
 # ---------------------------------------
 
-data "aws_iam_policy" "alb_controller_managed" {
-  arn = "arn:aws:iam::aws:policy/AWSLoadBalancerControllerIAMPolicy"
+# 공식 정책 JSON을 원격에서 가져와 고객 관리형 정책으로 생성
+# 참고: https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/<version>/docs/install/iam_policy.json
+# 버전은 컨트롤러 chart 버전에 맞추어 갱신하세요. (예: v2.7.1)
+
+data "http" "alb_controller_iam_policy" {
+  url = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.7.1/docs/install/iam_policy.json"
+}
+
+resource "aws_iam_policy" "alb_controller" {
+  name        = "AWSLoadBalancerControllerIAMPolicy"
+  description = "IAM policy for AWS Load Balancer Controller (customer managed)"
+  policy      = data.http.alb_controller_iam_policy.response_body
 }
 
 resource "aws_iam_role" "alb_controller" {
@@ -130,5 +140,5 @@ resource "aws_iam_role" "alb_controller" {
 
 resource "aws_iam_role_policy_attachment" "alb_controller_attach" {
   role       = aws_iam_role.alb_controller.name
-  policy_arn = data.aws_iam_policy.alb_controller_managed.arn
+  policy_arn = aws_iam_policy.alb_controller.arn
 }

@@ -60,15 +60,14 @@ resource "helm_release" "aws_load_balancer_controller" {
   wait              = true
   timeout           = 600
 
-  # 필수 값
-  set {
-    name  = "clusterName"
-    value = var.cluster_name
-  }
-
-  # IRSA 연결: serviceAccount.annotations["eks.amazonaws.com/role-arn"]
-  set {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = var.alb_controller_role_arn
-  }
+  values = [
+    yamlencode({
+      clusterName = var.cluster_name
+      serviceAccount = {
+        annotations = {
+          "eks.amazonaws.com/role-arn" = var.alb_controller_role_arn
+        }
+      }
+    })
+  ]
 }
