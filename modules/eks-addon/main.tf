@@ -46,28 +46,28 @@ resource "helm_release" "prometheus_node_exporter" {
   timeout           = 600
 }
 
-# ---------------------------------------
-# AWS Load Balancer Controller (Helm)
-# ---------------------------------------
-resource "helm_release" "aws_load_balancer_controller" {
-  provider          = helm
-  name              = "aws-load-balancer-controller"
-  repository        = "https://aws.github.io/eks-charts"
-  chart             = "aws-load-balancer-controller"
-  namespace         = "kube-system"
-  create_namespace  = false
-  dependency_update = true
-  wait              = true
-  timeout           = 600
+# # ---------------------------------------
+# # AWS Load Balancer Controller (Helm)
+# # ---------------------------------------
+# resource "helm_release" "aws_load_balancer_controller" {
+#   provider          = helm
+#   name              = "aws-load-balancer-controller"
+#   repository        = "https://aws.github.io/eks-charts"
+#   chart             = "aws-load-balancer-controller"
+#   namespace         = "kube-system"
+#   create_namespace  = false
+#   dependency_update = true
+#   wait              = true
+#   timeout           = 600
 
-  values = [
-    yamlencode({
-      clusterName = var.cluster_name
-      serviceAccount = {
-        annotations = {
-          "eks.amazonaws.com/role-arn" = var.alb_controller_role_arn
-        }
-      }
-    })
-  ]
-}
+#   values = [
+#     yamlencode({
+#       clusterName = var.cluster_name
+#       serviceAccount = {
+#         annotations = {
+#           "eks.amazonaws.com/role-arn" = var.alb_controller_role_arn
+#         }
+#       }
+#     })
+#   ]
+# }
