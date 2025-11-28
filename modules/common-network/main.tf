@@ -14,7 +14,7 @@ resource "aws_subnet" "public-a" {
   cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 0)
   availability_zone = "ap-northeast-2a"
   tags = {
-    Name = "goorm-public-subnet"
+    Name = "goorm-public-subnet-a"
     "kubernetes.io/role/elb" = "1"
   }
 }
@@ -89,7 +89,7 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route" "public_internet_a" {
-  route_table_id         = aws_route_table.public-a.id
+  route_table_id         = aws_route_table.public.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.igw.id
 }
@@ -99,13 +99,6 @@ resource "aws_route_table_association" "public_assoc_a" {
   subnet_id      = aws_subnet.public-a.id
   route_table_id = aws_route_table.public.id
 }
-
-resource "aws_route" "public_internet_b" {
-  route_table_id         = aws_route_table.public-b.id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.igw.id
-}
-# NOTE: "vic cidr -> local" route는 aws가 자동으로 생성/관리하므로 생략.
 
 resource "aws_route_table_association" "public_assoc_b" {
   subnet_id      = aws_subnet.public-b.id
