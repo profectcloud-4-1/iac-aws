@@ -3,9 +3,6 @@ terraform {
     tls = {
       source = "hashicorp/tls"
     }
-    http = {
-      source = "hashicorp/http"
-    }
   }
 }
 

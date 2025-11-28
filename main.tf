@@ -182,6 +182,7 @@ module "eks_addon" {
   providers = {
     helm = helm.eks
   }
+  depends_on = [module.eks]
 }
 
 
@@ -194,16 +195,6 @@ module "eks_addon" {
 #   vpce_sg_id         = module.security.vpce_sg_id
 #   route_table_ids    = [module.common_network.private_rtb_app_a_id, module.common_network.private_rtb_app_b_id] # S3 Gateway용
 # }
-
-### API Gateway ###
-module "apigateway" {
-  count = var.enable_apigateway ? 1 : 0
-
-  source                     = "./modules/apigateway"
-  vpc_link_security_group_id = module.security.vpc_link_sg_id
-  vpi_link_subnet_ids        = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
-}
-
 
 ### s3(presigned용)
 module "presigned_s3" {

@@ -23,7 +23,6 @@ resource "aws_eks_addon" "vpc_cni" {
 }
 
 resource "helm_release" "kube_state_metrics" {
-  provider          = helm
   name              = "kube-state-metrics"
   repository        = "https://prometheus-community.github.io/helm-charts"
   chart             = "kube-state-metrics"
@@ -35,7 +34,6 @@ resource "helm_release" "kube_state_metrics" {
 }
 
 resource "helm_release" "prometheus_node_exporter" {
-  provider          = helm
   name              = "prometheus-node-exporter"
   repository        = "https://prometheus-community.github.io/helm-charts"
   chart             = "prometheus-node-exporter"
@@ -50,7 +48,6 @@ resource "helm_release" "prometheus_node_exporter" {
 # # AWS Load Balancer Controller (Helm)
 # # ---------------------------------------
 # resource "helm_release" "aws_load_balancer_controller" {
-#   provider          = helm
 #   name              = "aws-load-balancer-controller"
 #   repository        = "https://aws.github.io/eks-charts"
 #   chart             = "aws-load-balancer-controller"
@@ -59,7 +56,7 @@ resource "helm_release" "prometheus_node_exporter" {
 #   dependency_update = true
 #   wait              = true
 #   timeout           = 600
-
+#
 #   values = [
 #     yamlencode({
 #       clusterName = var.cluster_name
