@@ -15,6 +15,7 @@ resource "aws_subnet" "public" {
   availability_zone = "ap-northeast-2a"
   tags = {
     Name = "goorm-public-subnet"
+    "kubernetes.io/role/elb" = "1"
   }
 }
 
