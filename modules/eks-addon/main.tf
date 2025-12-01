@@ -134,7 +134,8 @@ resource "helm_release" "external_secrets_operator" {
 
   depends_on = [
     kubernetes_namespace.external_secrets,
-    kubernetes_service_account.external_secrets_operator
+    kubernetes_service_account.external_secrets_operator,
+    helm_release.aws_load_balancer_controller
   ]
 }
 
