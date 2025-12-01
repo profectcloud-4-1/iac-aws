@@ -75,7 +75,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   create_namespace  = false
   dependency_update = true
   wait              = true
-  timeout           = 600
+  timeout           = 120
 
   values = [
     yamlencode({
@@ -93,6 +93,12 @@ resource "helm_release" "aws_load_balancer_controller" {
 # ---------------------------------------
 # External Secrets Operator (Helm) - use precreated SA
 # ---------------------------------------
+resource "kubernetes_namespace" "external_secrets" {
+  metadata {
+    name = "external-secrets"
+  }
+}
+
 resource "kubernetes_service_account" "external_secrets_operator" {
   metadata {
     name      = "external-secrets-operator"
@@ -108,10 +114,10 @@ resource "helm_release" "external_secrets_operator" {
   repository        = "https://charts.external-secrets.io"
   chart             = "external-secrets-operator"
   namespace         = "external-secrets"
-  create_namespace  = true
+  create_namespace  = false
   dependency_update = true
   wait              = true
-  timeout           = 600
+  timeout           = 120
 
   values = [
     yamlencode({
