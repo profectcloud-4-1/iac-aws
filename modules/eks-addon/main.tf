@@ -89,3 +89,72 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   depends_on = [kubernetes_service_account.alb_controller]
 }
+
+# ---------------------------------------
+# External Secrets Operator (Helm) - use precreated SA
+# ---------------------------------------
+resource "kubernetes_service_account" "external_secrets_operator" {
+  metadata {
+    name      = "external-secrets-operator"
+    namespace = "external-secrets"
+    annotations = {
+      "eks.amazonaws.com/role-arn" = var.external_secrets_operator_role_arn
+    }
+  }
+}
+
+resource "helm_release" "external_secrets_operator" {
+  name              = "external-secrets-operator"
+  repository        = "https://charts.external-secrets.io"
+  chart             = "external-secrets-operator"
+  namespace         = "external-secrets"
+  create_namespace  = false
+  dependency_update = true
+  wait              = true
+  timeout           = 600
+
+  values = [
+    yamlencode({
+      serviceAccount = {
+        create = false
+        name   = kubernetes_service_account.external_secrets_operator.metadata[0].name
+      }
+    })
+  ]
+
+  depends_on = [kubernetes_service_account.external_secrets_operator]
+}
+
+# # ---------------------------------------
+# # ArgoCD (Helm)
+# # ---------------------------------------
+# resource "helm_release" "argocd" {
+#   name              = "argocd"
+#   repository        = "https://argoproj.github.io/argo-helm"
+#   chart             = "argo-cd"
+#   namespace         = "argocd"
+#   create_namespace  = false
+#   dependency_update = true
+#   wait              = true
+#   timeout           = 600
+# }
+
+# # ArgoCD Application (TODO: 작성중)
+# resource "kubernetes_manifest" "bootstrap_application" {
+#   manifest = {
+#     apiVersion = "argoproj.io/v1alpha1"
+#     kind       = "Application"
+#     metadata = {
+#       name      = "bootstrap"
+#       namespace = "argocd"
+#     }
+#     spec = {
+#       project = "default"
+#       source = {
+#         repoURL = "https://github.com/argoproj/argo-cd.git"
+#         path = "manifests/crds"
+#         targetRevision = "HEAD"
+#       }
+#     }
+#   }
+# }
