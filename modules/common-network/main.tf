@@ -14,7 +14,7 @@ resource "aws_subnet" "public" {
   cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 0)
   availability_zone = "ap-northeast-2a"
   tags = {
-    Name = "goorm-public-subnet"
+    Name                     = "goorm-public-subnet"
     "kubernetes.io/role/elb" = "1"
   }
 }
@@ -23,7 +23,7 @@ resource "aws_subnet" "public-b" {
   cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 5)
   availability_zone = "ap-northeast-2b"
   tags = {
-    Name = "goorm-public-subnet-b"
+    Name                     = "goorm-public-subnet-b"
     "kubernetes.io/role/elb" = "1"
   }
 }

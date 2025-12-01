@@ -182,14 +182,15 @@ provider "kubernetes" {
 }
 
 module "eks_addon" {
-  source                  = "./modules/eks-addon"
-  cluster_name            = module.eks.cluster_name
-  vpc_cni_role_arn        = module.eks.vpc_cni_role_arn
-  alb_controller_role_arn = module.eks.alb_controller_role_arn
+  source                             = "./modules/eks-addon"
+  cluster_name                       = "goorm"
+  vpc_id                             = module.common_network.vpc_id
+  vpc_cni_role_arn                   = module.eks.vpc_cni_role_arn
+  alb_controller_role_arn            = module.eks.alb_controller_role_arn
   external_secrets_operator_role_arn = module.eks.external_secrets_operator_role_arn
   providers = {
-    helm        = helm.eks
-    kubernetes  = kubernetes.eks
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
   }
   depends_on = [module.eks]
 }

@@ -58,8 +58,8 @@ resource "kubernetes_service_account" "alb_controller" {
       "eks.amazonaws.com/role-arn" = var.alb_controller_role_arn
     }
     labels = {
-      "app.kubernetes.io/name"       = "aws-load-balancer-controller"
-      "app.kubernetes.io/component"  = "controller"
+      "app.kubernetes.io/name"      = "aws-load-balancer-controller"
+      "app.kubernetes.io/component" = "controller"
     }
   }
 }
@@ -76,10 +76,13 @@ resource "helm_release" "aws_load_balancer_controller" {
   dependency_update = true
   wait              = true
   timeout           = 120
+  atomic            = true
 
   values = [
     yamlencode({
-      clusterName   = var.cluster_name
+      clusterName = var.cluster_name
+      region      = "ap-northeast-2"
+      vpcId       = var.vpc_id
       serviceAccount = {
         create = false
         name   = kubernetes_service_account.alb_controller.metadata[0].name
@@ -112,12 +115,13 @@ resource "kubernetes_service_account" "external_secrets_operator" {
 resource "helm_release" "external_secrets_operator" {
   name              = "external-secrets-operator"
   repository        = "https://charts.external-secrets.io"
-  chart             = "external-secrets-operator"
+  chart             = "external-secrets"
   namespace         = "external-secrets"
   create_namespace  = false
   dependency_update = true
   wait              = true
   timeout           = 120
+  atomic            = true
 
   values = [
     yamlencode({
@@ -128,7 +132,10 @@ resource "helm_release" "external_secrets_operator" {
     })
   ]
 
-  depends_on = [kubernetes_service_account.external_secrets_operator]
+  depends_on = [
+    kubernetes_namespace.external_secrets,
+    kubernetes_service_account.external_secrets_operator
+  ]
 }
 
 # # ---------------------------------------
