@@ -108,7 +108,7 @@ resource "helm_release" "external_secrets_operator" {
   repository        = "https://charts.external-secrets.io"
   chart             = "external-secrets-operator"
   namespace         = "external-secrets"
-  create_namespace  = false
+  create_namespace  = true
   dependency_update = true
   wait              = true
   timeout           = 600
