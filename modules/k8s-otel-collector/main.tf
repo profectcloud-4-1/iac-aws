@@ -18,18 +18,11 @@ locals {
   otel_collector_sa_name = "otel-collector-collector"
 }
 
-# Namespace
-resource "kubernetes_namespace" "observability" {
-  metadata {
-    name = "observability"
-  }
-}
-
 # SA
 resource "kubernetes_service_account" "otel_collector" {
   metadata {
     name      = local.otel_collector_sa_name
-    namespace = "observability"
+    namespace = var.namespace
   }
   automount_service_account_token = true
 }
@@ -61,7 +54,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: ${local.otel_collector_sa_name}
-    namespace: observability
+    namespace: ${var.namespace}
 EOF
 }
 
@@ -75,4 +68,6 @@ resource "kubectl_manifest" "otel_collector" {
     loki_host              = var.loki_host,
     k8s_cluster_name       = var.k8s_cluster_name,
   })
+
+  depends_on = [ kubernetes_service_account.otel_collector, kubectl_manifest.otel_collector_kubeletstats_rbac ]
 }

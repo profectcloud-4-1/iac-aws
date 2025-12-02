@@ -287,6 +287,7 @@ module "k8s_otel_collector" {
     kubernetes = kubernetes.eks
     kubectl    = kubectl.eks
   }
+  namespace        = module.k8s_namespace.created_namespaces["observability"]
   tempo_host       = "tempo-distributor.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
   mimir_host       = "mimir-nginx.observability.svc.cluster.local"       # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
   loki_host        = "loki.observability.svc.cluster.local"              # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
