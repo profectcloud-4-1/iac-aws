@@ -276,6 +276,7 @@ module "k8s_otel_operator" {
   providers = {
     helm       = helm.eks
     kubernetes = kubernetes.eks
+    kubectl    = kubectl.eks
   }
   depends_on = [module.eks, module.eks_addon, module.k8s_certmanager]
 }

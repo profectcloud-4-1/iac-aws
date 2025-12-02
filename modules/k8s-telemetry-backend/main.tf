@@ -157,30 +157,37 @@ resource "helm_release" "loki" {
         size    = "50Gi"
       }
       loki = {
-        config = <<-EOT
-          auth_enabled: false
-          server:
-            http_listen_port: 3100
-          schema_config:
-            configs:
-            - from: "2023-01-01"
-              store: boltdb-shipper
-              object_store: s3
-              schema: v13
-              index:
-                prefix: loki_index_
-                period: 24h
-          storage_config:
-            boltdb_shipper:
-              shared_store: s3
-              active_index_directory: /var/loki/index
-              cache_location: /var/loki/index_cache
-            s3:
-              bucket: "${var.s3_bucket_loki}"
-              region: "${var.aws_region}"
-              s3forcepathstyle: ${var.s3_force_path_style}
-              ${local.s3_endpoint == null ? "" : "endpoint: \"${local.s3_endpoint}\""}
-        EOT
+        authEnabled = false
+        server = {
+          http_listen_port = 3100
+        }
+        schemaConfig = {
+          configs = [
+            {
+              from         = "2023-01-01"
+              store        = "boltdb-shipper"
+              object_store = "s3"
+              schema       = "v13"
+              index = {
+                prefix = "loki_index_"
+                period = "24h"
+              }
+            }
+          ]
+        }
+        storageConfig = {
+          boltdb_shipper = {
+            shared_store             = "s3"
+            active_index_directory   = "/var/loki/index"
+            cache_location           = "/var/loki/index_cache"
+          }
+          aws = {
+            bucketnames      = var.s3_bucket_loki
+            region           = var.aws_region
+            s3forcepathstyle = var.s3_force_path_style
+            endpoint         = local.s3_endpoint
+          }
+        }
       }
     })
   ]
