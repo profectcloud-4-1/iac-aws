@@ -161,38 +161,27 @@ module "eks" {
   subnet_ids      = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
 }
 
-# EKS 연결용 데이터 소스 (Helm/Kubernetes 프로바이더)
-data "aws_eks_cluster" "eks" {
-  depends_on = [module.eks]
-  name       = module.eks.cluster_name
-}
-
-data "aws_eks_cluster_auth" "eks" {
-  depends_on = [module.eks]
-  name       = module.eks.cluster_name
-}
-
 provider "helm" {
   alias = "eks"
   kubernetes {
-    host                   = data.aws_eks_cluster.eks.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.eks.token
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+    token                  = module.eks.cluster_token
   }
 }
 
 provider "kubernetes" {
   alias                  = "eks"
-  host                   = data.aws_eks_cluster.eks.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.eks.token
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  token                  = module.eks.cluster_token
 }
 
 provider "kubectl" {
   alias                  = "eks"
-  host                   = data.aws_eks_cluster.eks.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.eks.token
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  token                  = module.eks.cluster_token
   load_config_file       = false
   apply_retry_count      = 20
 }
