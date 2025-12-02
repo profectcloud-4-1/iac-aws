@@ -15,7 +15,8 @@ output "external_secrets_operator_role_arn" {
 
 output "loki_s3_role_arn" {
   description = "Loki S3(IRSA) 역할 ARN"
-  value       = aws_iam_role.loki_s3.arn
+#   value       = aws_iam_role.loki_s3.arn
+  value       = ""
 }
 
 output "tempo_s3_role_arn" {
