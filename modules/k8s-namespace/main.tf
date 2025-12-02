@@ -6,10 +6,10 @@ resource "kubernetes_namespace" "goormdotcom" {
   }
 }
 
-resource "kubernetes_namespace" "cert-manager" {
-    metadata {
-        name = "cert-manager"
-    }
+resource "kubernetes_namespace" "cert_manager" {
+  metadata {
+    name = "cert-manager"
+  }
 }
 
 resource "kubernetes_namespace" "external_secrets" {

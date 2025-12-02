@@ -212,7 +212,6 @@ module "k8s_namespace" {
   source = "./modules/k8s-namespace"
   providers = {
     kubernetes = kubernetes.eks
-    kubectl    = kubectl.eks
   }
   depends_on = [module.eks]
 }
@@ -223,7 +222,7 @@ module "k8s_certmanager" {
     helm       = helm.eks
     kubernetes = kubernetes.eks
   }
-  namespace = module.k8s_namespace.created_namespaces["cert-manager"]
+  namespace  = module.k8s_namespace.created_namespaces["cert_manager"]
   depends_on = [module.eks, module.eks_addon, module.k8s_namespace]
 }
 module "k8s_eso" {
@@ -234,7 +233,7 @@ module "k8s_eso" {
     kubectl    = kubectl.eks
   }
   external_secrets_operator_role_arn = module.eks.external_secrets_operator_role_arn
-  namespace                          = module.k8s_namespace.created_namespaces["external-secrets"]
+  namespace                          = module.k8s_namespace.created_namespaces["external_secrets"]
   depends_on                         = [module.eks, module.eks_addon, module.k8s_namespace]
 }
 
@@ -251,7 +250,7 @@ module "k8s_telemetry_backend" {
   s3_bucket_mimir = "goormdotcom-mimir"
   aws_region      = var.aws_region
 
-  depends_on      = [module.eks, module.eks_addon, module.k8s_namespace]
+  depends_on = [module.eks, module.eks_addon, module.k8s_namespace]
 }
 
 module "k8s_grafana" {
@@ -308,7 +307,7 @@ module "k8s_ingress" {
   goormdotcom_namespace   = module.k8s_namespace.created_namespaces["goormdotcom"]
   observability_namespace = module.k8s_namespace.created_namespaces["observability"]
 
-  depends_on              = [module.eks, module.eks_addon, module.k8s_grafana, module.k8s_namespace]
+  depends_on = [module.eks, module.eks_addon, module.k8s_grafana, module.k8s_namespace]
 }
 
 # NOTE: 제~~일 마지막에 실행

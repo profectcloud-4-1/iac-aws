@@ -177,9 +177,9 @@ resource "helm_release" "loki" {
         }
         storageConfig = {
           boltdb_shipper = {
-            shared_store             = "s3"
-            active_index_directory   = "/var/loki/index"
-            cache_location           = "/var/loki/index_cache"
+            shared_store           = "s3"
+            active_index_directory = "/var/loki/index"
+            cache_location         = "/var/loki/index_cache"
           }
           aws = {
             bucketnames      = var.s3_bucket_loki
@@ -194,7 +194,6 @@ resource "helm_release" "loki" {
 
   depends_on = [
     kubernetes_service_account.loki,
-    kubernetes_namespace.telemetry
   ]
 }
 
@@ -233,7 +232,6 @@ resource "helm_release" "tempo" {
 
   depends_on = [
     kubernetes_service_account.tempo,
-    kubernetes_namespace.telemetry
   ]
 }
 
@@ -291,6 +289,5 @@ resource "helm_release" "mimir" {
 
   depends_on = [
     kubernetes_service_account.mimir,
-    kubernetes_namespace.telemetry
   ]
 }
