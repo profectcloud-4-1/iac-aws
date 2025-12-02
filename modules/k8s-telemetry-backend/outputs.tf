@@ -26,7 +26,7 @@ output "helm_release_names" {
   value = {
     loki  = helm_release.loki.name
     tempo = helm_release.tempo.name
-    mimir = helm_release.mimir.name
+    # mimir = helm_release.mimir.name
   }
 }
 
