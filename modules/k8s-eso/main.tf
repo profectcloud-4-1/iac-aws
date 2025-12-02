@@ -75,7 +75,7 @@ resource "helm_release" "external_secrets_operator" {
 # SecretStore (AWS Secrets Manager)
 resource "kubectl_manifest" "aws_secretstore" {
   yaml_body = <<EOF
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ClusterSecretStore
 metadata:
   name: aws-secrets

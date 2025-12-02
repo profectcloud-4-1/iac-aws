@@ -7,11 +7,11 @@ terraform {
 }
 
 locals {
-  ns_goormdotcom       = "goormdotcom-prod"
-  ns_cert_manager      = "cert-manager"
-  ns_external_secrets  = "external-secrets"
-  ns_observability     = "observability"
-  ns_argocd            = "argocd"
+  ns_goormdotcom      = "goormdotcom-prod"
+  ns_cert_manager     = "cert-manager"
+  ns_external_secrets = "external-secrets"
+  ns_observability    = "observability"
+  ns_argocd           = "argocd"
 }
 
 resource "kubectl_manifest" "goormdotcom" {

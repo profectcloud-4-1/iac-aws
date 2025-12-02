@@ -239,37 +239,37 @@ module "k8s_eso" {
 }
 
 # S3 + Telemetry Backend
-module "k8s_telemetry_backend" {
-  source = "./modules/k8s-telemetry-backend"
-  providers = {
-    helm       = helm.eks
-    kubernetes = kubernetes.eks
-  }
-  namespace       = module.k8s_namespace.created_namespaces["observability"]
-  s3_bucket_loki  = "goormdotcom-loki"
-  s3_bucket_tempo = "goormdotcom-tempo"
-  s3_bucket_mimir = "goormdotcom-mimir"
-  aws_region      = var.aws_region
+# module "k8s_telemetry_backend" {
+#   source = "./modules/k8s-telemetry-backend"
+#   providers = {
+#     helm       = helm.eks
+#     kubernetes = kubernetes.eks
+#   }
+#   namespace       = module.k8s_namespace.created_namespaces["observability"]
+#   s3_bucket_loki  = "goormdotcom-loki"
+#   s3_bucket_tempo = "goormdotcom-tempo"
+#   s3_bucket_mimir = "goormdotcom-mimir"
+#   aws_region      = var.aws_region
 
-  depends_on = [module.eks, module.eks_addon, module.k8s_namespace]
-}
+#   depends_on = [module.eks, module.eks_addon, module.k8s_namespace]
+# }
 
-module "k8s_grafana" {
-  source = "./modules/k8s-grafana"
-  providers = {
-    helm       = helm.eks
-    kubernetes = kubernetes.eks
-  }
-  tempo_host = "tempo-query-frontend.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
-  mimir_host = "mimir-nginx.observability.svc.cluster.local"          # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
-  loki_host  = "loki.observability.svc.cluster.local"                 # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
+# module "k8s_grafana" {
+#   source = "./modules/k8s-grafana"
+#   providers = {
+#     helm       = helm.eks
+#     kubernetes = kubernetes.eks
+#   }
+#   tempo_host = "tempo-query-frontend.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
+#   mimir_host = "mimir-nginx.observability.svc.cluster.local"          # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
+#   loki_host  = "loki.observability.svc.cluster.local"                 # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
 
-  namespace  = "observability"
-  tempo_port = 3100
-  mimir_port = 80
-  loki_port  = 3100
-  depends_on = [module.eks, module.eks_addon, module.k8s_telemetry_backend]
-}
+#   namespace  = "observability"
+#   tempo_port = 3100
+#   mimir_port = 80
+#   loki_port  = 3100
+#   depends_on = [module.eks, module.eks_addon, module.k8s_telemetry_backend]
+# }
 
 module "k8s_otel_operator" {
   source = "./modules/k8s-otel-operator"
@@ -308,7 +308,9 @@ module "k8s_ingress" {
   goormdotcom_namespace   = module.k8s_namespace.created_namespaces["goormdotcom"]
   observability_namespace = module.k8s_namespace.created_namespaces["observability"]
 
-  depends_on = [module.eks, module.eks_addon, module.k8s_grafana, module.k8s_namespace]
+  depends_on = [module.eks, module.eks_addon, module.k8s_namespace
+    # , module.k8s_grafana
+  ]
 }
 
 # NOTE: 제~~일 마지막에 실행
