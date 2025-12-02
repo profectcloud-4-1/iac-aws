@@ -139,11 +139,6 @@ resource "aws_iam_role_policy_attachment" "alb_controller_attach" {
 # IRSA Roles for Observability (Loki/Tempo/Mimir) - S3 access
 # ---------------------------------------
 
-locals {
-  observability_namespace = "observability"
-  oidc_issuer_host        = replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")
-}
-
 resource "aws_iam_role" "loki_sa" {
   name = "eks-irsa-loki"
   assume_role_policy = jsonencode({
@@ -156,8 +151,8 @@ resource "aws_iam_role" "loki_sa" {
       Action = "sts:AssumeRoleWithWebIdentity",
       Condition = {
         StringEquals = {
-          "${local.oidc_issuer_host}:sub" = "system:serviceaccount:${local.observability_namespace}:loki",
-          "${local.oidc_issuer_host}:aud" = "sts.amazonaws.com"
+          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:observability:loki",
+          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
         }
       }
     }]
@@ -181,8 +176,8 @@ resource "aws_iam_role" "tempo_sa" {
       Action = "sts:AssumeRoleWithWebIdentity",
       Condition = {
         StringEquals = {
-          "${local.oidc_issuer_host}:sub" = "system:serviceaccount:${local.observability_namespace}:tempo",
-          "${local.oidc_issuer_host}:aud" = "sts.amazonaws.com"
+          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:observability:tempo",
+          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
         }
       }
     }]
@@ -206,8 +201,8 @@ resource "aws_iam_role" "mimir_sa" {
       Action = "sts:AssumeRoleWithWebIdentity",
       Condition = {
         StringEquals = {
-          "${local.oidc_issuer_host}:sub" = "system:serviceaccount:${local.observability_namespace}:mimir",
-          "${local.oidc_issuer_host}:aud" = "sts.amazonaws.com"
+          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:observability:mimir",
+          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
         }
       }
     }]
