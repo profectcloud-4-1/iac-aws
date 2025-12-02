@@ -152,9 +152,9 @@ resource "helm_release" "loki" {
         create = false
         name   = local.loki_sa_name
       }
+      deploymentMode = "simple-scalable"
       persistence = {
-        enabled = true
-        size    = "50Gi"
+        enabled = false
       }
       loki = {
         authEnabled = false
@@ -163,6 +163,14 @@ resource "helm_release" "loki" {
         }
         server = {
           http_listen_port = 3100
+        }
+        ingester = {
+          wal = {
+            enabled = false
+          }
+        }
+        limits_config = {
+          allow_structured_metadata = false
         }
         schemaConfig = {
           configs = [
