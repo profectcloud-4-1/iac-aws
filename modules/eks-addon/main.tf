@@ -139,19 +139,19 @@ resource "helm_release" "external_secrets_operator" {
   ]
 }
 
-# # ---------------------------------------
-# # ArgoCD (Helm)
-# # ---------------------------------------
-# resource "helm_release" "argocd" {
-#   name              = "argocd"
-#   repository        = "https://argoproj.github.io/argo-helm"
-#   chart             = "argo-cd"
-#   namespace         = "argocd"
-#   create_namespace  = false
-#   dependency_update = true
-#   wait              = true
-#   timeout           = 600
-# }
+# ---------------------------------------
+# ArgoCD (Helm)
+# ---------------------------------------
+resource "helm_release" "argocd" {
+  name              = "argocd"
+  repository        = "https://argoproj.github.io/argo-helm"
+  chart             = "argo-cd"
+  namespace         = "argocd"
+  create_namespace  = false
+  dependency_update = true
+  wait              = true
+  timeout           = 600
+}
 
 # # ArgoCD Application (TODO: 작성중)
 # resource "kubernetes_manifest" "bootstrap_application" {
