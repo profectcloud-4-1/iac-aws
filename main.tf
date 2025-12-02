@@ -157,7 +157,6 @@ module "eks" {
   subnet_ids      = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
 }
 
-
 # EKS 연결용 데이터 소스 (Helm/Kubernetes 프로바이더)
 data "aws_eks_cluster" "eks" {
   depends_on = [module.eks]
@@ -194,18 +193,23 @@ provider "kubectl" {
   apply_retry_count      = 20
 }
 
+module "k8s_iam_role" {
+  source            = "./modules/k8s-iam-role"
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_issuer_url   = module.eks.oidc_issuer_url
+  depends_on        = [module.eks]
+}
+
 module "eks_addon" {
-  source                             = "./modules/eks-addon"
-  cluster_name                       = "goorm"
-  vpc_id                             = module.common_network.vpc_id
-  vpc_cni_role_arn                   = module.eks.vpc_cni_role_arn
-  alb_controller_role_arn            = module.eks.alb_controller_role_arn
-  external_secrets_operator_role_arn = module.eks.external_secrets_operator_role_arn
+  source           = "./modules/eks-addon"
+  cluster_name     = "goorm"
+  vpc_id           = module.common_network.vpc_id
+  vpc_cni_role_arn = module.k8s_iam_role.vpc_cni_role_arn
   providers = {
     helm       = helm.eks
     kubernetes = kubernetes.eks
   }
-  depends_on = [module.eks]
+  depends_on = [module.eks, module.k8s_iam_role]
 }
 
 module "k8s_namespace" {
@@ -216,6 +220,8 @@ module "k8s_namespace" {
   }
   depends_on = [module.eks]
 }
+
+
 
 module "k8s_certmanager" {
   source = "./modules/k8s-certmanager"
@@ -233,7 +239,7 @@ module "k8s_eso" {
     kubernetes = kubernetes.eks
     kubectl    = kubectl.eks
   }
-  external_secrets_operator_role_arn = module.eks.external_secrets_operator_role_arn
+  external_secrets_operator_role_arn = module.k8s_iam_role.external_secrets_operator_role_arn
   namespace                          = module.k8s_namespace.created_namespaces["external_secrets"]
   depends_on                         = [module.eks, module.eks_addon, module.k8s_namespace]
 }
@@ -245,15 +251,15 @@ module "k8s_telemetry_backend" {
     helm       = helm.eks
     kubernetes = kubernetes.eks
   }
-  namespace       = module.k8s_namespace.created_namespaces["observability"]
-  s3_bucket_loki  = "goormdotcom-loki"
-  s3_bucket_tempo = "goormdotcom-tempo"
-  s3_bucket_mimir = "goormdotcom-mimir"
-  aws_region      = var.aws_region
-
-  # telemetry_backend_sa_role_arn = module.eks.telemetry_backend_sa_role_arn
-  telemetry_backend_sa_role_arn = ""
-  depends_on = [module.eks, module.eks_addon, module.k8s_namespace]
+  namespace         = module.k8s_namespace.created_namespaces["observability"]
+  s3_bucket_loki    = "goormdotcom-loki"
+  s3_bucket_tempo   = "goormdotcom-tempo"
+  s3_bucket_mimir   = "goormdotcom-mimir"
+  aws_region        = var.aws_region
+  loki_s3_role_arn  = module.k8s_iam_role.loki_s3_role_arn
+  tempo_s3_role_arn = module.k8s_iam_role.tempo_s3_role_arn
+  mimir_s3_role_arn = module.k8s_iam_role.mimir_s3_role_arn
+  depends_on        = [module.eks, module.eks_addon, module.k8s_namespace, module.k8s_iam_role]
 }
 
 # module "k8s_grafana" {
@@ -307,11 +313,11 @@ module "k8s_ingress" {
   }
   cluster_name            = module.eks.cluster_name
   vpc_id                  = module.common_network.vpc_id
-  alb_controller_role_arn = module.eks.alb_controller_role_arn
+  alb_controller_role_arn = module.k8s_iam_role.alb_controller_role_arn
   goormdotcom_namespace   = module.k8s_namespace.created_namespaces["goormdotcom"]
   observability_namespace = module.k8s_namespace.created_namespaces["observability"]
 
-  depends_on = [module.eks, module.eks_addon, module.k8s_namespace
+  depends_on = [module.eks, module.eks_addon, module.k8s_namespace, module.k8s_iam_role
     # , module.k8s_grafana
   ]
 }

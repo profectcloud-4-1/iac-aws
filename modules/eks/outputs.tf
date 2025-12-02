@@ -13,19 +13,14 @@ output "cluster_certificate_authority_data" {
   value       = aws_eks_cluster.this.certificate_authority[0].data
 }
 
-output "vpc_cni_role_arn" {
-  description = "VPC CNI 역할 ARN"
-  value       = aws_iam_role.vpc_cni.arn
+output "oidc_provider_arn" {
+  description = "EKS OIDC Provider ARN"
+  value       = aws_iam_openid_connect_provider.this.arn
 }
 
-output "alb_controller_role_arn" {
-  description = "ALB Controller(IRSA) 역할 ARN"
-  value       = aws_iam_role.alb_controller.arn
-}
-
-output "external_secrets_operator_role_arn" {
-  description = "External Secrets Operator(IRSA) 역할 ARN"
-  value       = aws_iam_role.external_secrets_operator.arn
+output "oidc_issuer_url" {
+  description = "EKS OIDC Issuer URL"
+  value       = aws_eks_cluster.this.identity[0].oidc[0].issuer
 }
 
 # output "telemetry_backend_sa_role_arn" {

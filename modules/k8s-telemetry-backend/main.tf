@@ -25,8 +25,8 @@ resource "kubernetes_service_account" "loki" {
   metadata {
     name      = local.loki_sa_name
     namespace = var.namespace
-    annotations = length(var.telemetry_backend_sa_role_arn) > 0 ? {
-      "eks.amazonaws.com/role-arn" = var.telemetry_backend_sa_role_arn
+    annotations = length(var.loki_s3_role_arn) > 0 ? {
+      "eks.amazonaws.com/role-arn" = var.loki_s3_role_arn
     } : null
   }
   automount_service_account_token = true
@@ -36,8 +36,8 @@ resource "kubernetes_service_account" "tempo" {
   metadata {
     name      = local.tempo_sa_name
     namespace = var.namespace
-    annotations = length(var.telemetry_backend_sa_role_arn) > 0 ? {
-      "eks.amazonaws.com/role-arn" = var.telemetry_backend_sa_role_arn
+    annotations = length(var.tempo_s3_role_arn) > 0 ? {
+      "eks.amazonaws.com/role-arn" = var.tempo_s3_role_arn
     } : null
   }
   automount_service_account_token = true
@@ -47,8 +47,8 @@ resource "kubernetes_service_account" "mimir" {
   metadata {
     name      = local.mimir_sa_name
     namespace = var.namespace
-    annotations = length(var.telemetry_backend_sa_role_arn) > 0 ? {
-      "eks.amazonaws.com/role-arn" = var.telemetry_backend_sa_role_arn
+    annotations = length(var.mimir_s3_role_arn) > 0 ? {
+      "eks.amazonaws.com/role-arn" = var.mimir_s3_role_arn
     } : null
   }
   automount_service_account_token = true

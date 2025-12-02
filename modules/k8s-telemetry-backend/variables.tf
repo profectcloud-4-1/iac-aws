@@ -42,8 +42,18 @@ variable "s3_endpoint" {
   default     = ""
 }
 
-variable "telemetry_backend_sa_role_arn" {
-  description = "Telemetry Backend ServiceAccount에 부여할 IRSA Role ARN"
+variable "loki_s3_role_arn" {
+  description = "Loki S3(IRSA) 역할 ARN"
+  type        = string
+}
+
+variable "tempo_s3_role_arn" {
+  description = "Tempo S3(IRSA) 역할 ARN"
+  type        = string
+}
+
+variable "mimir_s3_role_arn" {
+  description = "Mimir S3(IRSA) 역할 ARN"
   type        = string
 }
 

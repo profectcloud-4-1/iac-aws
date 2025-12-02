@@ -57,7 +57,7 @@ subjects:
     namespace: ${var.namespace}
 EOF
 
-    depends_on = [ kubernetes_service_account.otel_collector ]
+  depends_on = [kubernetes_service_account.otel_collector]
 }
 
 
@@ -71,5 +71,5 @@ resource "kubectl_manifest" "otel_collector" {
     k8s_cluster_name       = var.k8s_cluster_name,
   })
 
-  depends_on = [ kubernetes_service_account.otel_collector, kubectl_manifest.otel_collector_kubeletstats_rbac ]
+  depends_on = [kubernetes_service_account.otel_collector, kubectl_manifest.otel_collector_kubeletstats_rbac]
 }
