@@ -1,5 +1,4 @@
 terraform {
-  experiments = [ "variable_validation" ]
   cloud {
     organization = "goormdotcom"
     hostname     = "app.terraform.io"
