@@ -15,6 +15,17 @@ terraform {
   }
 }
 
+#
+# CRDs 선적용 (일부 환경에서 chart의 installCRDs=true가 race를 유발함)
+#
+data "http" "eso_crds" {
+  url = "https://raw.githubusercontent.com/external-secrets/external-secrets/main/deploy/crds/bundle.yaml"
+}
+
+resource "kubectl_manifest" "eso_crds" {
+  yaml_body = data.http.eso_crds.response_body
+}
+
 
 # ---------------------------------------
 # External Secrets Operator (Helm) - use precreated SA
@@ -56,6 +67,7 @@ resource "helm_release" "external_secrets_operator" {
   ]
 
   depends_on = [
+    kubectl_manifest.eso_crds,
     kubernetes_service_account.external_secrets_operator,
   ]
 }

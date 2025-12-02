@@ -158,6 +158,9 @@ resource "helm_release" "loki" {
       }
       loki = {
         authEnabled = false
+        commonConfig = {
+          replication_factor = 1
+        }
         server = {
           http_listen_port = 3100
         }
@@ -175,16 +178,16 @@ resource "helm_release" "loki" {
             }
           ]
         }
-        storageConfig = {
-          boltdb_shipper = {
-            shared_store           = "s3"
-            active_index_directory = "/var/loki/index"
-            cache_location         = "/var/loki/index_cache"
+        storage = {
+          type = "s3"
+          bucketNames = {
+            chunks = var.s3_bucket_loki
+            ruler  = var.s3_bucket_loki
+            admin  = var.s3_bucket_loki
           }
-          aws = {
-            bucketnames      = var.s3_bucket_loki
+          s3 = {
             region           = var.aws_region
-            s3forcepathstyle = var.s3_force_path_style
+            s3ForcePathStyle = var.s3_force_path_style
             endpoint         = local.s3_endpoint
           }
         }

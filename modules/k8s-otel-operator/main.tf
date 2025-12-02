@@ -42,13 +42,6 @@ locals {
   otel_collector_sa_name = "otel-collector-collector"
 }
 
-# Namespace
-resource "kubernetes_namespace" "observability" {
-  metadata {
-    name = "observability"
-  }
-}
-
 # SA
 resource "kubernetes_service_account" "otel_collector" {
   metadata {
