@@ -208,13 +208,23 @@ module "eks_addon" {
   depends_on = [module.eks]
 }
 
+module "k8s_namespace" {
+  source = "./modules/k8s-namespace"
+  providers = {
+    kubernetes = kubernetes.eks
+    kubectl    = kubectl.eks
+  }
+  depends_on = [module.eks]
+}
+
 module "k8s_certmanager" {
   source = "./modules/k8s-certmanager"
   providers = {
     helm       = helm.eks
     kubernetes = kubernetes.eks
   }
-  depends_on = [module.eks, module.eks_addon]
+  namespace = module.k8s_namespace.created_namespaces["cert-manager"]
+  depends_on = [module.eks, module.eks_addon, module.k8s_namespace]
 }
 module "k8s_eso" {
   source = "./modules/k8s-eso"
@@ -224,7 +234,8 @@ module "k8s_eso" {
     kubectl    = kubectl.eks
   }
   external_secrets_operator_role_arn = module.eks.external_secrets_operator_role_arn
-  depends_on                         = [module.eks, module.eks_addon]
+  namespace                          = module.k8s_namespace.created_namespaces["external-secrets"]
+  depends_on                         = [module.eks, module.eks_addon, module.k8s_namespace]
 }
 
 # S3 + Telemetry Backend
@@ -234,11 +245,30 @@ module "k8s_telemetry_backend" {
     helm       = helm.eks
     kubernetes = kubernetes.eks
   }
-  depends_on      = [module.eks, module.eks_addon, module.k8s_certmanager]
+  namespace       = module.k8s_namespace.created_namespaces["observability"]
   s3_bucket_loki  = "goormdotcom-loki"
   s3_bucket_tempo = "goormdotcom-tempo"
   s3_bucket_mimir = "goormdotcom-mimir"
   aws_region      = var.aws_region
+
+  depends_on      = [module.eks, module.eks_addon, module.k8s_namespace]
+}
+
+module "k8s_grafana" {
+  source = "./modules/k8s-grafana"
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+  }
+  tempo_host = "tempo-query-frontend.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
+  mimir_host = "mimir-nginx.observability.svc.cluster.local"          # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
+  loki_host  = "loki.observability.svc.cluster.local"                 # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
+
+  namespace  = "observability"
+  tempo_port = 3100
+  mimir_port = 80
+  loki_port  = 3100
+  depends_on = [module.eks, module.eks_addon, module.k8s_telemetry_backend]
 }
 
 module "k8s_otel_operator" {
@@ -264,24 +294,6 @@ module "k8s_otel_collector" {
 }
 
 
-module "k8s_grafana" {
-  source = "./modules/k8s-grafana"
-  providers = {
-    helm       = helm.eks
-    kubernetes = kubernetes.eks
-  }
-  tempo_host = "tempo-query-frontend.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
-  mimir_host = "mimir-nginx.observability.svc.cluster.local"          # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
-  loki_host  = "loki.observability.svc.cluster.local"                 # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
-
-  namespace  = "observability"
-  tempo_port = 3100
-  mimir_port = 80
-  loki_port  = 3100
-  depends_on = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_otel_operator]
-}
-
-
 module "k8s_ingress" {
   source = "./modules/k8s-ingress"
   providers = {
@@ -292,7 +304,10 @@ module "k8s_ingress" {
   cluster_name            = module.eks.cluster_name
   vpc_id                  = module.common_network.vpc_id
   alb_controller_role_arn = module.eks.alb_controller_role_arn
-  depends_on              = [module.eks, module.eks_addon, module.k8s_grafana]
+  goormdotcom_namespace   = module.k8s_namespace.created_namespaces["goormdotcom"]
+  observability_namespace = module.k8s_namespace.created_namespaces["observability"]
+
+  depends_on              = [module.eks, module.eks_addon, module.k8s_grafana, module.k8s_namespace]
 }
 
 # NOTE: 제~~일 마지막에 실행
@@ -302,7 +317,9 @@ module "k8s_ingress" {
 #     helm       = helm.eks
 #     kubernetes = kubernetes.eks
 #   }
-#   depends_on = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_ingress, module.k8s_otel]
+#   namespace = module.k8s_namespace.created_namespaces["argocd"]
+#   goormdotcom_namespace = module.k8s_namespace.created_namespaces["goormdotcom"]
+#   depends_on = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_ingress, module.k8s_otel, module.k8s_namespace]
 # }
 
 

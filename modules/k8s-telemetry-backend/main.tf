@@ -12,15 +12,6 @@ terraform {
   }
 }
 
-# ---------------------------------------
-# Namespace
-# ---------------------------------------
-resource "kubernetes_namespace" "telemetry" {
-  metadata {
-    name = var.namespace
-  }
-}
-
 locals {
   loki_sa_name  = "loki"
   tempo_sa_name = "tempo"

@@ -19,11 +19,6 @@ terraform {
 # ---------------------------------------
 # External Secrets Operator (Helm) - use precreated SA
 # ---------------------------------------
-resource "kubernetes_namespace" "external_secrets" {
-  metadata {
-    name = "external-secrets"
-  }
-}
 
 locals {
   eso_sa_name = "external-secrets-operator"
@@ -32,20 +27,18 @@ locals {
 resource "kubernetes_service_account" "external_secrets_operator" {
   metadata {
     name      = local.eso_sa_name
-    namespace = "external-secrets"
+    namespace = var.namespace
     annotations = {
       "eks.amazonaws.com/role-arn" = var.external_secrets_operator_role_arn
     }
   }
-
-  depends_on = [ kubernetes_namespace.external_secrets ]
 }
 
 resource "helm_release" "external_secrets_operator" {
   name              = "external-secrets-operator"
   repository        = "https://charts.external-secrets.io"
   chart             = "external-secrets"
-  namespace         = "external-secrets"
+  namespace         = var.namespace
   create_namespace  = false
   dependency_update = true
   wait              = true
@@ -83,7 +76,7 @@ spec:
         jwt:
           serviceAccountRef:
             name: ${local.eso_sa_name}
-            namespace: external-secrets
+            namespace: ${var.namespace}
 EOF
 
   depends_on = [

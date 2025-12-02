@@ -67,7 +67,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: goorm-ingress
-  namespace: goormdotcom-prod
+  namespace: ${var.goormdotcom_namespace}
   annotations:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
@@ -100,7 +100,7 @@ EOF
 resource "kubernetes_ingress_v1" "grafana" {
   metadata {
     name      = "grafana"
-    namespace = "observability"
+    namespace = var.observability_namespace
     annotations = {
       "alb.ingress.kubernetes.io/scheme"       = "internet-facing",
       "alb.ingress.kubernetes.io/target-type"  = "ip",

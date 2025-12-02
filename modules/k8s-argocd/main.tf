@@ -16,8 +16,8 @@ resource "helm_release" "argocd" {
   name              = "argocd"
   repository        = "https://argoproj.github.io/argo-helm"
   chart             = "argo-cd"
-  namespace         = "argocd"
-  create_namespace  = true
+  namespace         = var.namespace
+  create_namespace  = false
   dependency_update = true
   wait              = true
   timeout           = 120
@@ -30,7 +30,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: goormdotcom-applications
-  namespace: argocd
+  namespace: ${var.namespace}
 spec:
   generators:
     - list:
@@ -49,7 +49,7 @@ spec:
   template:
     metadata:
       name: "{{name}}"
-      namespace: argocd
+      namespace: ${var.namespace}
     spec:
       project: default
       source:
@@ -61,7 +61,7 @@ spec:
             - "{{valuesFile}}"
       destination:
         server: https://kubernetes.default.svc
-        namespace: goormdotcom-prod
+        namespace: ${var.goormdotcom_namespace}
       syncPolicy:
         automated:
           prune: true
