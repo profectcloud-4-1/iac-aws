@@ -155,8 +155,8 @@ resource "aws_iam_role" "telemetry_backend_sa" {
           "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com",
           "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub" = [
             "system:serviceaccount:observability:loki",
-            "system:serviceaccount:observability:tempo",
-            "system:serviceaccount:observability:mimir"
+            # "system:serviceaccount:observability:tempo",
+            # "system:serviceaccount:observability:mimir"
           ]
         }
       }

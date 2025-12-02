@@ -28,7 +28,7 @@ output "external_secrets_operator_role_arn" {
   value       = aws_iam_role.external_secrets_operator.arn
 }
 
-output "telemetry_backend_sa_role_arn" {
-  description = "Telemetry Backend Service Account(IRSA) 역할 ARN"
-  value       = aws_iam_role.telemetry_backend_sa.arn
-}
+# output "telemetry_backend_sa_role_arn" {
+#   description = "Telemetry Backend Service Account(IRSA) 역할 ARN"
+#   value       = aws_iam_role.telemetry_backend_sa.arn
+# }
