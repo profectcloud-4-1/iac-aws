@@ -135,6 +135,90 @@ resource "aws_iam_role_policy_attachment" "alb_controller_attach" {
   policy_arn = aws_iam_policy.alb_controller.arn
 }
 
+# ---------------------------------------
+# IRSA Roles for Observability (Loki/Tempo/Mimir) - S3 access
+# ---------------------------------------
+
+locals {
+  observability_namespace = "observability"
+  oidc_issuer_host        = replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")
+}
+
+resource "aws_iam_role" "loki_sa" {
+  name = "eks-irsa-loki"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Federated = aws_iam_openid_connect_provider.this.arn
+      },
+      Action = "sts:AssumeRoleWithWebIdentity",
+      Condition = {
+        StringEquals = {
+          "${local.oidc_issuer_host}:sub" = "system:serviceaccount:${local.observability_namespace}:loki",
+          "${local.oidc_issuer_host}:aud" = "sts.amazonaws.com"
+        }
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "loki_sa_s3" {
+  role       = aws_iam_role.loki_sa.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role" "tempo_sa" {
+  name = "eks-irsa-tempo"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Federated = aws_iam_openid_connect_provider.this.arn
+      },
+      Action = "sts:AssumeRoleWithWebIdentity",
+      Condition = {
+        StringEquals = {
+          "${local.oidc_issuer_host}:sub" = "system:serviceaccount:${local.observability_namespace}:tempo",
+          "${local.oidc_issuer_host}:aud" = "sts.amazonaws.com"
+        }
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "tempo_sa_s3" {
+  role       = aws_iam_role.tempo_sa.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role" "mimir_sa" {
+  name = "eks-irsa-mimir"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Federated = aws_iam_openid_connect_provider.this.arn
+      },
+      Action = "sts:AssumeRoleWithWebIdentity",
+      Condition = {
+        StringEquals = {
+          "${local.oidc_issuer_host}:sub" = "system:serviceaccount:${local.observability_namespace}:mimir",
+          "${local.oidc_issuer_host}:aud" = "sts.amazonaws.com"
+        }
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "mimir_sa_s3" {
+  role       = aws_iam_role.mimir_sa.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
 # External Secrets Operator IRSA Role
 resource "aws_iam_role" "external_secrets_operator" {
   name = "eks-external-secrets-operator-irsa"

@@ -251,6 +251,10 @@ module "k8s_telemetry_backend" {
   s3_bucket_mimir = "goormdotcom-mimir"
   aws_region      = var.aws_region
 
+  loki_sa_role_arn  = module.eks.loki_sa_role_arn
+  tempo_sa_role_arn = module.eks.tempo_sa_role_arn
+  mimir_sa_role_arn = module.eks.mimir_sa_role_arn
+
   depends_on = [module.eks, module.eks_addon, module.k8s_namespace]
 }
 

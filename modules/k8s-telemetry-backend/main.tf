@@ -209,49 +209,49 @@ resource "helm_release" "loki" {
 }
 
 # Tempo
-# resource "helm_release" "tempo" {
-#   name             = "tempo"
-#   repository       = local.grafana_repo
-#   chart            = "tempo"
-#   namespace        = var.namespace
-#   create_namespace = false
-#   timeout          = 180
-#   atomic           = true
-#   version          = var.tempo_chart_version == "" ? null : var.tempo_chart_version
+resource "helm_release" "tempo" {
+  name             = "tempo"
+  repository       = local.grafana_repo
+  chart            = "tempo"
+  namespace        = var.namespace
+  create_namespace = false
+  timeout          = 180
+  atomic           = true
+  version          = var.tempo_chart_version == "" ? null : var.tempo_chart_version
 
-#   values = [
-#     yamlencode({
-#       serviceAccount = {
-#         create = false
-#         name   = local.tempo_sa_name
-#       }
-#       # small, single-replica footprint (chart-level keys)
-#       distributor   = { replicaCount = 1 }
-#       ingester      = { replicaCount = 1 }
-#       querier       = { replicaCount = 1 }
-#       queryFrontend = { replicaCount = 1 }
-#       compactor     = { replicaCount = 1 }
-#       tempo = {
-#         metricsGenerator = { enabled = false }
-#         storage = {
-#           trace = {
-#             backend = "s3"
-#             s3 = {
-#               bucket         = var.s3_bucket_tempo
-#               region         = var.aws_region
-#               endpoint       = format("s3.%s.amazonaws.com", var.aws_region)
-#               forcepathstyle = var.s3_force_path_style
-#             }
-#           }
-#         }
-#       }
-#     })
-#   ]
+  values = [
+    yamlencode({
+      serviceAccount = {
+        create = false
+        name   = local.tempo_sa_name
+      }
+      # small, single-replica footprint (chart-level keys)
+      distributor   = { replicaCount = 1 }
+      ingester      = { replicaCount = 1 }
+      querier       = { replicaCount = 1 }
+      queryFrontend = { replicaCount = 1 }
+      compactor     = { replicaCount = 1 }
+      tempo = {
+        metricsGenerator = { enabled = false }
+        storage = {
+          trace = {
+            backend = "s3"
+            s3 = {
+              bucket         = var.s3_bucket_tempo
+              region         = var.aws_region
+              endpoint       = format("s3.%s.amazonaws.com", var.aws_region)
+              forcepathstyle = var.s3_force_path_style
+            }
+          }
+        }
+      }
+    })
+  ]
 
-#   depends_on = [
-#     kubernetes_service_account.tempo,
-#   ]
-# }
+  depends_on = [
+    kubernetes_service_account.tempo,
+  ]
+}
 
 # # Mimir (distributed)
 # resource "helm_release" "mimir" {

@@ -27,3 +27,18 @@ output "external_secrets_operator_role_arn" {
   description = "External Secrets Operator(IRSA) 역할 ARN"
   value       = aws_iam_role.external_secrets_operator.arn
 }
+
+output "loki_sa_role_arn" {
+  description = "Loki Service Account(IRSA) 역할 ARN"
+  value       = aws_iam_role.loki_sa.arn
+}
+
+output "tempo_sa_role_arn" {
+  description = "Tempo Service Account(IRSA) 역할 ARN"
+  value       = aws_iam_role.tempo_sa.arn
+}
+
+output "mimir_sa_role_arn" {
+  description = "Mimir Service Account(IRSA) 역할 ARN"
+  value       = aws_iam_role.mimir_sa.arn
+}
