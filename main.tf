@@ -212,6 +212,7 @@ module "k8s_namespace" {
   source = "./modules/k8s-namespace"
   providers = {
     kubernetes = kubernetes.eks
+    kubectl    = kubectl.eks
   }
   depends_on = [module.eks]
 }
