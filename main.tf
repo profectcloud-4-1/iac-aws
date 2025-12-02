@@ -1,4 +1,5 @@
 terraform {
+  experiments = [ "variable_validation" ]
   cloud {
     organization = "goormdotcom"
     hostname     = "app.terraform.io"
@@ -24,6 +25,10 @@ terraform {
       source = "alekc/kubectl"
     }
   }
+}
+
+locals {
+  tf_log_level = "DEBUG"
 }
 
 provider "aws" {
