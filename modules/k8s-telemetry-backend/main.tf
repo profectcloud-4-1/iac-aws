@@ -237,7 +237,7 @@ resource "helm_release" "mimir" {
   chart            = "mimir-distributed"
   namespace        = var.namespace
   create_namespace = false
-  timeout          = 900
+  timeout          = 180
   atomic           = true
   version          = var.mimir_chart_version == "" ? null : var.mimir_chart_version
 
