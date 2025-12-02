@@ -87,11 +87,9 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: auth-gateway
+                name: auth-gateway-goorm-app
                 port:
                   number: 8080
-
-}
 EOF
 }
 

@@ -61,7 +61,7 @@ spec:
             - "{{valuesFile}}"
       destination:
         server: https://kubernetes.default.svc
-        namespace: goormdotcom-local
+        namespace: goormdotcom-prod
       syncPolicy:
         automated:
           prune: true
