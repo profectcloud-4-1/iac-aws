@@ -56,6 +56,8 @@ subjects:
     name: ${local.otel_collector_sa_name}
     namespace: ${var.namespace}
 EOF
+
+    depends_on = [ kubernetes_service_account.otel_collector ]
 }
 
 
