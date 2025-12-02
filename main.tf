@@ -161,12 +161,16 @@ module "eks" {
   subnet_ids      = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
 }
 
+data "aws_eks_cluster_auth" "eks" {
+  name = module.eks.cluster_name
+}
+
 provider "helm" {
   alias = "eks"
   kubernetes {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-    token                  = module.eks.cluster_token
+    token                  = data.aws_eks_cluster_auth.eks.token
   }
 }
 
@@ -174,14 +178,14 @@ provider "kubernetes" {
   alias                  = "eks"
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  token                  = module.eks.cluster_token
+  token                  = data.aws_eks_cluster_auth.eks.token
 }
 
 provider "kubectl" {
   alias                  = "eks"
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  token                  = module.eks.cluster_token
+  token                  = data.aws_eks_cluster_auth.eks.token
   load_config_file       = false
   apply_retry_count      = 20
 }
