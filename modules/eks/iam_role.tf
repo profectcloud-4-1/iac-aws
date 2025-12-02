@@ -139,8 +139,8 @@ resource "aws_iam_role_policy_attachment" "alb_controller_attach" {
 # IRSA Roles for Observability (Loki/Tempo/Mimir) - S3 access
 # ---------------------------------------
 
-resource "aws_iam_role" "loki_sa" {
-  name = "eks-irsa-loki"
+resource "aws_iam_role" "telemetry_backend_sa" {
+  name       = "eks-irsa-telemetry-backend"
   depends_on = [aws_iam_openid_connect_provider.this, aws_eks_cluster.this]
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -152,68 +152,20 @@ resource "aws_iam_role" "loki_sa" {
       Action = "sts:AssumeRoleWithWebIdentity",
       Condition = {
         StringEquals = {
-          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:observability:loki",
-          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
+          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com",
+          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub" = [
+            "system:serviceaccount:observability:loki",
+            "system:serviceaccount:observability:tempo",
+            "system:serviceaccount:observability:mimir"
+          ]
         }
       }
     }]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "loki_sa_s3" {
-  role       = aws_iam_role.loki_sa.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-}
-
-resource "aws_iam_role" "tempo_sa" {
-  name = "eks-irsa-tempo"
-  depends_on = [aws_iam_openid_connect_provider.this, aws_eks_cluster.this]
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Federated = aws_iam_openid_connect_provider.this.arn
-      },
-      Action = "sts:AssumeRoleWithWebIdentity",
-      Condition = {
-        StringEquals = {
-          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:observability:tempo",
-          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
-        }
-      }
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "tempo_sa_s3" {
-  role       = aws_iam_role.tempo_sa.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-}
-
-resource "aws_iam_role" "mimir_sa" {
-  name = "eks-irsa-mimir"
-  depends_on = [aws_iam_openid_connect_provider.this, aws_eks_cluster.this]
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Federated = aws_iam_openid_connect_provider.this.arn
-      },
-      Action = "sts:AssumeRoleWithWebIdentity",
-      Condition = {
-        StringEquals = {
-          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:observability:mimir",
-          "${replace(aws_eks_cluster.this.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
-        }
-      }
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "mimir_sa_s3" {
-  role       = aws_iam_role.mimir_sa.name
+resource "aws_iam_role_policy_attachment" "telemetry_backend_sa_s3" {
+  role       = aws_iam_role.telemetry_backend_sa.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 

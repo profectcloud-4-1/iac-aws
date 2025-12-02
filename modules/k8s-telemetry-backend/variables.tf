@@ -42,22 +42,9 @@ variable "s3_endpoint" {
   default     = ""
 }
 
-variable "loki_sa_role_arn" {
-  description = "Loki ServiceAccount에 부여할 IRSA Role ARN"
+variable "telemetry_backend_sa_role_arn" {
+  description = "Telemetry Backend ServiceAccount에 부여할 IRSA Role ARN"
   type        = string
-  default     = ""
-}
-
-variable "tempo_sa_role_arn" {
-  description = "Tempo ServiceAccount에 부여할 IRSA Role ARN"
-  type        = string
-  default     = ""
-}
-
-variable "mimir_sa_role_arn" {
-  description = "Mimir ServiceAccount에 부여할 IRSA Role ARN"
-  type        = string
-  default     = ""
 }
 
 variable "loki_chart_version" {
