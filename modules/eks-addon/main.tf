@@ -47,8 +47,8 @@ resource "helm_release" "prometheus_node_exporter" {
   timeout           = 600
 }
 
-resource "kubernetes_namespace" "external_secrets" {
-  metadata {
-    name = "goormdotcom-prod"
-  }
-}
+# resource "kubernetes_namespace" "external_secrets" {
+#   metadata {
+#     name = "goormdotcom-prod"
+#   }
+# }

@@ -246,59 +246,59 @@ resource "helm_release" "tempo" {
   ]
 }
 
-# Mimir (distributed)
-resource "helm_release" "mimir" {
-  name             = "mimir"
-  repository       = local.grafana_repo
-  chart            = "mimir-distributed"
-  namespace        = var.namespace
-  create_namespace = false
-  timeout          = 180
-  atomic           = true
-  version          = var.mimir_chart_version == "" ? null : var.mimir_chart_version
+# # Mimir (distributed)
+# resource "helm_release" "mimir" {
+#   name             = "mimir"
+#   repository       = local.grafana_repo
+#   chart            = "mimir-distributed"
+#   namespace        = var.namespace
+#   create_namespace = false
+#   timeout          = 180
+#   atomic           = true
+#   version          = var.mimir_chart_version == "" ? null : var.mimir_chart_version
 
-  values = [
-    yamlencode({
-      serviceAccount = {
-        create = false
-        name   = local.mimir_sa_name
-      }
-      mimir = {
-        # structuredConfig는 최신 차트에서 권장됨
-        structuredConfig = {
-          blocks_storage = {
-            backend = "s3"
-            s3 = {
-              bucket_name      = var.s3_bucket_mimir
-              region           = var.aws_region
-              s3forcepathstyle = var.s3_force_path_style
-              endpoint         = local.s3_endpoint
-            }
-          }
-          ruler_storage = {
-            backend = "s3"
-            s3 = {
-              bucket_name      = var.s3_bucket_mimir
-              region           = var.aws_region
-              s3forcepathstyle = var.s3_force_path_style
-              endpoint         = local.s3_endpoint
-            }
-          }
-          alertmanager_storage = {
-            backend = "s3"
-            s3 = {
-              bucket_name      = var.s3_bucket_mimir
-              region           = var.aws_region
-              s3forcepathstyle = var.s3_force_path_style
-              endpoint         = local.s3_endpoint
-            }
-          }
-        }
-      }
-    })
-  ]
+#   values = [
+#     yamlencode({
+#       serviceAccount = {
+#         create = false
+#         name   = local.mimir_sa_name
+#       }
+#       mimir = {
+#         # structuredConfig는 최신 차트에서 권장됨
+#         structuredConfig = {
+#           blocks_storage = {
+#             backend = "s3"
+#             s3 = {
+#               bucket_name      = var.s3_bucket_mimir
+#               region           = var.aws_region
+#               s3forcepathstyle = var.s3_force_path_style
+#               endpoint         = local.s3_endpoint
+#             }
+#           }
+#           ruler_storage = {
+#             backend = "s3"
+#             s3 = {
+#               bucket_name      = var.s3_bucket_mimir
+#               region           = var.aws_region
+#               s3forcepathstyle = var.s3_force_path_style
+#               endpoint         = local.s3_endpoint
+#             }
+#           }
+#           alertmanager_storage = {
+#             backend = "s3"
+#             s3 = {
+#               bucket_name      = var.s3_bucket_mimir
+#               region           = var.aws_region
+#               s3forcepathstyle = var.s3_force_path_style
+#               endpoint         = local.s3_endpoint
+#             }
+#           }
+#         }
+#       }
+#     })
+#   ]
 
-  depends_on = [
-    kubernetes_service_account.mimir,
-  ]
-}
+#   depends_on = [
+#     kubernetes_service_account.mimir,
+#   ]
+# }
