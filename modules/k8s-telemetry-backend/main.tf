@@ -150,7 +150,7 @@ resource "helm_release" "loki" {
   chart            = "loki"
   namespace        = var.namespace
   create_namespace = false
-  timeout          = 600
+  timeout          = 180
   atomic           = true
   # if provided
   version = var.loki_chart_version == "" ? null : var.loki_chart_version
@@ -207,7 +207,7 @@ resource "helm_release" "tempo" {
   chart            = "tempo"
   namespace        = var.namespace
   create_namespace = false
-  timeout          = 600
+  timeout          = 180
   atomic           = true
   version          = var.tempo_chart_version == "" ? null : var.tempo_chart_version
 

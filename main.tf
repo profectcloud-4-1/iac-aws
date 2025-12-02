@@ -182,6 +182,15 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.eks.token
 }
 
+provider "kubectl" {
+  alias                  = "eks"
+  host                   = data.aws_eks_cluster.eks.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.eks.token
+  load_config_file       = false
+  apply_retry_count      = 20
+}
+
 module "eks_addon" {
   source                             = "./modules/eks-addon"
   cluster_name                       = "goorm"
@@ -209,6 +218,7 @@ module "k8s_eso" {
   providers = {
     helm       = helm.eks
     kubernetes = kubernetes.eks
+    kubectl    = kubectl.eks
   }
   external_secrets_operator_role_arn = module.eks.external_secrets_operator_role_arn
   depends_on                         = [module.eks, module.eks_addon]
@@ -241,6 +251,7 @@ module "k8s_otel_collector" {
   source = "./modules/k8s-otel-collector"
   providers = {
     kubernetes = kubernetes.eks
+    kubectl    = kubectl.eks
   }
   tempo_host       = "tempo-distributor.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
   mimir_host       = "mimir-nginx.observability.svc.cluster.local"       # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
@@ -273,6 +284,7 @@ module "k8s_ingress" {
   providers = {
     helm       = helm.eks
     kubernetes = kubernetes.eks
+    kubectl    = kubectl.eks
   }
   cluster_name            = module.eks.cluster_name
   vpc_id                  = module.common_network.vpc_id

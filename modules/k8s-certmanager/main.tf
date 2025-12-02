@@ -23,7 +23,13 @@ resource "helm_release" "cert_manager" {
   create_namespace  = true
   dependency_update = true
   wait              = true
-  timeout           = 600
+  timeout           = 120
+
+  values = [
+    yamlencode({
+      installCRDs = true
+    })
+  ]
 }
 
 resource "null_resource" "wait_cert_manager" {

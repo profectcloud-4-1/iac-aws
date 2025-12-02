@@ -34,7 +34,7 @@ resource "helm_release" "grafana" {
   create_namespace  = false
   dependency_update = true
   wait              = true
-  timeout           = 600
+  timeout           = 120
   atomic            = true
   version           = var.chart_version == "" ? null : var.chart_version
 

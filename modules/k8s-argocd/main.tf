@@ -20,7 +20,7 @@ resource "helm_release" "argocd" {
   create_namespace  = true
   dependency_update = true
   wait              = true
-  timeout           = 600
+  timeout           = 120
 }
 
 # # ArgoCD Application Set
