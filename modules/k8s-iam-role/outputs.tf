@@ -21,10 +21,12 @@ output "loki_s3_role_arn" {
 
 output "tempo_s3_role_arn" {
   description = "Tempo S3(IRSA) 역할 ARN"
-  value       = aws_iam_role.tempo_s3.arn
+#   value       = aws_iam_role.tempo_s3.arn
+  value       = ""
 }
 
 output "mimir_s3_role_arn" {
   description = "Mimir S3(IRSA) 역할 ARN"
-  value       = aws_iam_role.mimir_s3.arn
+#   value       = aws_iam_role.mimir_s3.arn
+  value       = ""
 }
