@@ -103,48 +103,49 @@ module "security" {
 #   security_group_ids    = [module.security.rds_payment_sg_id]
 # }
 
-### ECR Repository ###
-module "ecr_user" {
-  source               = "./modules/ecr"
-  repository_name      = "goormdotcom/user-service"
-  image_tag_mutability = "MUTABLE"
-  scan_on_push         = true
-}
-module "ecr_product" {
-  source               = "./modules/ecr"
-  repository_name      = "goormdotcom/product-service"
-  image_tag_mutability = "MUTABLE"
-  scan_on_push         = true
-}
-module "ecr_order" {
-  source               = "./modules/ecr"
-  repository_name      = "goormdotcom/order-service"
-  image_tag_mutability = "MUTABLE"
-  scan_on_push         = true
-}
-module "ecr_payment" {
-  source               = "./modules/ecr"
-  repository_name      = "goormdotcom/payment-service"
-  image_tag_mutability = "MUTABLE"
-  scan_on_push         = true
-}
-module "ecr_auth" {
-  source               = "./modules/ecr"
-  repository_name      = "goormdotcom/auth-service"
-  image_tag_mutability = "MUTABLE"
-  scan_on_push         = true
-}
+# ### ECR Repository ###
+# module "ecr_user" {
+#   source               = "./modules/ecr"
+#   repository_name      = "goormdotcom/user-service"
+#   image_tag_mutability = "MUTABLE"
+#   scan_on_push         = true
+# }
+# module "ecr_product" {
+#   source               = "./modules/ecr"
+#   repository_name      = "goormdotcom/product-service"
+#   image_tag_mutability = "MUTABLE"
+#   scan_on_push         = true
+# }
+# module "ecr_order" {
+#   source               = "./modules/ecr"
+#   repository_name      = "goormdotcom/order-service"
+#   image_tag_mutability = "MUTABLE"
+#   scan_on_push         = true
+# }
+# module "ecr_payment" {
+#   source               = "./modules/ecr"
+#   repository_name      = "goormdotcom/payment-service"
+#   image_tag_mutability = "MUTABLE"
+#   scan_on_push         = true
+# }
+# module "ecr_auth" {
+#   source               = "./modules/ecr"
+#   repository_name      = "goormdotcom/auth-service"
+#   image_tag_mutability = "MUTABLE"
+#   scan_on_push         = true
+# }
 
-### ECR Policy. 한 정책의 Resource에 여러 ECR 레포지토리 포함 ###
-module "ecr_policy_user" {
-  source = "./modules/ecr-policy"
-  repository_arns = [
-    module.ecr_user.repository_arn,
-    module.ecr_product.repository_arn,
-    module.ecr_order.repository_arn,
-    module.ecr_payment.repository_arn
-  ]
-}
+# ### ECR Policy. 한 정책의 Resource에 여러 ECR 레포지토리 포함 ###
+# module "ecr_policy_user" {
+#   source = "./modules/ecr-policy"
+#   repository_arns = [
+#     module.ecr_user.repository_arn,
+#     module.ecr_auth.repository_arn,
+#     module.ecr_product.repository_arn,
+#     module.ecr_order.repository_arn,
+#     module.ecr_payment.repository_arn
+#   ]
+# }
 
 module "eks" {
   source          = "./modules/eks"
@@ -194,6 +195,100 @@ module "eks_addon" {
   }
   depends_on = [module.eks]
 }
+
+module "k8s_certmanager" {
+  source = "./modules/k8s-certmanager"
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+  }
+  depends_on = [module.eks, module.eks_addon]
+}
+module "k8s_eso" {
+  source = "./modules/k8s-eso"
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+  }
+  external_secrets_operator_role_arn = module.eks.external_secrets_operator_role_arn
+  depends_on                         = [module.eks, module.eks_addon]
+}
+
+# S3 + Telemetry Backend
+module "k8s_telemetry_backend" {
+  source = "./modules/k8s-telemetry-backend"
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+  }
+  depends_on      = [module.eks, module.eks_addon, module.k8s_certmanager]
+  s3_bucket_loki  = "goormdotcom-loki"
+  s3_bucket_tempo = "goormdotcom-tempo"
+  s3_bucket_mimir = "goormdotcom-mimir"
+  aws_region      = var.aws_region
+}
+
+module "k8s_otel_operator" {
+  source = "./modules/k8s-otel-operator"
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+  }
+  depends_on = [module.eks, module.eks_addon, module.k8s_certmanager]
+}
+
+module "k8s_otel_collector" {
+  source = "./modules/k8s-otel-collector"
+  providers = {
+    kubernetes = kubernetes.eks
+  }
+  tempo_host       = "tempo-distributor.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
+  mimir_host       = "mimir-nginx.observability.svc.cluster.local"       # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
+  loki_host        = "loki.observability.svc.cluster.local"              # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
+  k8s_cluster_name = module.eks.cluster_name
+  depends_on       = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_ingress, module.k8s_otel_operator]
+}
+
+
+module "k8s_grafana" {
+  source = "./modules/k8s-grafana"
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+  }
+  tempo_host = "tempo-query-frontend.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
+  mimir_host = "mimir-nginx.observability.svc.cluster.local"          # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
+  loki_host  = "loki.observability.svc.cluster.local"                 # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
+
+  namespace  = "observability"
+  tempo_port = 3100
+  mimir_port = 80
+  loki_port  = 3100
+  depends_on = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_otel_operator]
+}
+
+
+module "k8s_ingress" {
+  source = "./modules/k8s-ingress"
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+  }
+  cluster_name            = module.eks.cluster_name
+  vpc_id                  = module.common_network.vpc_id
+  alb_controller_role_arn = module.eks.alb_controller_role_arn
+  depends_on              = [module.eks, module.eks_addon, module.k8s_grafana]
+}
+
+# NOTE: 제~~일 마지막에 실행
+# module "k8s_argocd" {
+#   source = "./modules/k8s-argocd"
+#   providers = {
+#     helm       = helm.eks
+#     kubernetes = kubernetes.eks
+#   }
+#   depends_on = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_ingress, module.k8s_otel]
+# }
 
 
 # module "vpc_endpoint" {
