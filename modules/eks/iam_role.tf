@@ -164,10 +164,10 @@ resource "aws_iam_role" "telemetry_backend_sa" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "telemetry_backend_sa_s3" {
-  role       = aws_iam_role.telemetry_backend_sa.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-}
+# resource "aws_iam_role_policy_attachment" "telemetry_backend_sa_s3" {
+#   role       = aws_iam_role.telemetry_backend_sa.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+# }
 
 # External Secrets Operator IRSA Role
 resource "aws_iam_role" "external_secrets_operator" {
