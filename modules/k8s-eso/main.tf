@@ -52,6 +52,7 @@ resource "helm_release" "external_secrets_operator" {
 
   values = [
     yamlencode({
+      installCRDs = true
       serviceAccount = {
         create = false
         name   = local.eso_sa_name
@@ -83,5 +84,9 @@ spec:
             name: ${local.eso_sa_name}
             namespace: external-secrets
 EOF
+
+  depends_on = [
+    helm_release.external_secrets_operator
+  ]
 }
 
