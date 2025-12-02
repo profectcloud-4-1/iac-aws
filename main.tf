@@ -239,20 +239,20 @@ module "k8s_eso" {
 }
 
 # S3 + Telemetry Backend
-# module "k8s_telemetry_backend" {
-#   source = "./modules/k8s-telemetry-backend"
-#   providers = {
-#     helm       = helm.eks
-#     kubernetes = kubernetes.eks
-#   }
-#   namespace       = module.k8s_namespace.created_namespaces["observability"]
-#   s3_bucket_loki  = "goormdotcom-loki"
-#   s3_bucket_tempo = "goormdotcom-tempo"
-#   s3_bucket_mimir = "goormdotcom-mimir"
-#   aws_region      = var.aws_region
+module "k8s_telemetry_backend" {
+  source = "./modules/k8s-telemetry-backend"
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+  }
+  namespace       = module.k8s_namespace.created_namespaces["observability"]
+  s3_bucket_loki  = "goormdotcom-loki"
+  s3_bucket_tempo = "goormdotcom-tempo"
+  s3_bucket_mimir = "goormdotcom-mimir"
+  aws_region      = var.aws_region
 
-#   depends_on = [module.eks, module.eks_addon, module.k8s_namespace]
-# }
+  depends_on = [module.eks, module.eks_addon, module.k8s_namespace]
+}
 
 # module "k8s_grafana" {
 #   source = "./modules/k8s-grafana"
@@ -292,7 +292,7 @@ module "k8s_otel_collector" {
   mimir_host       = "mimir-nginx.observability.svc.cluster.local"       # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
   loki_host        = "loki.observability.svc.cluster.local"              # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
   k8s_cluster_name = module.eks.cluster_name
-  depends_on       = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_ingress, module.k8s_otel_operator]
+  depends_on       = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_ingress, module.k8s_otel_operator, module.k8s_telemetry_backend]
 }
 
 
