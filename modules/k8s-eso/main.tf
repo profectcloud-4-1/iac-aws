@@ -37,6 +37,8 @@ resource "kubernetes_service_account" "external_secrets_operator" {
       "eks.amazonaws.com/role-arn" = var.external_secrets_operator_role_arn
     }
   }
+
+  depends_on = [ kubernetes_namespace.external_secrets ]
 }
 
 resource "helm_release" "external_secrets_operator" {
@@ -61,7 +63,6 @@ resource "helm_release" "external_secrets_operator" {
   ]
 
   depends_on = [
-    kubernetes_namespace.external_secrets,
     kubernetes_service_account.external_secrets_operator,
   ]
 }
