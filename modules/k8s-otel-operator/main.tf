@@ -32,21 +32,14 @@ terraform {
 #   yaml_body = data.http.otel_operator.response_body
 # }
 
-data "http" "otel_operator" {
-  url = "https://github.com/open-telemetry/opentelemetry-operator/releases/latest/download/opentelemetry-operator.yaml"
-}
-
-locals {
-  raw_yaml  = data.http.otel_operator.response_body
-  documents = split("\n---", local.raw_yaml)
-}
-
-resource "kubectl_manifest" "otel_operator" {
-  for_each = {
-    for i, doc in local.documents :
-    i => doc
-    if trimspace(doc) != ""
-  }
-
-  yaml_body = each.value
+resource "helm_release" "otel_operator" {
+  name              = "opentelemetry-operator"
+  repository        = "https://open-telemetry.github.io/opentelemetry-helm-charts"
+  chart             = "opentelemetry-operator"
+  namespace         = "opentelemetry-operator-system"
+  create_namespace  = true
+  dependency_update = true
+  wait              = true
+  timeout           = 180
+  atomic            = true
 }
