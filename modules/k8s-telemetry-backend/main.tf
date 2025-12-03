@@ -13,9 +13,18 @@ terraform {
 }
 
 locals {
-  loki_sa_name  = "loki"
-  tempo_sa_name = "tempo"
-  mimir_sa_name = "mimir"
+  sa_names = {
+    loki  = "loki"
+    tempo = "tempo"
+    mimir = "mimir"
+  }
+  bucket_names = {
+    loki  = var.s3_bucket_loki
+    tempo = var.s3_bucket_tempo
+    mimir = var.s3_bucket_mimir
+  }
+  grafana_repo = "https://grafana.github.io/helm-charts"
+  s3_endpoint  = var.s3_endpoint
 }
 
 # ---------------------------------------
@@ -23,7 +32,7 @@ locals {
 # ---------------------------------------
 resource "kubernetes_service_account" "loki" {
   metadata {
-    name      = local.loki_sa_name
+    name      = local.sa_names.loki
     namespace = var.namespace
     annotations = length(var.loki_s3_role_arn) > 0 ? {
       "eks.amazonaws.com/role-arn" = var.loki_s3_role_arn
@@ -34,7 +43,7 @@ resource "kubernetes_service_account" "loki" {
 
 resource "kubernetes_service_account" "tempo" {
   metadata {
-    name      = local.tempo_sa_name
+    name      = local.sa_names.tempo
     namespace = var.namespace
     annotations = length(var.tempo_s3_role_arn) > 0 ? {
       "eks.amazonaws.com/role-arn" = var.tempo_s3_role_arn
@@ -45,7 +54,7 @@ resource "kubernetes_service_account" "tempo" {
 
 resource "kubernetes_service_account" "mimir" {
   metadata {
-    name      = local.mimir_sa_name
+    name      = local.sa_names.mimir
     namespace = var.namespace
     annotations = length(var.mimir_s3_role_arn) > 0 ? {
       "eks.amazonaws.com/role-arn" = var.mimir_s3_role_arn
@@ -57,68 +66,42 @@ resource "kubernetes_service_account" "mimir" {
 # ---------------------------------------
 # Optional S3 Buckets
 # ---------------------------------------
-resource "aws_s3_bucket" "loki" {
-  count  = var.create_buckets ? 1 : 0
-  bucket = var.s3_bucket_loki
+
+
+# S3 buckets for Loki, Tempo, Mimir
+resource "aws_s3_bucket" "telemetry" {
+  for_each      = local.bucket_names
+  bucket        = each.value
+  force_destroy = true
+
+  tags = {
+    Name = each.value
+  }
 }
 
-resource "aws_s3_bucket" "tempo" {
-  count  = var.create_buckets ? 1 : 0
-  bucket = var.s3_bucket_tempo
-}
+resource "aws_s3_bucket_versioning" "telemetry" {
+  for_each = aws_s3_bucket.telemetry
+  bucket   = each.value.id
 
-resource "aws_s3_bucket" "mimir" {
-  count  = var.create_buckets ? 1 : 0
-  bucket = var.s3_bucket_mimir
-}
-
-resource "aws_s3_bucket_versioning" "loki" {
-  count  = var.create_buckets ? 1 : 0
-  bucket = aws_s3_bucket.loki[0].id
   versioning_configuration {
     status = "Enabled"
   }
 }
 
-resource "aws_s3_bucket_versioning" "tempo" {
-  count  = var.create_buckets ? 1 : 0
-  bucket = aws_s3_bucket.tempo[0].id
-  versioning_configuration {
-    status = "Enabled"
-  }
+resource "aws_s3_bucket_public_access_block" "telemetry" {
+  for_each = aws_s3_bucket.telemetry
+  bucket   = each.value.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_versioning" "mimir" {
-  count  = var.create_buckets ? 1 : 0
-  bucket = aws_s3_bucket.mimir[0].id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
+resource "aws_s3_bucket_server_side_encryption_configuration" "telemetry" {
+  for_each = aws_s3_bucket.telemetry
+  bucket   = each.value.bucket
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "loki" {
-  count  = var.create_buckets ? 1 : 0
-  bucket = aws_s3_bucket.loki[0].id
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "tempo" {
-  count  = var.create_buckets ? 1 : 0
-  bucket = aws_s3_bucket.tempo[0].id
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "mimir" {
-  count  = var.create_buckets ? 1 : 0
-  bucket = aws_s3_bucket.mimir[0].id
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
@@ -129,10 +112,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "mimir" {
 # ---------------------------------------
 # Helm Releases
 # ---------------------------------------
-locals {
-  grafana_repo = "https://grafana.github.io/helm-charts"
-  s3_endpoint  = var.s3_endpoint == "" ? null : var.s3_endpoint
-}
 
 # Loki (monolithic)
 resource "helm_release" "loki" {
@@ -150,7 +129,7 @@ resource "helm_release" "loki" {
     yamlencode({
       serviceAccount = {
         create = false
-        name   = local.loki_sa_name
+        name   = local.sa_names.loki
       }
       deploymentMode = "simple-scalable"
       persistence = {
@@ -189,9 +168,9 @@ resource "helm_release" "loki" {
         storage = {
           type = "s3"
           bucketNames = {
-            chunks = var.s3_bucket_loki
-            ruler  = var.s3_bucket_loki
-            admin  = var.s3_bucket_loki
+            chunks = local.bucket_names.loki
+            ruler  = local.bucket_names.loki
+            admin  = local.bucket_names.loki
           }
           s3 = {
             region           = var.aws_region
@@ -223,7 +202,7 @@ resource "helm_release" "tempo" {
     yamlencode({
       serviceAccount = {
         create = false
-        name   = local.tempo_sa_name
+        name   = local.sa_names.tempo
       }
       # small, single-replica footprint (chart-level keys)
       distributor   = { replicaCount = 1 }
@@ -237,9 +216,9 @@ resource "helm_release" "tempo" {
           trace = {
             backend = "s3"
             s3 = {
-              bucket         = var.s3_bucket_tempo
+              bucket         = local.bucket_names.tempo
               region         = var.aws_region
-              endpoint       = format("s3.%s.amazonaws.com", var.aws_region)
+              endpoint       = local.s3_endpoint
               forcepathstyle = var.s3_force_path_style
             }
           }
@@ -265,8 +244,8 @@ resource "helm_release" "mimir" {
 
   values = [
     templatefile("${path.module}/mimir-values.yaml", {
-      SA_NAME             = local.mimir_sa_name
-      BUCKET              = var.s3_bucket_mimir
+      SA_NAME             = local.sa_names.mimir
+      BUCKET              = local.bucket_names.mimir
       S3_FORCE_PATH_STYLE = var.s3_force_path_style == true ? "path" : "dns"
       S3_ENDPOINT         = local.s3_endpoint
     })
@@ -276,58 +255,3 @@ resource "helm_release" "mimir" {
     kubernetes_service_account.mimir
   ]
 }
-# resource "helm_release" "mimir" {
-#   name             = "mimir"
-#   repository       = local.grafana_repo
-#   chart            = "mimir-distributed"
-#   namespace        = var.namespace
-#   create_namespace = false
-#   timeout          = 180
-#   atomic           = true
-#   version          = var.mimir_chart_version == "" ? null : var.mimir_chart_version
-
-#   values = [
-#     yamlencode({
-#       serviceAccount = {
-#         create = false
-#         name   = local.mimir_sa_name
-#       }
-#       mimir = {
-#         # structuredConfig는 최신 차트에서 권장됨
-#         structuredConfig = {
-#           blocks_storage = {
-#             backend = "s3"
-#             s3 = {
-#               bucket_name      = var.s3_bucket_mimir
-#               region           = var.aws_region
-#               s3forcepathstyle = var.s3_force_path_style
-#               endpoint         = local.s3_endpoint
-#             }
-#           }
-#           ruler_storage = {
-#             backend = "s3"
-#             s3 = {
-#               bucket_name      = var.s3_bucket_mimir
-#               region           = var.aws_region
-#               s3forcepathstyle = var.s3_force_path_style
-#               endpoint         = local.s3_endpoint
-#             }
-#           }
-#           alertmanager_storage = {
-#             backend = "s3"
-#             s3 = {
-#               bucket_name      = var.s3_bucket_mimir
-#               region           = var.aws_region
-#               s3forcepathstyle = var.s3_force_path_style
-#               endpoint         = local.s3_endpoint
-#             }
-#           }
-#         }
-#       }
-#     })
-#   ]
-
-#   depends_on = [
-#     kubernetes_service_account.mimir,
-#   ]
-# }

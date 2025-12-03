@@ -242,6 +242,7 @@ module "k8s_eso" {
 }
 
 # S3 + Telemetry Backend
+
 module "k8s_telemetry_backend" {
   source = "./modules/k8s-telemetry-backend"
   providers = {
@@ -249,10 +250,8 @@ module "k8s_telemetry_backend" {
     kubernetes = kubernetes.eks
   }
   namespace         = module.k8s_namespace.created_namespaces["observability"]
-  s3_bucket_loki    = "goormdotcom-loki"
-  s3_bucket_tempo   = "goormdotcom-tempo"
-  s3_bucket_mimir   = "goormdotcom-mimir"
-  aws_region        = var.aws_region
+  s3_endpoint       = "https://s3.ap-northeast-2.amazonaws.com"
+  aws_region        = "ap-northeast-2"
   loki_s3_role_arn  = module.k8s_iam_role.loki_s3_role_arn
   tempo_s3_role_arn = module.k8s_iam_role.tempo_s3_role_arn
   mimir_s3_role_arn = module.k8s_iam_role.mimir_s3_role_arn

@@ -18,16 +18,19 @@ variable "create_buckets" {
 variable "s3_bucket_loki" {
   description = "Loki가 사용할 S3 버킷 이름"
   type        = string
+  default     = "goormdotcom-log"
 }
 
 variable "s3_bucket_tempo" {
   description = "Tempo가 사용할 S3 버킷 이름"
   type        = string
+  default     = "goormdotcom-trace"
 }
 
 variable "s3_bucket_mimir" {
   description = "Mimir가 사용할 S3 버킷 이름"
   type        = string
+  default     = "goormdotcom-metric"
 }
 
 variable "s3_force_path_style" {
