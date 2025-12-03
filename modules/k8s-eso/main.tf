@@ -77,7 +77,7 @@ resource "kubectl_manifest" "aws_secretstore" {
 apiVersion: external-secrets.io/v1
 kind: ClusterSecretStore
 metadata:
-  name: aws-secrets
+  name: goorm-app-secret-store
 spec:
   provider:
     aws:
