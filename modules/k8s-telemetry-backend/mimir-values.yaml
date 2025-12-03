@@ -29,21 +29,21 @@ mimir:
       s3:
         bucket_name: ${BUCKET}
         region: ap-northeast-2
-        s3forcepathstyle: ${S3_FORCE_PATH_STYLE}
         endpoint: ${S3_ENDPOINT}
+        path_style_access: true
 
     alertmanager_storage:
       backend: s3
       s3:
         bucket_name: ${BUCKET}
         region: ap-northeast-2
-        s3forcepathstyle: ${S3_FORCE_PATH_STYLE}
         endpoint: ${S3_ENDPOINT}
+        path_style_access: true
 
     ruler_storage:
       backend: s3
       s3:
         bucket_name: ${BUCKET}
         region: ap-northeast-2
-        s3forcepathstyle: ${S3_FORCE_PATH_STYLE}
         endpoint: ${S3_ENDPOINT}
+        path_style_access: true
