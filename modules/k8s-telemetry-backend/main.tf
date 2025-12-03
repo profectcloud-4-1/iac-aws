@@ -144,7 +144,9 @@ resource "helm_release" "loki" {
       singleBinary = {
         replicas = 1
         persistence = {
-          enabled = false
+          enabled = true
+          storageClassName = "" # PVC 생성 안 하고 emptyDir 쓰게 만드는 핵심!
+          size = "1Gi"          # 필수지만 실제 PVC는 안 만들어짐
         }
       }
 
@@ -152,6 +154,15 @@ resource "helm_release" "loki" {
       # MinIO 끄기 (S3 직접 사용)
       #######################################################
       minio = {
+        enabled = false
+      }
+      chunks_cache = {
+        enabled = false
+      }
+      results_cache = {
+        enabled = false
+      }
+      memberlist = {
         enabled = false
       }
 
