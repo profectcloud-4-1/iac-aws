@@ -264,14 +264,14 @@ module "k8s_grafana" {
     helm       = helm.eks
     kubernetes = kubernetes.eks
   }
-  tempo_host = "tempo-query-frontend.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
-  mimir_host = "mimir-nginx.observability.svc.cluster.local"          # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
+  tempo_host = "tempo.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
+  mimir_host = "mimir.observability.svc.cluster.local"          # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
   loki_host  = "loki-gateway.observability.svc.cluster.local"         # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
 
   namespace  = "observability"
-  tempo_port = 3100
-  mimir_port = 80
-  loki_port  = 3100
+  tempo_port = 3200
+  mimir_port = 9009
+  loki_port  = 80
   depends_on = [module.eks, module.eks_addon, module.k8s_telemetry_backend]
 }
 

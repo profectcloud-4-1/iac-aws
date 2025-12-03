@@ -65,7 +65,7 @@ EOF
 resource "kubectl_manifest" "otel_collector" {
   yaml_body = templatefile("${path.module}/collector.yaml", {
     otel_collector_sa_name = local.otel_collector_sa_name,
-    tempo_host             = "tempo-query-frontend.observability.svc.cluster.local",
+    tempo_host             = "tempo.observability.svc.cluster.local",
     mimir_host             = "mimir.observability.svc.cluster.local",
     loki_host              = "loki-gateway.observability.svc.cluster.local",
     k8s_cluster_name       = var.k8s_cluster_name,
