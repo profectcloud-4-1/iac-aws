@@ -232,26 +232,22 @@ resource "helm_release" "tempo" {
   ]
 }
 
-# # Mimir (distributed)
-resource "helm_release" "mimir" {
-  name             = "mimir"
-  repository       = local.grafana_repo
-  chart            = "mimir-distributed"
-  namespace        = var.namespace
-  create_namespace = false
-  timeout          = 180
-  atomic           = true
-
-  values = [
-    templatefile("${path.module}/mimir-values.yaml", {
-      SA_NAME             = local.sa_names.mimir
-      BUCKET              = local.bucket_names.mimir
-      S3_FORCE_PATH_STYLE = var.s3_force_path_style == true ? "path" : "dns"
-      S3_ENDPOINT         = local.s3_endpoint
-    })
-  ]
-
-  depends_on = [
-    kubernetes_service_account.mimir
-  ]
+# Mimir (minimum)
+resource "kubernetes_manifest" "mimir_config" {
+  manifest = yamldecode(templatefile("${path.module}/mimir/configmap.yaml", {
+    BUCKET = local.bucket_names.mimir
+  }))
 }
+
+resource "kubernetes_manifest" "mimir_deployment" {
+  manifest = yamldecode(templatefile("${path.module}/mimir/deployment.yaml", {
+    SA_NAME = local.sa_names.mimir
+  }))
+  depends_on = [kubernetes_manifest.mimir_config, kubernetes_service_account.mimir]
+}
+
+resource "kubernetes_manifest" "mimir_service" {
+  manifest   = yamldecode(file("${path.module}/mimir/service.yaml"))
+  depends_on = [kubernetes_manifest.mimir_deployment]
+}
+

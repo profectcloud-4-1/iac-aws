@@ -71,10 +71,3 @@ variable "tempo_chart_version" {
   type        = string
   default     = ""
 }
-
-variable "mimir_chart_version" {
-  description = "Grafana Mimir Distributed 차트 버전 (빈 값이면 최신)"
-  type        = string
-  default     = ""
-}
-
