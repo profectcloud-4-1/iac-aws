@@ -79,7 +79,4 @@ resource "helm_release" "grafana" {
     })
   ]
 
-  depends_on = [
-    kubernetes_namespace.grafana
-  ]
 }
