@@ -6,6 +6,9 @@ terraform {
     kubernetes = {
       source = "hashicorp/kubernetes"
     }
+    kubectl = {
+      source = "alekc/kubectl"
+    }
   }
 }
 
@@ -20,7 +23,7 @@ resource "helm_release" "argocd" {
   create_namespace  = false
   dependency_update = true
   wait              = true
-  timeout           = 120
+  timeout           = 180
 }
 
 # # ArgoCD Application Set

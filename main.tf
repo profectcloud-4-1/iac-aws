@@ -316,16 +316,17 @@ module "k8s_ingress" {
 }
 
 # NOTE: 제~~일 마지막에 실행
-# module "k8s_argocd" {
-#   source = "./modules/k8s-argocd"
-#   providers = {
-#     helm       = helm.eks
-#     kubernetes = kubernetes.eks
-#   }
-#   namespace = module.k8s_namespace.created_namespaces["argocd"]
-#   goormdotcom_namespace = module.k8s_namespace.created_namespaces["goormdotcom"]
-#   depends_on = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_ingress, module.k8s_otel, module.k8s_namespace]
-# }
+module "k8s_argocd" {
+  source = "./modules/k8s-argocd"
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+    kubectl    = kubectl.eks
+  }
+  namespace             = module.k8s_namespace.created_namespaces["argocd"]
+  goormdotcom_namespace = module.k8s_namespace.created_namespaces["goormdotcom"]
+  depends_on            = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_otel_collector, module.k8s_ingress]
+}
 
 
 # module "vpc_endpoint" {

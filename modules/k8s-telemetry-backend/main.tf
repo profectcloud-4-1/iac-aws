@@ -128,29 +128,33 @@ resource "helm_release" "loki" {
   values = [
     yamlencode({
 
-      ###############################
-      # Pod ServiceAccount
-      ###############################
+      #######################################################
+      # Service Account (IRSA)
+      #######################################################
       serviceAccount = {
         create = false
         name   = local.sa_names.loki
       }
 
-      ###############################
-      # Loki Mode (MUST)
-      ###############################
-      deploymentMode = "SimpleScalable"
+      #######################################################
+      # Monolithic Loki Mode
+      #######################################################
+      deploymentMode = "SingleBinary"
 
-      ###############################
-      # Persistence Off (your config)
-      ###############################
-      persistence = {
+      singleBinary = {
+        replicas = 1
+      }
+
+      #######################################################
+      # MinIO 끄기 (S3 직접 사용)
+      #######################################################
+      minio = {
         enabled = false
       }
 
-      ###############################
-      # SimpleScalable Loki Core Config
-      ###############################
+      #######################################################
+      # Loki main config
+      #######################################################
       loki = {
         authEnabled = false
 
@@ -158,23 +162,12 @@ resource "helm_release" "loki" {
           replication_factor = 1
         }
 
-        server = {
-          http_listen_port = 3100
-        }
-
-        ingester = {
-          wal = { enabled = false }
-        }
-
-        limits_config = {
-          allow_structured_metadata = false
-        }
-
+        # TSDB 기반 스키마
         schemaConfig = {
           configs = [
             {
-              from         = "2023-01-01"
-              store        = "boltdb-shipper"
+              from         = "2024-04-01"
+              store        = "tsdb"
               object_store = "s3"
               schema       = "v13"
               index = {
@@ -185,34 +178,56 @@ resource "helm_release" "loki" {
           ]
         }
 
-        ###############################
-        # S3 Storage (AWS)
-        ###############################
+        pattern_ingester = {
+          enabled = true
+        }
+
+        limits_config = {
+          allow_structured_metadata = true
+          volume_enabled            = true
+        }
+
+        ruler = {
+          enable_api = true
+        }
+
+        #######################################################
+        # === S3 저장소 설정 ===
+        #######################################################
         storage = {
           type = "s3"
+
           bucketNames = {
             chunks = local.bucket_names.loki
             ruler  = local.bucket_names.loki
             admin  = local.bucket_names.loki
           }
+
           s3 = {
-            region           = var.aws_region
             endpoint         = "https://s3.ap-northeast-2.amazonaws.com"
-            s3ForcePathStyle = true
+            region           = "ap-northeast-2"
+            s3ForcePathStyle = false # AWS S3는 반드시 false
+            insecure         = false
           }
         }
       }
 
-      ###############################
-      # REQUIRED CACHE ENTRIES (simple-scalable)
-      ###############################
-      resultsCache = {
-        enabled = true
-      }
+      #######################################################
+      # Disable ALL distributed mode components
+      #######################################################
+      backend        = { replicas = 0 }
+      read           = { replicas = 0 }
+      write          = { replicas = 0 }
+      ingester       = { replicas = 0 }
+      querier        = { replicas = 0 }
+      queryFrontend  = { replicas = 0 }
+      queryScheduler = { replicas = 0 }
+      distributor    = { replicas = 0 }
+      compactor      = { replicas = 0 }
+      indexGateway   = { replicas = 0 }
+      bloomCompactor = { replicas = 0 }
+      bloomGateway   = { replicas = 0 }
 
-      chunksCache = {
-        enabled = true
-      }
     })
   ]
 
