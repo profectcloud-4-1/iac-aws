@@ -120,126 +120,15 @@ resource "helm_release" "loki" {
   chart            = "loki"
   namespace        = var.namespace
   create_namespace = false
-  timeout          = 180
+  timeout          = 120
   atomic           = true
 
   version = var.loki_chart_version == "" ? null : var.loki_chart_version
 
   values = [
-    yamlencode({
-
-      #######################################################
-      # Service Account (IRSA)
-      #######################################################
-      serviceAccount = {
-        create = false
-        name   = local.sa_names.loki
-      }
-
-      #######################################################
-      # Monolithic Loki Mode
-      #######################################################
-      deploymentMode = "SingleBinary"
-
-      singleBinary = {
-        replicas = 1
-        persistence = {
-          enabled = false
-        }
-      }
-
-      #######################################################
-      # MinIO 끄기 (S3 직접 사용)
-      #######################################################
-      minio = {
-        enabled = false
-      }
-      chunksCache = {
-        enabled = false
-      }
-      resultsCache = {
-        enabled = false
-      }
-      memberlist = {
-        enabled = false
-      }
-
-      #######################################################
-      # Loki main config
-      #######################################################
-      loki = {
-        authEnabled = false
-
-        commonConfig = {
-          replication_factor = 1
-        }
-
-        # TSDB 기반 스키마
-        schemaConfig = {
-          configs = [
-            {
-              from         = "2024-04-01"
-              store        = "boltdb-shipper"
-              object_store = "s3"
-              schema       = "v13"
-              index = {
-                prefix = "loki_index_"
-                period = "24h"
-              }
-            }
-          ]
-        }
-
-        pattern_ingester = {
-          enabled = true
-        }
-
-        limits_config = {
-          allow_structured_metadata = false
-          volume_enabled            = true
-        }
-
-        ruler = {
-          enable_api = true
-        }
-
-        #######################################################
-        # === S3 저장소 설정 ===
-        #######################################################
-        storage = {
-          type = "s3"
-
-          bucketNames = {
-            chunks = local.bucket_names.loki
-            ruler  = local.bucket_names.loki
-            admin  = local.bucket_names.loki
-          }
-
-          s3 = {
-            endpoint         = "https://s3.ap-northeast-2.amazonaws.com"
-            region           = "ap-northeast-2"
-            s3ForcePathStyle = false # AWS S3는 반드시 false
-            insecure         = false
-          }
-        }
-      }
-
-      #######################################################
-      # Disable ALL distributed mode components
-      #######################################################
-      backend        = { replicas = 0 }
-      read           = { replicas = 0 }
-      write          = { replicas = 0 }
-      ingester       = { replicas = 0 }
-      querier        = { replicas = 0 }
-      queryFrontend  = { replicas = 0 }
-      queryScheduler = { replicas = 0 }
-      distributor    = { replicas = 0 }
-      compactor      = { replicas = 0 }
-      indexGateway   = { replicas = 0 }
-      bloomCompactor = { replicas = 0 }
-      bloomGateway   = { replicas = 0 }
-
+    templatefile("${path.module}/loki-values.yaml", {
+      SA_NAME = local.sa_names.loki
+      BUCKET  = local.bucket_names.loki
     })
   ]
 
