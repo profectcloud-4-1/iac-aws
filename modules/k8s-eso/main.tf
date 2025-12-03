@@ -67,7 +67,6 @@ resource "helm_release" "external_secrets_operator" {
   ]
 
   depends_on = [
-    kubectl_manifest.eso_crds,
     kubernetes_service_account.external_secrets_operator,
   ]
 }
