@@ -37,11 +37,16 @@ data "http" "otel_operator" {
 }
 
 locals {
-  otel_docs = kubectl_file_documents( data.http.otel_operator.response_body )
+  raw_yaml   = data.http.otel_operator.response_body
+  documents  = split("\n---", local.raw_yaml)
 }
 
 resource "kubectl_manifest" "otel_operator" {
-  for_each = { for k, v in local.otel_docs : k => v }
+  for_each = {
+    for i, doc in local.documents :
+    i => doc
+    if trim(doc) != ""
+  }
 
   yaml_body = each.value
 }
