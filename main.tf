@@ -250,7 +250,7 @@ module "k8s_telemetry_backend" {
     kubernetes = kubernetes.eks
   }
   namespace         = module.k8s_namespace.created_namespaces["observability"]
-  s3_endpoint       = "https://s3.ap-northeast-2.amazonaws.com"
+  s3_endpoint       = "s3.ap-northeast-2.amazonaws.com"
   aws_region        = "ap-northeast-2"
   loki_s3_role_arn  = module.k8s_iam_role.loki_s3_role_arn
   tempo_s3_role_arn = module.k8s_iam_role.tempo_s3_role_arn
@@ -297,23 +297,23 @@ module "k8s_otel_collector" {
 }
 
 
-module "k8s_ingress" {
-  source = "./modules/k8s-ingress"
-  providers = {
-    helm       = helm.eks
-    kubernetes = kubernetes.eks
-    kubectl    = kubectl.eks
-  }
-  cluster_name            = module.eks.cluster_name
-  vpc_id                  = module.common_network.vpc_id
-  alb_controller_role_arn = module.k8s_iam_role.alb_controller_role_arn
-  goormdotcom_namespace   = module.k8s_namespace.created_namespaces["goormdotcom"]
-  observability_namespace = module.k8s_namespace.created_namespaces["observability"]
+# module "k8s_ingress" {
+#   source = "./modules/k8s-ingress"
+#   providers = {
+#     helm       = helm.eks
+#     kubernetes = kubernetes.eks
+#     kubectl    = kubectl.eks
+#   }
+#   cluster_name            = module.eks.cluster_name
+#   vpc_id                  = module.common_network.vpc_id
+#   alb_controller_role_arn = module.k8s_iam_role.alb_controller_role_arn
+#   goormdotcom_namespace   = module.k8s_namespace.created_namespaces["goormdotcom"]
+#   observability_namespace = module.k8s_namespace.created_namespaces["observability"]
 
-  depends_on = [module.eks, module.eks_addon, module.k8s_namespace, module.k8s_iam_role
-    # , module.k8s_grafana
-  ]
-}
+#   depends_on = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_iam_role
+#     # , module.k8s_grafana
+#   ]
+# }
 
 # NOTE: 제~~일 마지막에 실행
 # module "k8s_argocd" {
