@@ -195,7 +195,7 @@ resource "helm_release" "loki" {
         }
 
         limits_config = {
-          allow_structured_metadata = true
+          allow_structured_metadata = false
           volume_enabled            = true
         }
 
