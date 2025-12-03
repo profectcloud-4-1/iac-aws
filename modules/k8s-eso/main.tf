@@ -55,10 +55,11 @@ resource "helm_release" "external_secrets_operator" {
   wait              = true
   timeout           = 120
   atomic            = true
+  skip_crds         = true
 
   values = [
     yamlencode({
-      installCRDs = true
+      installCRDs = false
       serviceAccount = {
         create = false
         name   = local.eso_sa_name
