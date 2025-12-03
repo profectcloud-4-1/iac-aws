@@ -20,9 +20,7 @@ spec:
     receivers:
       kafka/traces:
         brokers:
-%{ for broker in kafka_brokers ~}
           - "${broker}"
-%{ endfor ~}
         topic: "${kafka_topic_traces}"
         group_id: "otel-gateway-traces"
         protocol_version: "2.0.0"
@@ -38,7 +36,7 @@ spec:
           - context: span
             statements:
               - set(attributes["deployment_env"], "${deployment_env}")
-
+      #확인해보고 빼기
       batch/default:
         send_batch_size: 8192
         timeout: 1s
@@ -62,5 +60,6 @@ spec:
         traces:
           receivers: [kafka/traces]
           processors: [memory_limiter, transform/traces, batch/default]
+          #debug는 초기에만 넣고 나중에 빼기
           exporters: [otlphttp/tempo, debug]
 

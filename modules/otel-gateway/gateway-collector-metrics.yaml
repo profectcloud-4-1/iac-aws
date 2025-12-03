@@ -20,9 +20,7 @@ spec:
     receivers:
       kafka/metrics:
         brokers:
-%{ for broker in kafka_brokers ~}
           - "${broker}"
-%{ endfor ~}
         topic: "${kafka_topic_metrics}"
         group_id: "otel-gateway-metrics"
         protocol_version: "2.0.0"
@@ -32,7 +30,7 @@ spec:
         check_interval: 5s
         limit_percentage: 80
         spike_limit_percentage: 25
-
+      #확인해보고 빼기
       batch/default:
         send_batch_size: 8192
         timeout: 1s
@@ -54,5 +52,6 @@ spec:
         metrics:
           receivers: [kafka/metrics]
           processors: [memory_limiter, batch/default]
+          #debug는 초기에만 넣고 나중에 빼기
           exporters: [prometheusremotewrite/mimir, debug]
 

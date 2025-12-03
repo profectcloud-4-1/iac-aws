@@ -20,9 +20,7 @@ spec:
     receivers:
       kafka/logs:
         brokers:
-%{ for broker in kafka_brokers ~}
           - "${broker}"
-%{ endfor ~}
         topic: "${kafka_topic_logs}"
         group_id: "otel-gateway-logs"
         protocol_version: "2.0.0"
@@ -39,7 +37,7 @@ spec:
             match_type: regexp
             bodies:
               - "GET /actuator/health"
-
+      #확인해보고 빼기
       batch/default:
         send_batch_size: 8192
         timeout: 1s
@@ -61,5 +59,6 @@ spec:
         logs:
           receivers: [kafka/logs]
           processors: [memory_limiter, filter/logs, batch/default]
+          #debug는 초기에만 넣고 나중에 빼기
           exporters: [loki, debug]
 
