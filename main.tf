@@ -194,6 +194,10 @@ provider "kubectl" {
 module "eks_addon" {
   source       = "./modules/eks-addon"
   cluster_name = "goorm"
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+  }
   depends_on   = [module.eks, module.k8s_iam_role]
 }
 
