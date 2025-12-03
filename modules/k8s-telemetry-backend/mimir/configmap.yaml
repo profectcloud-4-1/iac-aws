@@ -16,7 +16,7 @@ data:
       s3:
         bucket_name: ${BUCKET}
         region: ap-northeast-2
-        endpoint: https://s3.ap-northeast-2.amazonaws.com
+        endpoint: s3.ap-northeast-2.amazonaws.com
 
     ruler_storage:
       backend: s3
@@ -24,7 +24,7 @@ data:
       s3:
         bucket_name: ${BUCKET}
         region: ap-northeast-2
-        endpoint: https://s3.ap-northeast-2.amazonaws.com
+        endpoint: s3.ap-northeast-2.amazonaws.com
 
     alertmanager_storage:
       backend: s3
@@ -32,7 +32,7 @@ data:
       s3:
         bucket_name: ${BUCKET}
         region: ap-northeast-2
-        endpoint: https://s3.ap-northeast-2.amazonaws.com
+        endpoint: s3.ap-northeast-2.amazonaws.com
 
     ingester:
       ring:
