@@ -15,16 +15,16 @@ terraform {
   }
 }
 
-#
-# CRDs 선적용 (일부 환경에서 chart의 installCRDs=true가 race를 유발함)
-#
-data "http" "eso_crds" {
-  url = "https://raw.githubusercontent.com/external-secrets/external-secrets/main/deploy/crds/bundle.yaml"
-}
+# #
+# # CRDs 선적용 (일부 환경에서 chart의 installCRDs=true가 race를 유발함)
+# #
+# data "http" "eso_crds" {
+#   url = "https://raw.githubusercontent.com/external-secrets/external-secrets/main/deploy/crds/bundle.yaml"
+# }
 
-resource "kubectl_manifest" "eso_crds" {
-  yaml_body = data.http.eso_crds.response_body
-}
+# resource "kubectl_manifest" "eso_crds" {
+#   yaml_body = data.http.eso_crds.response_body
+# }
 
 
 # ---------------------------------------
@@ -55,11 +55,10 @@ resource "helm_release" "external_secrets_operator" {
   wait              = true
   timeout           = 120
   atomic            = true
-  skip_crds         = true
 
   values = [
     yamlencode({
-      installCRDs = false
+      installCRDs = true
       serviceAccount = {
         create = false
         name   = local.eso_sa_name
