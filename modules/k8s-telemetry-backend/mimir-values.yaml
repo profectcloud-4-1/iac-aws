@@ -1,0 +1,49 @@
+serviceAccount:
+  create: false
+  name: ${SA_NAME}
+
+ingester:
+  persistentVolume:
+    enabled: false
+
+compactor:
+  persistentVolume:
+    enabled: false
+
+store_gateway:
+  persistentVolume:
+    enabled: false
+
+alertmanager:
+  persistentVolume:
+    enabled: false
+
+ruler:
+  persistentVolume:
+    enabled: false
+
+mimir:
+  structuredConfig:
+    blocks_storage:
+      backend: s3
+      s3:
+        bucket_name: ${BUCKET}
+        region: ap-northeast-2
+        s3forcepathstyle: ${S3_FORCE_PATH_STYLE}
+        endpoint: ${S3_ENDPOINT}
+
+    alertmanager_storage:
+      backend: s3
+      s3:
+        bucket_name: ${BUCKET}
+        region: ap-northeast-2
+        s3forcepathstyle: ${S3_FORCE_PATH_STYLE}
+        endpoint: ${S3_ENDPOINT}
+
+    ruler_storage:
+      backend: s3
+      s3:
+        bucket_name: ${BUCKET}
+        region: ap-northeast-2
+        s3forcepathstyle: ${S3_FORCE_PATH_STYLE}
+        endpoint: ${S3_ENDPOINT}

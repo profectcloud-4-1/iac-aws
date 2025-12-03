@@ -113,7 +113,7 @@ spec:
 
     exporters:
       otlphttp/loki:
-        logs_endpoint: "http://loki-gateway.observability.svc.cluster.local/otlp/v1/logs"
+        logs_endpoint: "http://${loki_host}/otlp/v1/logs"
         tls:
           insecure: true
         headers:

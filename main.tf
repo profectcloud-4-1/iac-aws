@@ -267,7 +267,7 @@ module "k8s_telemetry_backend" {
 #   }
 #   tempo_host = "tempo-query-frontend.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
 #   mimir_host = "mimir-nginx.observability.svc.cluster.local"          # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
-#   loki_host  = "loki.observability.svc.cluster.local"                 # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
+#   loki_host  = "loki-gateway.observability.svc.cluster.local"                 # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
 
 #   namespace  = "observability"
 #   tempo_port = 3100
@@ -293,9 +293,6 @@ module "k8s_otel_collector" {
     kubectl    = kubectl.eks
   }
   namespace        = module.k8s_namespace.created_namespaces["observability"]
-  tempo_host       = "tempo-distributor.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
-  mimir_host       = "mimir-nginx.observability.svc.cluster.local"       # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
-  loki_host        = "loki.observability.svc.cluster.local"              # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
   k8s_cluster_name = module.eks.cluster_name
   depends_on       = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_ingress, module.k8s_otel_operator, module.k8s_telemetry_backend]
 }

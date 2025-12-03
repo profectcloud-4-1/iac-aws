@@ -97,41 +97,41 @@ EOF
 # ---------------------------------------
 # Ingress (ALB)
 # ---------------------------------------
-resource "kubernetes_ingress_v1" "grafana" {
-  metadata {
-    name      = "grafana"
-    namespace = var.observability_namespace
-    annotations = {
-      "alb.ingress.kubernetes.io/scheme"       = "internet-facing",
-      "alb.ingress.kubernetes.io/target-type"  = "ip",
-      "alb.ingress.kubernetes.io/listen-ports" = "[{\"HTTP\":80}]",
-      "alb.ingress.kubernetes.io/group.name"   = "external-main",
-      "alb.ingress.kubernetes.io/group.order"  = "10"
+# resource "kubernetes_ingress_v1" "grafana" {
+#   metadata {
+#     name      = "grafana"
+#     namespace = var.observability_namespace
+#     annotations = {
+#       "alb.ingress.kubernetes.io/scheme"       = "internet-facing",
+#       "alb.ingress.kubernetes.io/target-type"  = "ip",
+#       "alb.ingress.kubernetes.io/listen-ports" = "[{\"HTTP\":80}]",
+#       "alb.ingress.kubernetes.io/group.name"   = "external-main",
+#       "alb.ingress.kubernetes.io/group.order"  = "10"
 
-      "alb.ingress.kubernetes.io/healthcheck-path"     = "/login"
-      "alb.ingress.kubernetes.io/healthcheck-port"     = "80"
-      "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTP"
-    }
-  }
-  spec {
-    ingress_class_name = "alb"
-    rule {
-      http {
-        path {
-          path      = "/grafana"
-          path_type = "Prefix"
-          backend {
-            service {
-              name = "grafana"
-              port {
-                number = 80
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+#       "alb.ingress.kubernetes.io/healthcheck-path"     = "/login"
+#       "alb.ingress.kubernetes.io/healthcheck-port"     = "80"
+#       "alb.ingress.kubernetes.io/healthcheck-protocol" = "HTTP"
+#     }
+#   }
+#   spec {
+#     ingress_class_name = "alb"
+#     rule {
+#       http {
+#         path {
+#           path      = "/grafana"
+#           path_type = "Prefix"
+#           backend {
+#             service {
+#               name = "grafana"
+#               port {
+#                 number = 80
+#               }
+#             }
+#           }
+#         }
+#       }
+#     }
+#   }
 
-  depends_on = [kubernetes_service_account.alb_controller]
-}
+#   depends_on = [kubernetes_service_account.alb_controller]
+# }

@@ -254,6 +254,28 @@ resource "helm_release" "tempo" {
 }
 
 # # Mimir (distributed)
+resource "helm_release" "mimir" {
+  name             = "mimir"
+  repository       = local.grafana_repo
+  chart            = "mimir-distributed"
+  namespace        = var.namespace
+  create_namespace = false
+  timeout          = 180
+  atomic           = true
+
+  values = [
+    templatefile("${path.module}/mimir-values.yaml", {
+      SA_NAME             = local.mimir_sa_name
+      BUCKET              = var.s3_bucket_mimir
+      S3_FORCE_PATH_STYLE = var.s3_force_path_style == true ? "path" : "dns"
+      S3_ENDPOINT         = local.s3_endpoint
+    })
+  ]
+
+  depends_on = [
+    kubernetes_service_account.mimir
+  ]
+}
 # resource "helm_release" "mimir" {
 #   name             = "mimir"
 #   repository       = local.grafana_repo
