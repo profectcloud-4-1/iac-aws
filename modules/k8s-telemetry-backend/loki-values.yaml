@@ -26,14 +26,13 @@ chunksCache:
 resultsCache:
   enabled: false
 
-memberlist:
-  enabled: false
-
 loki:
   authEnabled: false
 
   commonConfig:
     replication_factor: 1
+
+  memberlist: null
 
   schemaConfig:
     configs:
@@ -53,7 +52,7 @@ loki:
     volume_enabled: true
 
   ruler:
-    enable_api: true
+    enable_api: false
 
   storage:
     type: s3
