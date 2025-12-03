@@ -1,0 +1,66 @@
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel-gateway-traces
+  namespace: ${namespace}
+spec:
+  mode: deployment
+  image: ${image}
+  replicas: ${replicas_traces}
+
+  resources:
+    limits:
+      cpu: ${cpu_limit_traces}
+      memory: ${memory_limit_traces}
+    requests:
+      cpu: ${cpu_request_traces}
+      memory: ${memory_request_traces}
+
+  config:
+    receivers:
+      kafka/traces:
+        brokers:
+%{ for broker in kafka_brokers ~}
+          - "${broker}"
+%{ endfor ~}
+        topic: "${kafka_topic_traces}"
+        group_id: "otel-gateway-traces"
+        protocol_version: "2.0.0"
+
+    processors:
+      memory_limiter:
+        check_interval: 5s
+        limit_percentage: 80
+        spike_limit_percentage: 25
+
+      transform/traces:
+        trace_statements:
+          - context: span
+            statements:
+              - set(attributes["deployment_env"], "${deployment_env}")
+
+      batch/default:
+        send_batch_size: 8192
+        timeout: 1s
+
+    exporters:
+      otlphttp/tempo:
+        endpoint: http://${tempo_host}:4318
+        tls:
+          insecure: true
+        retry_on_failure:
+          enabled: true
+          initial_interval: 5s
+          max_interval: 30s
+          max_elapsed_time: 300s
+
+      debug:
+        verbosity: normal
+
+    service:
+      pipelines:
+        traces:
+          receivers: [kafka/traces]
+          processors: [memory_limiter, transform/traces, batch/default]
+          exporters: [otlphttp/tempo, debug]
+

@@ -1,0 +1,58 @@
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel-gateway-metrics
+  namespace: ${namespace}
+spec:
+  mode: deployment
+  image: ${image}
+  replicas: ${replicas_metrics}
+
+  resources:
+    limits:
+      cpu: ${cpu_limit_metrics}
+      memory: ${memory_limit_metrics}
+    requests:
+      cpu: ${cpu_request_metrics}
+      memory: ${memory_request_metrics}
+
+  config:
+    receivers:
+      kafka/metrics:
+        brokers:
+%{ for broker in kafka_brokers ~}
+          - "${broker}"
+%{ endfor ~}
+        topic: "${kafka_topic_metrics}"
+        group_id: "otel-gateway-metrics"
+        protocol_version: "2.0.0"
+
+    processors:
+      memory_limiter:
+        check_interval: 5s
+        limit_percentage: 80
+        spike_limit_percentage: 25
+
+      batch/default:
+        send_batch_size: 8192
+        timeout: 1s
+
+    exporters:
+      prometheusremotewrite/mimir:
+        endpoint: http://${mimir_host}:9009/api/v1/push
+        retry_on_failure:
+          enabled: true
+          initial_interval: 5s
+          max_interval: 30s
+          max_elapsed_time: 300s
+
+      debug:
+        verbosity: normal
+
+    service:
+      pipelines:
+        metrics:
+          receivers: [kafka/metrics]
+          processors: [memory_limiter, batch/default]
+          exporters: [prometheusremotewrite/mimir, debug]
+

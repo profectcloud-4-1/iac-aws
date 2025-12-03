@@ -1,0 +1,65 @@
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel-gateway-logs
+  namespace: ${namespace}
+spec:
+  mode: deployment
+  image: ${image}
+  replicas: ${replicas_logs}
+
+  resources:
+    limits:
+      cpu: ${cpu_limit_logs}
+      memory: ${memory_limit_logs}
+    requests:
+      cpu: ${cpu_request_logs}
+      memory: ${memory_request_logs}
+
+  config:
+    receivers:
+      kafka/logs:
+        brokers:
+%{ for broker in kafka_brokers ~}
+          - "${broker}"
+%{ endfor ~}
+        topic: "${kafka_topic_logs}"
+        group_id: "otel-gateway-logs"
+        protocol_version: "2.0.0"
+
+    processors:
+      memory_limiter:
+        check_interval: 5s
+        limit_percentage: 80
+        spike_limit_percentage: 25
+
+      filter/logs:
+        logs:
+          exclude:
+            match_type: regexp
+            bodies:
+              - "GET /actuator/health"
+
+      batch/default:
+        send_batch_size: 8192
+        timeout: 1s
+
+    exporters:
+      loki:
+        endpoint: http://${loki_host}:3100/loki/api/v1/push
+        retry_on_failure:
+          enabled: true
+          initial_interval: 5s
+          max_interval: 30s
+          max_elapsed_time: 300s
+
+      debug:
+        verbosity: normal
+
+    service:
+      pipelines:
+        logs:
+          receivers: [kafka/logs]
+          processors: [memory_limiter, filter/logs, batch/default]
+          exporters: [loki, debug]
+
