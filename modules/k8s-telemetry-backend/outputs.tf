@@ -21,14 +21,6 @@ output "service_accounts" {
   }
 }
 
-output "helm_release_names" {
-  description = "설치된 Helm 릴리스 이름"
-  value = {
-    loki  = helm_release.loki.name
-    tempo = helm_release.tempo.name
-    # mimir = helm_release.mimir.name
-  }
-}
 
 output "loki_host" {
   description = "Loki in-cluster DNS 호스트 (포트 제외)"

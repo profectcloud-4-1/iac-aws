@@ -63,11 +63,11 @@ variable "mimir_s3_role_arn" {
 variable "loki_chart_version" {
   description = "Grafana Loki 차트 버전 (빈 값이면 최신)"
   type        = string
-  default     = ""
+  default     = "6.46.0" # APP 3.5.7
 }
 
 variable "tempo_chart_version" {
   description = "Grafana Tempo 차트 버전 (빈 값이면 최신)"
   type        = string
-  default     = ""
+  default     = "1.24.1" # APP 2.9.0
 }
