@@ -9,15 +9,6 @@ terraform {
   }
 }
 
-# ---------------------------------------
-# Namespace
-# ---------------------------------------
-resource "kubernetes_namespace" "grafana" {
-  metadata {
-    name = var.namespace
-  }
-}
-
 locals {
   grafana_repo = "https://grafana.github.io/helm-charts"
 }
