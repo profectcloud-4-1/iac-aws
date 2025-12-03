@@ -52,65 +52,66 @@ module "security" {
   vpc_cidr_block = module.common_network.vpc_cidr_block
 }
 
-# ### RDS ###
-# module "rds_user" {
-#   source                = "./modules/rds"
-#   name                  = "user"
-#   db_name               = "goormdotcom"
-#   vpc_id                = module.common_network.vpc_id
-#   subnet_ids            = [module.common_network.private_subnet_db_id, module.common_network.private_subnet_db_2_id]
-#   availability_zone     = "ap-northeast-2a" # 실제 인스턴스는 private-db(2a)에 배치
-#   instance_class        = "db.t3.micro"
-#   username              = var.db_master_username
-#   password              = var.db_master_password
-#   multi_az              = false
-#   create_security_group = false
-#   security_group_ids    = [module.security.rds_user_sg_id]
-# }
-# module "rds_product" {
-#   source                = "./modules/rds"
-#   name                  = "product"
-#   db_name               = "goormdotcom"
-#   vpc_id                = module.common_network.vpc_id
-#   subnet_ids            = [module.common_network.private_subnet_db_id, module.common_network.private_subnet_db_2_id]
-#   availability_zone     = "ap-northeast-2a"
-#   instance_class        = "db.t3.micro"
-#   username              = var.db_master_username
-#   password              = var.db_master_password
-#   multi_az              = false
-#   create_security_group = false
-#   security_group_ids    = [module.security.rds_product_sg_id]
-# }
-# module "rds_order" {
-#   source                = "./modules/rds"
-#   name                  = "order"
-#   db_name               = "goormdotcom"
-#   vpc_id                = module.common_network.vpc_id
-#   subnet_ids            = [module.common_network.private_subnet_db_id, module.common_network.private_subnet_db_2_id]
-#   availability_zone     = "ap-northeast-2a"
-#   instance_class        = "db.t3.micro"
-#   username              = var.db_master_username
-#   password              = var.db_master_password
-#   multi_az              = false
-#   create_security_group = false
-#   security_group_ids    = [module.security.rds_order_sg_id]
-# }
-# module "rds_payment" {
-#   source                = "./modules/rds"
-#   name                  = "payment"
-#   db_name               = "goormdotcom"
-#   vpc_id                = module.common_network.vpc_id
-#   subnet_ids            = [module.common_network.private_subnet_db_id, module.common_network.private_subnet_db_2_id]
-#   availability_zone     = "ap-northeast-2a"
-#   instance_class        = "db.t3.micro"
-#   username              = var.db_master_username
-#   password              = var.db_master_password
-#   multi_az              = false
-#   create_security_group = false
-#   security_group_ids    = [module.security.rds_payment_sg_id]
-# }
+### RDS ###
+module "rds_user" {
+  source                = "./modules/rds"
+  name                  = "user"
+  db_name               = "goormdotcom"
+  vpc_id                = module.common_network.vpc_id
+  subnet_ids            = [module.common_network.private_subnet_db_a_id, module.common_network.private_subnet_db_b_id]
+  availability_zone     = "ap-northeast-2a" # 실제 인스턴스는 private-db(2a)에 배치
+  instance_class        = "db.t3.micro"
+  username              = var.db_master_username
+  password              = var.db_master_password
+  multi_az              = false
+  create_security_group = false
+  security_group_ids    = [module.security.rds_user_sg_id]
+}
+module "rds_product" {
+  source                = "./modules/rds"
+  name                  = "product"
+  db_name               = "goormdotcom"
+  vpc_id                = module.common_network.vpc_id
+  subnet_ids            = [module.common_network.private_subnet_db_a_id, module.common_network.private_subnet_db_b_id]
+  availability_zone     = "ap-northeast-2a"
+  instance_class        = "db.t3.micro"
+  username              = var.db_master_username
+  password              = var.db_master_password
+  multi_az              = false
+  create_security_group = false
+  security_group_ids    = [module.security.rds_product_sg_id]
+}
+module "rds_order" {
+  source                = "./modules/rds"
+  name                  = "order"
+  db_name               = "goormdotcom"
+  vpc_id                = module.common_network.vpc_id
+  subnet_ids            = [module.common_network.private_subnet_db_a_id, module.common_network.private_subnet_db_b_id]
+  availability_zone     = "ap-northeast-2a"
+  instance_class        = "db.t3.micro"
+  username              = var.db_master_username
+  password              = var.db_master_password
+  multi_az              = false
+  create_security_group = false
+  security_group_ids    = [module.security.rds_order_sg_id]
+}
+module "rds_payment" {
+  source                = "./modules/rds"
+  name                  = "payment"
+  db_name               = "goormdotcom"
+  vpc_id                = module.common_network.vpc_id
+  subnet_ids            = [module.common_network.private_subnet_db_a_id, module.common_network.private_subnet_db_b_id]
+  availability_zone     = "ap-northeast-2a"
+  instance_class        = "db.t3.micro"
+  username              = var.db_master_username
+  password              = var.db_master_password
+  multi_az              = false
+  create_security_group = false
+  security_group_ids    = [module.security.rds_payment_sg_id]
+}
 
 # ### ECR Repository ###
+# NOTE: ECR 돈도 딱히 안나가고, 내릴때마다 이미지 지워지니까 프로비저닝 대상에서 제외했습니다.
 # module "ecr_user" {
 #   source               = "./modules/ecr"
 #   repository_name      = "goormdotcom/user-service"
@@ -190,35 +191,18 @@ provider "kubectl" {
   apply_retry_count      = 20
 }
 
+module "eks_addon" {
+  source       = "./modules/eks-addon"
+  cluster_name = "goorm"
+  depends_on   = [module.eks, module.k8s_iam_role]
+}
+
 module "k8s_iam_role" {
   source            = "./modules/k8s-iam-role"
   oidc_provider_arn = module.eks.oidc_provider_arn
   oidc_issuer_url   = module.eks.oidc_issuer_url
   depends_on        = [module.eks]
 }
-
-module "eks_addon" {
-  source           = "./modules/eks-addon"
-  cluster_name     = "goorm"
-  vpc_id           = module.common_network.vpc_id
-  vpc_cni_role_arn = module.k8s_iam_role.vpc_cni_role_arn
-  providers = {
-    helm       = helm.eks
-    kubernetes = kubernetes.eks
-  }
-  depends_on = [module.eks, module.k8s_iam_role]
-}
-
-# module "k8s_namespace" {
-#   source = "./modules/k8s-namespace"
-#   providers = {
-#     kubernetes = kubernetes.eks
-#     kubectl    = kubectl.eks
-#   }
-#   depends_on = [module.eks]
-# }
-
-
 
 module "k8s_certmanager" {
   source = "./modules/k8s-certmanager"
@@ -228,115 +212,15 @@ module "k8s_certmanager" {
   }
   depends_on = [module.eks, module.eks_addon]
 }
-# module "k8s_eso" {
-#   source = "./modules/k8s-eso"
-#   providers = {
-#     helm       = helm.eks
-#     kubernetes = kubernetes.eks
-#     kubectl    = kubectl.eks
-#   }
-#   external_secrets_operator_role_arn = module.k8s_iam_role.external_secrets_operator_role_arn
-#   namespace                          = module.k8s_namespace.created_namespaces["external_secrets"]
-#   depends_on                         = [module.eks, module.eks_addon, module.k8s_namespace]
-# }
 
-# # S3 + Telemetry Backend
-
-# module "k8s_telemetry_backend" {
-#   source = "./modules/k8s-telemetry-backend"
-#   providers = {
-#     helm       = helm.eks
-#     kubernetes = kubernetes.eks
-#   }
-#   namespace         = module.k8s_namespace.created_namespaces["observability"]
-#   s3_endpoint       = "s3.ap-northeast-2.amazonaws.com"
-#   aws_region        = "ap-northeast-2"
-#   loki_s3_role_arn  = module.k8s_iam_role.loki_s3_role_arn
-#   tempo_s3_role_arn = module.k8s_iam_role.tempo_s3_role_arn
-#   mimir_s3_role_arn = module.k8s_iam_role.mimir_s3_role_arn
-#   depends_on        = [module.eks, module.eks_addon, module.k8s_namespace, module.k8s_iam_role]
-# }
-
-# module "k8s_grafana" {
-#   source = "./modules/k8s-grafana"
-#   providers = {
-#     helm       = helm.eks
-#     kubernetes = kubernetes.eks
-#   }
-#   tempo_host = "tempo.observability.svc.cluster.local"        # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
-#   mimir_host = "mimir.observability.svc.cluster.local"        # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
-#   loki_host  = "loki-gateway.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
-
-#   namespace  = "observability"
-#   tempo_port = 3200
-#   mimir_port = 9009
-#   loki_port  = 80
-#   depends_on = [module.eks, module.eks_addon, module.k8s_telemetry_backend]
-# }
-
-# module "k8s_otel_operator" {
-#   source = "./modules/k8s-otel-operator"
-#   providers = {
-#     helm       = helm.eks
-#     kubernetes = kubernetes.eks
-#     kubectl    = kubectl.eks
-#   }
-#   depends_on = [module.eks, module.eks_addon, module.k8s_certmanager]
-# }
-
-# module "k8s_otel_collector" {
-#   source = "./modules/k8s-otel-collector"
-#   providers = {
-#     kubernetes = kubernetes.eks
-#     kubectl    = kubectl.eks
-#   }
-#   namespace        = module.k8s_namespace.created_namespaces["observability"]
-#   k8s_cluster_name = module.eks.cluster_name
-#   depends_on       = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_otel_operator, module.k8s_telemetry_backend]
-# }
-
-
-# module "k8s_ingress" {
-#   source = "./modules/k8s-ingress"
-#   providers = {
-#     helm       = helm.eks
-#     kubernetes = kubernetes.eks
-#     kubectl    = kubectl.eks
-#   }
-#   cluster_name            = module.eks.cluster_name
-#   vpc_id                  = module.common_network.vpc_id
-#   alb_controller_role_arn = module.k8s_iam_role.alb_controller_role_arn
-#   goormdotcom_namespace   = module.k8s_namespace.created_namespaces["goormdotcom"]
-#   observability_namespace = module.k8s_namespace.created_namespaces["observability"]
-
-#   depends_on = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_iam_role, module.k8s_otel_collector
-#     , module.k8s_grafana
-#   ]
-# }
-
-# # NOTE: 제~~일 마지막에 실행
-# module "k8s_argocd" {
-#   source = "./modules/k8s-argocd"
-#   providers = {
-#     helm       = helm.eks
-#     kubernetes = kubernetes.eks
-#     kubectl    = kubectl.eks
-#   }
-#   namespace             = module.k8s_namespace.created_namespaces["argocd"]
-#   goormdotcom_namespace = module.k8s_namespace.created_namespaces["goormdotcom"]
-#   depends_on            = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_otel_collector, module.k8s_ingress]
-# }
-
-
-# module "vpc_endpoint" {
-#   source = "./modules/vpc-endpoint"
-#
-#   name_prefix        = "goorm"
-#   vpc_id             = module.common_network.vpc_id
-#   private_subnet_ids = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
-#   vpce_sg_id         = module.security.vpce_sg_id
-#   route_table_ids    = [module.common_network.private_rtb_app_a_id, module.common_network.private_rtb_app_b_id] # S3 Gateway용
-# }
+# Loki, Tempo, Mimir가 데이터를 저장할 S3 Buckets + IRSA
+module "telemetry_s3" {
+  source            = "./modules/telemetry-s3"
+  aws_region        = var.aws_region
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_issuer_url   = module.eks.oidc_issuer_url
+  depends_on        = [module.eks]
+}
 
 ### s3(presigned용)
 module "presigned_s3" {
@@ -344,4 +228,8 @@ module "presigned_s3" {
   bucket_name = var.presigned_bucket_name
   versioning  = true
 }
+
+# TODO: MSK
+
+# TODO: SecretsManager Update (RDS Credentials, MSK Credentials)
 

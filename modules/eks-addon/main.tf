@@ -22,7 +22,9 @@ resource "aws_eks_addon" "kube_proxy" {
 resource "aws_eks_addon" "vpc_cni" {
   cluster_name             = var.cluster_name
   addon_name               = "vpc-cni"
-  service_account_role_arn = var.vpc_cni_role_arn
+  service_account_role_arn = aws_iam_role.vpc_cni.arn
+
+  depends_on = [aws_iam_role_policy_attachment.vpc_cni_policy]
 }
 
 resource "helm_release" "kube_state_metrics" {

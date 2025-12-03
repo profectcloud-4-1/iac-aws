@@ -51,22 +51,22 @@ resource "aws_subnet" "private-app-b" {
   }
 }
 
-resource "aws_subnet" "private-db" {
+resource "aws_subnet" "private_db_a" {
   vpc_id            = aws_vpc.goorm.id
   cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 3)
   availability_zone = "ap-northeast-2a"
   tags = {
-    Name = "goorm-private-subnet-db-a"
+    Name = "goorm-private-subnet_db_a"
     AZ   = "a"
   }
 }
 
-resource "aws_subnet" "private-db-2" {
+resource "aws_subnet" "private_db_b" {
   vpc_id            = aws_vpc.goorm.id
   cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 4)
   availability_zone = "ap-northeast-2b"
   tags = {
-    Name = "goorm-private-subnet-db-b"
+    Name = "goorm-private-subnet_db_b"
     AZ   = "b"
   }
 }
@@ -128,8 +128,12 @@ resource "aws_route_table" "private_db" {
     Name = "goorm-rtb-private-db"
   }
 }
-resource "aws_route_table_association" "private_db_assoc" {
-  subnet_id      = aws_subnet.private-db.id
+resource "aws_route_table_association" "private_db_assoc_a" {
+  subnet_id      = aws_subnet.private_db_a.id
+  route_table_id = aws_route_table.private_db.id
+}
+resource "aws_route_table_association" "private_db_assoc_b" {
+  subnet_id      = aws_subnet.private_db_b.id
   route_table_id = aws_route_table.private_db.id
 }
 
@@ -240,9 +244,13 @@ resource "aws_network_acl_rule" "private_db_egress_allow_vpc" {
   cidr_block     = aws_vpc.goorm.cidr_block
 }
 # nacl <-> subnet 연결
-resource "aws_network_acl_association" "private_db_assoc" {
+resource "aws_network_acl_association" "private_db_assoc_a" {
   network_acl_id = aws_network_acl.private_db.id
-  subnet_id      = aws_subnet.private-db.id
+  subnet_id      = aws_subnet.private_db_a.id
+}
+resource "aws_network_acl_association" "private_db_assoc_b" {
+  network_acl_id = aws_network_acl.private_db.id
+  subnet_id      = aws_subnet.private_db_b.id
 }
 
 # eip for nat gw

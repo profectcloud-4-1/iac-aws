@@ -16,7 +16,11 @@ output "private_subnet_app_b_id" {
 }
 
 output "private_subnet_db_a_id" {
-  value = aws_subnet.private-db.id
+  value = aws_subnet.private_db_a.id
+}
+
+output "private_subnet_db_b_id" {
+  value = aws_subnet.private_db_b.id
 }
 
 output "private_rtb_app_a_id" {
