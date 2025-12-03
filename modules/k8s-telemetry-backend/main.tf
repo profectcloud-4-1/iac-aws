@@ -144,9 +144,7 @@ resource "helm_release" "loki" {
       singleBinary = {
         replicas = 1
         persistence = {
-          enabled = true
-          storageClassName = "" # PVC 생성 안 하고 emptyDir 쓰게 만드는 핵심!
-          size = "1Gi"          # 필수지만 실제 PVC는 안 만들어짐
+          enabled = false
         }
       }
 
@@ -156,10 +154,10 @@ resource "helm_release" "loki" {
       minio = {
         enabled = false
       }
-      chunks_cache = {
+      chunksCache = {
         enabled = false
       }
-      results_cache = {
+      resultsCache = {
         enabled = false
       }
       memberlist = {
