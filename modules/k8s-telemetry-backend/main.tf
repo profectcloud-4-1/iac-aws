@@ -143,6 +143,9 @@ resource "helm_release" "loki" {
 
       singleBinary = {
         replicas = 1
+        persistence = {
+          enabled = false
+        }
       }
 
       #######################################################
