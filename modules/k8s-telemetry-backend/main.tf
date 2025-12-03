@@ -198,7 +198,7 @@ resource "helm_release" "loki" {
           s3 = {
             region           = var.aws_region
             endpoint         = "https://s3.ap-northeast-2.amazonaws.com"
-            s3ForcePathStyle = "path"
+            s3ForcePathStyle = true
           }
         }
       }
