@@ -179,7 +179,7 @@ resource "helm_release" "loki" {
           configs = [
             {
               from         = "2024-04-01"
-              store        = "tsdb"
+              store        = "boltdb-shipper"
               object_store = "s3"
               schema       = "v13"
               index = {
