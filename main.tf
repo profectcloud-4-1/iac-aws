@@ -258,22 +258,22 @@ module "k8s_telemetry_backend" {
   depends_on        = [module.eks, module.eks_addon, module.k8s_namespace, module.k8s_iam_role]
 }
 
-# module "k8s_grafana" {
-#   source = "./modules/k8s-grafana"
-#   providers = {
-#     helm       = helm.eks
-#     kubernetes = kubernetes.eks
-#   }
-#   tempo_host = "tempo-query-frontend.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
-#   mimir_host = "mimir-nginx.observability.svc.cluster.local"          # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
-#   loki_host  = "loki-gateway.observability.svc.cluster.local"                 # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
+module "k8s_grafana" {
+  source = "./modules/k8s-grafana"
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+  }
+  tempo_host = "tempo-query-frontend.observability.svc.cluster.local" # 클러스터 내 프로비저닝 완료된 Tempo 서비스 IP
+  mimir_host = "mimir-nginx.observability.svc.cluster.local"          # 클러스터 내 프로비저닝 완료된 Mimir 서비스 IP
+  loki_host  = "loki-gateway.observability.svc.cluster.local"         # 클러스터 내 프로비저닝 완료된 Loki 서비스 IP
 
-#   namespace  = "observability"
-#   tempo_port = 3100
-#   mimir_port = 80
-#   loki_port  = 3100
-#   depends_on = [module.eks, module.eks_addon, module.k8s_telemetry_backend]
-# }
+  namespace  = "observability"
+  tempo_port = 3100
+  mimir_port = 80
+  loki_port  = 3100
+  depends_on = [module.eks, module.eks_addon, module.k8s_telemetry_backend]
+}
 
 module "k8s_otel_operator" {
   source = "./modules/k8s-otel-operator"
@@ -297,23 +297,23 @@ module "k8s_otel_collector" {
 }
 
 
-# module "k8s_ingress" {
-#   source = "./modules/k8s-ingress"
-#   providers = {
-#     helm       = helm.eks
-#     kubernetes = kubernetes.eks
-#     kubectl    = kubectl.eks
-#   }
-#   cluster_name            = module.eks.cluster_name
-#   vpc_id                  = module.common_network.vpc_id
-#   alb_controller_role_arn = module.k8s_iam_role.alb_controller_role_arn
-#   goormdotcom_namespace   = module.k8s_namespace.created_namespaces["goormdotcom"]
-#   observability_namespace = module.k8s_namespace.created_namespaces["observability"]
+module "k8s_ingress" {
+  source = "./modules/k8s-ingress"
+  providers = {
+    helm       = helm.eks
+    kubernetes = kubernetes.eks
+    kubectl    = kubectl.eks
+  }
+  cluster_name            = module.eks.cluster_name
+  vpc_id                  = module.common_network.vpc_id
+  alb_controller_role_arn = module.k8s_iam_role.alb_controller_role_arn
+  goormdotcom_namespace   = module.k8s_namespace.created_namespaces["goormdotcom"]
+  observability_namespace = module.k8s_namespace.created_namespaces["observability"]
 
-#   depends_on = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_iam_role
-#     # , module.k8s_grafana
-#   ]
-# }
+  depends_on = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_iam_role, module.k8s_otel_collector
+    , module.k8s_grafana
+  ]
+}
 
 # NOTE: 제~~일 마지막에 실행
 # module "k8s_argocd" {
