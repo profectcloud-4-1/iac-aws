@@ -9,12 +9,6 @@ variable "aws_region" {
   type        = string
 }
 
-variable "create_buckets" {
-  description = "모듈 내에서 S3 버킷을 생성할지 여부 (기존 버킷 사용 시 false)"
-  type        = bool
-  default     = true
-}
-
 variable "s3_bucket_loki" {
   description = "Loki가 사용할 S3 버킷 이름"
   type        = string

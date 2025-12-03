@@ -114,78 +114,112 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "telemetry" {
 # ---------------------------------------
 
 # Loki (monolithic)
-# resource "helm_release" "loki" {
-#   name             = "loki"
-#   repository       = local.grafana_repo
-#   chart            = "loki"
-#   namespace        = var.namespace
-#   create_namespace = false
-#   timeout          = 180
-#   atomic           = true
-#   # if provided
-#   version = var.loki_chart_version == "" ? null : var.loki_chart_version
+resource "helm_release" "loki" {
+  name             = "loki"
+  repository       = local.grafana_repo
+  chart            = "loki"
+  namespace        = var.namespace
+  create_namespace = false
+  timeout          = 180
+  atomic           = true
 
-#   values = [
-#     yamlencode({
-#       serviceAccount = {
-#         create = false
-#         name   = local.sa_names.loki
-#       }
-#       deploymentMode = "simple-scalable"
-#       persistence = {
-#         enabled = false
-#       }
-#       loki = {
-#         authEnabled = false
-#         commonConfig = {
-#           replication_factor = 1
-#         }
-#         server = {
-#           http_listen_port = 3100
-#         }
-#         ingester = {
-#           wal = {
-#             enabled = false
-#           }
-#         }
-#         limits_config = {
-#           allow_structured_metadata = false
-#         }
-#         schemaConfig = {
-#           configs = [
-#             {
-#               from         = "2023-01-01"
-#               store        = "boltdb-shipper"
-#               object_store = "s3"
-#               schema       = "v13"
-#               index = {
-#                 prefix = "loki_index_"
-#                 period = "24h"
-#               }
-#             }
-#           ]
-#         }
-#         storage = {
-#           type = "s3"
-#           bucketNames = {
-#             chunks = local.bucket_names.loki
-#             ruler  = local.bucket_names.loki
-#             admin  = local.bucket_names.loki
-#           }
-#           s3 = {
-#             region           = var.aws_region
-#             s3ForcePathStyle = var.s3_force_path_style
-#             endpoint         = local.s3_endpoint
-#           }
-#         }
-#       }
-#     })
-#   ]
+  version = var.loki_chart_version == "" ? null : var.loki_chart_version
 
-#   depends_on = [
-#     kubernetes_service_account.loki,
-#   ]
-# }
+  values = [
+    yamlencode({
+
+      ###############################
+      # Pod ServiceAccount
+      ###############################
+      serviceAccount = {
+        create = false
+        name   = local.sa_names.loki
+      }
+
+      ###############################
+      # Loki Mode (MUST)
+      ###############################
+      deploymentMode = "SimpleScalable"
+
+      ###############################
+      # Persistence Off (your config)
+      ###############################
+      persistence = {
+        enabled = false
+      }
+
+      ###############################
+      # SimpleScalable Loki Core Config
+      ###############################
+      loki = {
+        authEnabled = false
+
+        commonConfig = {
+          replication_factor = 1
+        }
+
+        server = {
+          http_listen_port = 3100
+        }
+
+        ingester = {
+          wal = { enabled = false }
+        }
+
+        limits_config = {
+          allow_structured_metadata = false
+        }
+
+        schemaConfig = {
+          configs = [
+            {
+              from         = "2023-01-01"
+              store        = "boltdb-shipper"
+              object_store = "s3"
+              schema       = "v13"
+              index = {
+                prefix = "loki_index_"
+                period = "24h"
+              }
+            }
+          ]
+        }
+
+        ###############################
+        # S3 Storage (AWS)
+        ###############################
+        storage = {
+          type = "s3"
+          bucketNames = {
+            chunks = local.bucket_names.loki
+            ruler  = local.bucket_names.loki
+            admin  = local.bucket_names.loki
+          }
+          s3 = {
+            region           = var.aws_region
+            endpoint         = "https://s3.ap-northeast-2.amazonaws.com"
+            s3ForcePathStyle = "path"
+          }
+        }
+      }
+
+      ###############################
+      # REQUIRED CACHE ENTRIES (simple-scalable)
+      ###############################
+      resultsCache = {
+        enabled = true
+      }
+
+      chunksCache = {
+        enabled = true
+      }
+    })
+  ]
+
+  depends_on = [
+    kubernetes_service_account.loki,
+  ]
+}
 
 # Tempo
 resource "helm_release" "tempo" {
