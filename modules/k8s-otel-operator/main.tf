@@ -37,15 +37,15 @@ data "http" "otel_operator" {
 }
 
 locals {
-  raw_yaml   = data.http.otel_operator.response_body
-  documents  = split("\n---", local.raw_yaml)
+  raw_yaml  = data.http.otel_operator.response_body
+  documents = split("\n---", local.raw_yaml)
 }
 
 resource "kubectl_manifest" "otel_operator" {
   for_each = {
     for i, doc in local.documents :
     i => doc
-    if trim(doc) != ""
+    if trimspace(doc) != ""
   }
 
   yaml_body = each.value
