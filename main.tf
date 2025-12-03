@@ -293,7 +293,7 @@ module "k8s_otel_collector" {
   }
   namespace        = module.k8s_namespace.created_namespaces["observability"]
   k8s_cluster_name = module.eks.cluster_name
-  depends_on       = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_ingress, module.k8s_otel_operator, module.k8s_telemetry_backend]
+  depends_on       = [module.eks, module.eks_addon, module.k8s_certmanager, module.k8s_eso, module.k8s_otel_operator, module.k8s_telemetry_backend]
 }
 
 
