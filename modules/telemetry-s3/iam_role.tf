@@ -16,7 +16,7 @@ resource "aws_iam_role" "log_s3" {
       Condition = {
         StringEquals = {
           "${replace(var.oidc_issuer_url, "https://", "")}:aud" = "sts.amazonaws.com",
-          "${replace(var.oidc_issuer_url, "https://", "")}:sub" = "system:serviceaccount:observability:log"
+          "${replace(var.oidc_issuer_url, "https://", "")}:sub" = "system:serviceaccount:observability:goormdotcom-log"
         }
       }
     }]
@@ -41,7 +41,7 @@ resource "aws_iam_role" "trace_s3" {
       Condition = {
         StringEquals = {
           "${replace(var.oidc_issuer_url, "https://", "")}:aud" = "sts.amazonaws.com",
-          "${replace(var.oidc_issuer_url, "https://", "")}:sub" = "system:serviceaccount:observability:trace"
+          "${replace(var.oidc_issuer_url, "https://", "")}:sub" = "system:serviceaccount:observability:goormdotcom-trace"
         }
       }
     }]
@@ -66,7 +66,7 @@ resource "aws_iam_role" "metric_s3" {
       Condition = {
         StringEquals = {
           "${replace(var.oidc_issuer_url, "https://", "")}:aud" = "sts.amazonaws.com",
-          "${replace(var.oidc_issuer_url, "https://", "")}:sub" = "system:serviceaccount:observability:metric"
+          "${replace(var.oidc_issuer_url, "https://", "")}:sub" = "system:serviceaccount:observability:goormdotcom-metric"
         }
       }
     }]
