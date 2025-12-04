@@ -275,3 +275,61 @@ resource "aws_route" "private_app_to_nat" {
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.nat.id
 }
+
+# Private subnets for MSK, one per AZ (2a/2b/2c)
+resource "aws_subnet" "msk_a" {
+  vpc_id            = aws_vpc.goorm.id
+  cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 6)
+  availability_zone = "ap-northeast-2a"
+
+  tags = {
+    Name = "goorm-private-subnet-msk-a"
+    AZ   = "a"
+  }
+}
+
+resource "aws_subnet" "msk_b" {
+  vpc_id            = aws_vpc.goorm.id
+  cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 7)
+  availability_zone = "ap-northeast-2b"
+
+  tags = {
+    Name = "goorm-private-subnet-msk-b"
+    AZ   = "b"
+  }
+}
+
+resource "aws_subnet" "msk_c" {
+  vpc_id            = aws_vpc.goorm.id
+  cidr_block        = cidrsubnet(aws_vpc.goorm.cidr_block, 4, 8)
+  availability_zone = "ap-northeast-2c"
+
+  tags = {
+    Name = "goorm-private-subnet-msk-c"
+    AZ   = "c"
+  }
+}
+
+# Dedicated private route table for MSK subnets
+resource "aws_route_table" "private_msk" {
+  vpc_id = aws_vpc.goorm.id
+
+  tags = {
+    Name = "goorm-rtb-private-msk"
+  }
+}
+
+resource "aws_route_table_association" "private_msk_a" {
+  subnet_id      = aws_subnet.msk_a.id
+  route_table_id = aws_route_table.private_msk.id
+}
+
+resource "aws_route_table_association" "private_msk_b" {
+  subnet_id      = aws_subnet.msk_b.id
+  route_table_id = aws_route_table.private_msk.id
+}
+
+resource "aws_route_table_association" "private_msk_c" {
+  subnet_id      = aws_subnet.msk_c.id
+  route_table_id = aws_route_table.private_msk.id
+}
