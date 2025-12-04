@@ -65,3 +65,21 @@ variable "aws_region" {
   type        = string
   default     = "ap-northeast-2"
 }
+
+variable "enhanced_monitoring" {
+  description = "MSK 클러스터 모니터링 수준 (DEFAULT | PER_BROKER | PER_TOPIC_PER_BROKER | PER_TOPIC_PER_PARTITION)"
+  type        = string
+  default     = "PER_TOPIC_PER_BROKER"
+}
+
+variable "enable_broker_logs_cloudwatch" {
+  description = "브로커 로그를 CloudWatch Logs로 전송 여부"
+  type        = bool
+  default     = true
+}
+
+variable "broker_logs_cloudwatch_log_group" {
+  description = "브로커 로그를 보낼 CloudWatch Log Group 이름 (enable=true 시 지정 권장)"
+  type        = string
+  default     = "/aws/msk/goorm/cluster"
+}
