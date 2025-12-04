@@ -198,7 +198,7 @@ module "eks_addon" {
     helm       = helm.eks
     kubernetes = kubernetes.eks
   }
-  depends_on   = [module.eks, module.k8s_iam_role]
+  depends_on = [module.eks, module.k8s_iam_role]
 }
 
 module "k8s_iam_role" {
@@ -234,6 +234,13 @@ module "presigned_s3" {
 }
 
 # TODO: MSK
+module "msk" {
+  source             = "./modules/msk"
+  subnet_ids         = [module.common_network.private_subnet_msk_a_id, module.common_network.private_subnet_msk_b_id, module.common_network.private_subnet_msk_c_id]
+  vpc_id             = module.common_network.vpc_id
+  vpc_cidr_block     = module.common_network.vpc_cidr_block
+  security_group_ids = [module.security.msk_sg_id]
+}
 
 # TODO: SecretsManager Update (RDS Credentials, MSK Credentials)
 

@@ -24,3 +24,7 @@ output "vpc_link_sg_id" {
 output "ecs_service_sg_id" {
   value = aws_security_group.ecs_service.id
 }
+
+output "msk_sg_id" {
+  value = aws_security_group.msk.id
+}

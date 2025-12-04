@@ -198,3 +198,34 @@ resource "aws_security_group" "ecs_service" {
     Name = "${var.name_prefix}-ecs-service-sg"
   }
 }
+
+resource "aws_security_group" "msk" {
+  name        = "goorm-msk-sg"
+  description = "Security group for MSK brokers (TLS + SASL IAM/SCRAM)"
+  vpc_id      = var.vpc_id
+
+  # SASL/SCRAM over TLS(9096), SASL/IAM over TLS(9098)
+  ingress {
+    from_port   = 9096
+    to_port     = 9096
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr_block]
+  }
+  ingress {
+    from_port   = 9098
+    to_port     = 9098
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr_block]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.name_prefix}-msk-sg"
+  }
+}
