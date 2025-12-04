@@ -5,7 +5,8 @@ resource "aws_vpc" "goorm" {
   enable_dns_support   = true
 
   tags = {
-    Name = "goorm-vpc"
+    Name                          = "goorm-vpc"
+    "kubernetes.io/cluster/goorm" = "shared"
   }
 }
 
