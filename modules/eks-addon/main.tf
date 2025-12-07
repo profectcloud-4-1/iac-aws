@@ -14,6 +14,27 @@ resource "aws_eks_addon" "coredns" {
   addon_name   = "coredns"
 }
 
+resource "kubernetes_manifest" "coredns_pdb_override" {
+  manifest = {
+    apiVersion = "policy/v1"
+    kind       = "PodDisruptionBudget"
+    metadata = {
+      name      = "coredns"
+      namespace = "kube-system"
+    }
+    spec = {
+      minAvailable = 2
+      selector = {
+        matchLabels = {
+          k8s-app = "kube-dns"
+        }
+      }
+    }
+  }
+
+  depends_on = [ aws_eks_addon.coredns ]
+}
+
 resource "aws_eks_addon" "kube_proxy" {
   cluster_name = var.cluster_name
   addon_name   = "kube-proxy"
