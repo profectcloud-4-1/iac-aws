@@ -38,13 +38,13 @@ resource "helm_release" "kube_state_metrics" {
   timeout           = 600
 }
 
-resource "helm_release" "prometheus_node_exporter" {
-  name              = "prometheus-node-exporter"
-  repository        = "https://prometheus-community.github.io/helm-charts"
-  chart             = "prometheus-node-exporter"
-  namespace         = "kube-system"
-  create_namespace  = false
-  dependency_update = true
-  wait              = true
-  timeout           = 600
-}
+# resource "helm_release" "prometheus_node_exporter" {
+#   name              = "prometheus-node-exporter"
+#   repository        = "https://prometheus-community.github.io/helm-charts"
+#   chart             = "prometheus-node-exporter"
+#   namespace         = "kube-system"
+#   create_namespace  = false
+#   dependency_update = true
+#   wait              = true
+#   timeout           = 600
+# }
