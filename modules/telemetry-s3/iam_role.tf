@@ -110,3 +110,31 @@ resource "aws_iam_role_policy_attachment" "grafana_cloudwatchlogs_readonly" {
   role       = aws_iam_role.grafana_cloudwatch.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsReadOnlyAccess"
 }
+
+# ---------------------------------------
+# IRSA Role for OTEL Collector - CloudWatch Logs polling
+# ---------------------------------------
+resource "aws_iam_role" "otel_cloudwatch" {
+  name = "eks-irsa-cloudwatch-log"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Federated = var.oidc_provider_arn
+      },
+      Action = "sts:AssumeRoleWithWebIdentity",
+      Condition = {
+        StringEquals = {
+          "${replace(var.oidc_issuer_url, "https://", "")}:aud" = "sts.amazonaws.com",
+          "${replace(var.oidc_issuer_url, "https://", "")}:sub" = "system:serviceaccount:observability:goormdotcom-cloudwatch-log"
+        }
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "otel_cloudwatchlogs_readonly" {
+  role       = aws_iam_role.otel_cloudwatch.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsReadOnlyAccess"
+}

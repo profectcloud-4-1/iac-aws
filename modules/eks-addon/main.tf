@@ -32,7 +32,7 @@ resource "kubernetes_manifest" "coredns_pdb_override" {
     }
   }
 
-  depends_on = [ aws_eks_addon.coredns ]
+  depends_on = [aws_eks_addon.coredns]
 }
 
 resource "aws_eks_addon" "kube_proxy" {
