@@ -24,9 +24,11 @@ variable "s3_bucket_mimir" {
 variable "oidc_provider_arn" {
   description = "클러스터 OIDC 공급자 ARN"
   type        = string
+  default = "none"
 }
 
 variable "oidc_issuer_url" {
   description = "클러스터 OIDC 발급자 URL"
   type        = string
+  default = "none"
 }
