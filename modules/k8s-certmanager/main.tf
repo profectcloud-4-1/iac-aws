@@ -28,6 +28,21 @@ resource "helm_release" "cert_manager" {
   values = [
     yamlencode({
       installCRDs = true
+      cainjector = {
+        nodeSelector = {
+          "karpenter.sh/nodepool" = "system"
+        }
+      }
+      webhook = {
+        nodeSelector = {
+          "karpenter.sh/nodepool" = "system"
+        }
+      }
+      controller = {
+        nodeSelector = {
+          "karpenter.sh/nodepool" = "system"
+        }
+      }
     })
   ]
 }
