@@ -204,6 +204,9 @@ module "eks_addon" {
 
 module "eks_nodepool" {
   source       = "./modules/eks-nodepool"
+  providers = {
+    kubectl = kubectl.eks
+  }
   depends_on   = [module.eks, module.eks_addon]
 }
 
