@@ -33,7 +33,7 @@ variable "broker_count" {
 variable "ebs_volume_size" {
   description = "브로커 EBS 용량(GB)"
   type        = number
-  default     = 10
+  default     = 20
 }
 
 variable "instance_type" {
