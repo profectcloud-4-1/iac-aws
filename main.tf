@@ -202,6 +202,11 @@ module "eks_addon" {
   depends_on = [module.eks, module.k8s_iam_role]
 }
 
+module "eks_nodepool" {
+  source       = "./modules/eks-nodepool"
+  depends_on   = [module.eks, module.eks_addon]
+}
+
 module "k8s_iam_role" {
   source            = "./modules/k8s-iam-role"
   oidc_provider_arn = module.eks.oidc_provider_arn
