@@ -222,9 +222,9 @@ module "rds_payment" {
 module "telemetry_s3" {
   source            = "./modules/telemetry-s3"
   aws_region        = var.aws_region
-  oidc_provider_arn = module.eks.oidc_provider_arn
-  oidc_issuer_url   = module.eks.oidc_issuer_url
-  depends_on        = [module.eks]
+  # oidc_provider_arn = module.eks.oidc_provider_arn
+  # oidc_issuer_url   = module.eks.oidc_issuer_url
+  # depends_on        = [module.eks]
 }
 
 ### s3(presigned용)
