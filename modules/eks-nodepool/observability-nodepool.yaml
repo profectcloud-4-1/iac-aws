@@ -1,0 +1,29 @@
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: observabiliy-nodepool
+spec:
+  template:
+    metadata:
+      labels:
+        workload: observability
+    spec:
+      nodeClassRef:
+        group: eks.amazonaws.com
+        kind: NodeClass
+        name: default
+
+      requirements:
+        - key: "eks.amazonaws.com/instance-category"
+          operator: In
+          values: ["c", "m"]
+        - key: "topology.kubernetes.io/zone"
+          operator: In
+          values: ["ap-northeast-2a", "ap-northeast-2b", "ap-northeast-2c"]
+        - key: "kubernetes.io/arch"
+          operator: In
+          values: ["amd64"]
+
+  limits:
+    cpu: "2000"
+    memory: 8Gi
