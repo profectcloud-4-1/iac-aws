@@ -155,67 +155,68 @@ module "rds_payment" {
 #   ]
 # }
 
-module "eks" {
-  source          = "./modules/eks"
-  cluster_name    = "goorm"
-  cluster_version = "1.33"
-  subnet_ids      = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
-}
+# ------- EKS -------
+# module "eks" {
+#   source          = "./modules/eks"
+#   cluster_name    = "goorm"
+#   cluster_version = "1.33"
+#   subnet_ids      = [module.common_network.private_subnet_app_a_id, module.common_network.private_subnet_app_b_id]
+# }
 
-data "aws_eks_cluster_auth" "eks" {
-  name = module.eks.cluster_name
-}
+# data "aws_eks_cluster_auth" "eks" {
+#   name = module.eks.cluster_name
+# }
 
-provider "helm" {
-  alias = "eks"
-  kubernetes {
-    host                   = module.eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-    token                  = data.aws_eks_cluster_auth.eks.token
-  }
-}
+# provider "helm" {
+#   alias = "eks"
+#   kubernetes {
+#     host                   = module.eks.cluster_endpoint
+#     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+#     token                  = data.aws_eks_cluster_auth.eks.token
+#   }
+# }
 
-provider "kubernetes" {
-  alias                  = "eks"
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  token                  = data.aws_eks_cluster_auth.eks.token
-}
+# provider "kubernetes" {
+#   alias                  = "eks"
+#   host                   = module.eks.cluster_endpoint
+#   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+#   token                  = data.aws_eks_cluster_auth.eks.token
+# }
 
-provider "kubectl" {
-  alias                  = "eks"
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  token                  = data.aws_eks_cluster_auth.eks.token
-  load_config_file       = false
-  apply_retry_count      = 20
-}
+# provider "kubectl" {
+#   alias                  = "eks"
+#   host                   = module.eks.cluster_endpoint
+#   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+#   token                  = data.aws_eks_cluster_auth.eks.token
+#   load_config_file       = false
+#   apply_retry_count      = 20
+# }
 
-module "eks_addon" {
-  source       = "./modules/eks-addon"
-  cluster_name = "goorm"
-  providers = {
-    helm       = helm.eks
-    kubernetes = kubernetes.eks
-  }
-  depends_on = [module.eks, module.k8s_iam_role]
-}
+# module "eks_addon" {
+#   source       = "./modules/eks-addon"
+#   cluster_name = "goorm"
+#   providers = {
+#     helm       = helm.eks
+#     kubernetes = kubernetes.eks
+#   }
+#   depends_on = [module.eks, module.k8s_iam_role]
+# }
 
-module "k8s_iam_role" {
-  source            = "./modules/k8s-iam-role"
-  oidc_provider_arn = module.eks.oidc_provider_arn
-  oidc_issuer_url   = module.eks.oidc_issuer_url
-  depends_on        = [module.eks]
-}
+# module "k8s_iam_role" {
+#   source            = "./modules/k8s-iam-role"
+#   oidc_provider_arn = module.eks.oidc_provider_arn
+#   oidc_issuer_url   = module.eks.oidc_issuer_url
+#   depends_on        = [module.eks]
+# }
 
-module "k8s_certmanager" {
-  source = "./modules/k8s-certmanager"
-  providers = {
-    helm       = helm.eks
-    kubernetes = kubernetes.eks
-  }
-  depends_on = [module.eks, module.eks_addon]
-}
+# module "k8s_certmanager" {
+#   source = "./modules/k8s-certmanager"
+#   providers = {
+#     helm       = helm.eks
+#     kubernetes = kubernetes.eks
+#   }
+#   depends_on = [module.eks, module.eks_addon]
+# }
 
 # Loki, Tempo, Mimir가 데이터를 저장할 S3 Buckets + IRSA
 module "telemetry_s3" {
@@ -233,7 +234,7 @@ module "presigned_s3" {
   versioning  = true
 }
 
-# TODO: MSK
+# MSK
 module "msk" {
   source             = "./modules/msk"
   subnet_ids         = [module.common_network.private_subnet_msk_a_id, module.common_network.private_subnet_msk_b_id, module.common_network.private_subnet_msk_c_id]
