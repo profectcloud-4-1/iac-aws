@@ -38,7 +38,7 @@ resource "helm_release" "cert_manager" {
           "karpenter.sh/nodepool" = "system"
         }
       }
-      controller = {
+      cert-manager = {
         nodeSelector = {
           "karpenter.sh/nodepool" = "system"
         }
